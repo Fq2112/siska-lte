@@ -1,3 +1,6 @@
+## About SISKA
+SISKA-LTE is SISKA web apps in a **lite** version that developed with **Laramen**.
+
 ## About Laramen
 
 Laramen is a proof of concept on how Laravel & Lumen can be combined into one application. This gives a full Laravel web application with Lumen powered API routes.
