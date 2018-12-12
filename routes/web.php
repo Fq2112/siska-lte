@@ -11,6 +11,38 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+Auth::routes();
+
+Route::get('/', [
+    'uses' => 'Auth\LoginController@showLoginForm',
+    'as' => 'show.login.form'
+]);
+
+Route::group(['namespace' => 'Auth', 'prefix' => 'account'], function () {
+
+    Route::post('login', [
+        'uses' => 'LoginController@login',
+        'as' => 'login'
+    ]);
+
+    Route::post('logout', [
+        'uses' => 'LoginController@logout',
+        'as' => 'logout'
+    ]);
+
+    Route::get('activate', [
+        'uses' => 'ActivationController@activate',
+        'as' => 'activate'
+    ]);
+
+    Route::get('login/{provider}', [
+        'uses' => 'SocialAuthController@redirectToProvider',
+        'as' => 'redirect'
+    ]);
+
+    Route::get('login/{provider}/callback', [
+        'uses' => 'SocialAuthController@handleProviderCallback',
+        'as' => 'callback'
+    ]);
+
 });

@@ -11,6 +11,3 @@
 |
 */
 
-$router->get('/api', function () use ($router) {
-    return view('welcome');
-});

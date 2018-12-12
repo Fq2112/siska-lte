@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Http\Request;
+use App\Support\Facades\GlobalAuth;
+use Illuminate\Support\Facades\Input;
 
 class LoginController extends Controller
 {
@@ -17,15 +20,13 @@ class LoginController extends Controller
     | to conveniently provide its functionality to your applications.
     |
     */
-
     use AuthenticatesUsers;
-
     /**
      * Where to redirect users after login.
      *
      * @var string
      */
-    protected $redirectTo = '/home';
+    protected $redirectTo = '/';
 
     /**
      * Create a new controller instance.
@@ -34,6 +35,53 @@ class LoginController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('guest')->except('logout');
+        $this->middleware(['guest:admin', 'guest:web'])->except('logout');
+    }
+
+    /**
+     * Show the application's login form.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function showLoginForm()
+    {
+        return view('index');
+    }
+
+    /**
+     * Perform login process for users & admins
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function login(Request $request)
+    {
+        if (GlobalAuth::login(['email' => $request->email, 'password' => $request->password])) {
+            if (session()->has('intended')) {
+                $this->redirectTo = session('intended');
+                session()->forget('intended');
+            }
+
+            return back()->with('signed', 'You`re now signed in.');
+        }
+
+        return back()->withInput(Input::all())->with([
+            'error' => 'Your email or password is incorrect.'
+        ]);
+    }
+
+    /**
+     * Log the user out of the application.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function logout(Request $request)
+    {
+        $request->session()->invalidate();
+
+        GlobalAuth::logout();
+
+        return redirect()->route('show.login.form')->with('logout', 'You`re now signed out.');
     }
 }
