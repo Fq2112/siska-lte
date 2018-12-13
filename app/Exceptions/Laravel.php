@@ -76,6 +76,7 @@ class Laravel extends ExceptionHandler
             return response()->json(['error' => 'Unauthenticated.'], 401);
         }
 
-        return redirect()->guest(route('home-seeker'))->with('expire', 'The page you requested requires authentication, please login to your account.');
+        return redirect()->guest(route('show.login.form'))
+            ->with('expire', 'The page you requested requires authentication, please login to your account.');
     }
 }

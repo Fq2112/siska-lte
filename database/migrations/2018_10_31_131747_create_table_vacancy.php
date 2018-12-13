@@ -24,7 +24,7 @@ class CreateTableVacancy extends Migration
                 ->onUpdate('CASCADE')->onDelete('CASCADE');
             $table->text('syarat');
             $table->text('tanggungjawab');
-            $table->string('pengalaman');
+            $table->integer('pengalaman')->unsigned();
             $table->integer('jobtype_id')->unsigned();
             $table->foreign('jobtype_id')->references('id')->on('job_types')
                 ->onUpdate('CASCADE')->onDelete('CASCADE');
@@ -46,9 +46,9 @@ class CreateTableVacancy extends Migration
             $table->integer('jobfunction_id')->unsigned();
             $table->foreign('jobfunction_id')->references('id')->on('job_functions')
                 ->onUpdate('CASCADE')->onDelete('CASCADE');
-            $table->date('recruitmentDate_start')->nullable();
-            $table->date('recruitmentDate_end')->nullable();
-            $table->date('interview_date')->nullable();
+            $table->date('recruitmentDate_start');
+            $table->date('recruitmentDate_end');
+            $table->date('interview_date');
             $table->timestamps();
         });
     }

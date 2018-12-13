@@ -15,6 +15,8 @@ class CreateTableAgencies extends Migration
     {
         Schema::create('agencies', function (Blueprint $table) {
             $table->increments('id');
+            $table->string('ava')->nullable();
+            $table->string('email')->unique();
             $table->string('company');
             $table->string('kantor_pusat', 60);
             $table->integer('industry_id')->unsigned();

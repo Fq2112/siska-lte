@@ -21,7 +21,7 @@ class AdminMiddleware
 
         } else {
             if (Auth::guest()) {
-                return redirect()->guest(route('home-seeker'))
+                return redirect()->guest(route('show.login.form'))
                     ->with('expire', 'The page you requested requires authentication, please login to your account.');
             }
         }

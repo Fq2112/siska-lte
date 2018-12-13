@@ -32,6 +32,8 @@ class UserSeeder extends Seeder
 
         for ($c = 0; $c < 50; $c++) {
             $agency = Agencies::create([
+                'ava' => 'agency.png',
+                'email' => $faker->companyEmail,
                 'company' => $faker->company,
                 'kantor_pusat' => $faker->city,
                 'industry_id' => rand(Industries::min('id'), Industries::max('id')),
@@ -165,6 +167,11 @@ class UserSeeder extends Seeder
         User::find(1)->update([
             'email' => 'fiqy_a@icloud.com',
             'name' => 'Fiqy Ainuzzaqy'
+        ]);
+
+        Agencies::find(1)->update([
+            'email' => 'rm.rabbitmedia@gmail.com',
+            'company' => 'Rabbit Media'
         ]);
 
         Admin::find(1)->update([

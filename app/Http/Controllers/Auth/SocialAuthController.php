@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\User;
+use App\Models\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
@@ -35,7 +35,7 @@ class SocialAuthController extends Controller
 
             if (!$checkUser) {
                 Storage::disk('local')
-                    ->put('public/users/' . $userSocial->getId() . ".jpg", file_get_contents($userSocial->getAvatar()));
+                    ->put('public/users/ava/' . $userSocial->getId() . ".jpg", file_get_contents($userSocial->getAvatar()));
 
                 $user = User::firstOrCreate([
                     'ava' => $userSocial->getId() . ".jpg",
@@ -43,10 +43,7 @@ class SocialAuthController extends Controller
                     'name' => $userSocial->getName(),
                     'password' => bcrypt(str_random(15)),
                     'status' => true,
-                    'role' => 'seeker'
                 ]);
-
-                $user->seekers()->create(['user_id' => $user->id]);
 
                 $user->socialProviders()->create([
                     'provider_id' => $userSocial->getId(),
@@ -57,17 +54,14 @@ class SocialAuthController extends Controller
             } else {
                 if ($checkUser->ava == "seeker.png" || $checkUser->ava == "") {
                     Storage::disk('local')
-                        ->put('public/users/' . $userSocial->getId() . ".jpg", file_get_contents($userSocial->getAvatar()));
+                        ->put('public/users/ava/' . $userSocial->getId() . ".jpg", file_get_contents($userSocial->getAvatar()));
 
                     $checkUser->update(['ava' => $userSocial->getId() . ".jpg"]);
                 }
                 Auth::loginUsingId($checkUser->id);
             }
 
-            if ($provider == "twitter" || $provider == "google") {
-                return redirect()->route('home-seeker')->with('signed', 'You`re now signed in as a Job Seeker.');
-            }
-            return back()->with('signed', 'You`re now signed in as a Job Seeker.');
+            return redirect()->route('home-seeker')->with('signed', 'You`re now signed in as a Job Seeker.');
 
         } catch (\Exception $e) {
             return back()->with('unknown', 'Please, login/register with SISKA account.');

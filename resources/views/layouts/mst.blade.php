@@ -152,11 +152,40 @@
 
 <body class="nav-md">
 @php
-    $auth = Auth::guard('admin')->user();
+    $auth = Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::user();
+
+    if(Auth::guard('admin')->check()){
+        $logo = 'Admins';
+
+        if($auth->ava == "" || $auth->ava == "avatar.png"){
+            $ava = asset('images/avatar.png');
+            $bg = 'bg-red';
+            $label = '50%';
+        } else{
+            $ava = asset('storage/admins/ava/'.$auth->ava);
+            $bg = 'bg-green';
+            $label = '100%';
+        }
+
+    } else {
+       if(Auth::check()){
+            $logo = 'Seekers';
+
+            if($auth->ava == "" || $auth->ava == "seeker.png"){
+                $ava = asset('images/seeker.png');
+                $bg = 'bg-red';
+                $label = '50%';
+            } else{
+                $ava = asset('storage/users/ava/'.$auth->ava);
+                $bg = 'bg-green';
+                $label = '100%';
+            }
+       }
+    }
 
     $applications = \App\Models\Vacancies::whereHas('getApplication', function ($acc){
         $acc->where('isApply', true);
-    })->whereDate('recruitmentDate_end','>=', today())->get();
+    })->whereDate('recruitmentDate_end', today())->get();
 
     $notifications = count($applications);
 @endphp
@@ -165,8 +194,8 @@
         <div class="col-md-3 left_col">
             <div class="left_col scroll-view">
                 <div class="navbar nav_title" style="border: 0;">
-                    <a href="{{route('home-admin')}}" class="site_title"><i class="fa fa-user-secret"></i>
-                        <span>SISKA Admins</span></a>
+                    <a href="{{route('home-seeker')}}" class="site_title">
+                        <i class="fa fa-university"></i> <span>{{env('APP_NAME')." ".$logo}}</span></a>
                 </div>
 
                 <div class="clearfix"></div>
@@ -174,8 +203,7 @@
                 <!-- menu profile quick info -->
                 <div class="profile clearfix">
                     <div class="profile_pic">
-                        <img src="{{$auth->ava == "" || $auth->ava == "avatar.png" ? asset('images/avatar.png') :
-                        asset('storage/admins/'.$auth->ava)}}" alt="..." class="img-circle profile_img">
+                        <img src="{{$ava}}" alt="..." class="img-circle profile_img">
                     </div>
                     <div class="profile_info">
                         <span>Welcome,</span>
@@ -191,56 +219,9 @@
                     <div class="menu_section">
                         <h3>General</h3>
                         <ul class="nav side-menu">
-                            <li><a href="{{route('home-admin')}}"><i class="fa fa-home"></i> Dashboard</a></li>
-                            <li>
-                                <a><i class="fa fa-table"></i> Tables
-                                    <span class="fa fa-chevron-down"></span></a>
-                                <ul class="nav child_menu">
-                                    <li><a>Data Master <span class="fa fa-chevron-down"></span></a>
-                                        <ul class="nav child_menu">
-                                            <li><a>Accounts <span class="fa fa-chevron-down"></span></a>
-                                                <ul class="nav child_menu">
-                                                    <li><a href="{{route('table.admins')}}">Admins</a></li>
-                                                    <li><a href="{{route('table.users')}}">Users</a></li>
-                                                </ul>
-                                            </li>
-                                            <li><a>Requirements <span class="fa fa-chevron-down"></span></a>
-                                                <ul class="nav child_menu">
-                                                    <li><a href="{{route('table.degrees')}}">Education Degrees</a></li>
-                                                    <li><a href="{{route('table.majors')}}">Education Majors</a></li>
-                                                    <li><a href="{{route('table.industries')}}">Industries</a></li>
-                                                    <li><a href="{{route('table.JobFunctions')}}">Job Functions</a></li>
-                                                    <li><a href="{{route('table.JobLevels')}}">Job Levels</a></li>
-                                                    <li><a href="{{route('table.JobTypes')}}">Job Types</a></li>
-                                                    <li><a href="{{route('table.salaries')}}">Salaries</a></li>
-                                                </ul>
-                                            </li>
-                                            <li><a>Web Contents <span class="fa fa-chevron-down"></span></a>
-                                                <ul class="nav child_menu">
-                                                    <li><a href="{{route('table.nations')}}">Nations</a></li>
-                                                    <li><a href="{{route('table.provinces')}}">Provinces</a></li>
-                                                    <li><a href="{{route('table.cities')}}">Cities</a></li>
-                                                </ul>
-                                            </li>
-                                        </ul>
-                                    </li>
-                                    <li><a>Data Transaction <span class="fa fa-chevron-down"></span></a>
-                                        <ul class="nav child_menu">
-                                            <li><a>Agencies <span class="fa fa-chevron-down"></span></a>
-                                                <ul class="nav child_menu">
-                                                    <li><a href="{{route('table.agencies')}}">Agencies</a></li>
-                                                    <li><a href="{{route('table.vacancies')}}">Vacancies</a></li>
-                                                </ul>
-                                            </li>
-                                            <li><a>Seekers <span class="fa fa-chevron-down"></span></a>
-                                                <ul class="nav child_menu">
-                                                    <li><a href="{{route('table.applications')}}">Applications</a></li>
-                                                </ul>
-                                            </li>
-                                        </ul>
-                                    </li>
-                                </ul>
-                            </li>
+                            <li><a href="{{Auth::guard('admin')->check() ? route('home-admin') :
+                            route('home-seeker')}}"><i class="fa fa-home"></i> Dashboard</a></li>
+                            @include('layouts.partials._navigation')
                         </ul>
                     </div>
 
@@ -261,8 +242,7 @@
                     <a data-toggle="tooltip" title="Sign Out" class="btn_signOut">
                         <span class="glyphicon glyphicon-off" aria-hidden="true"></span>
                     </a>
-                    <form id="logout-form" action="{{ route('logout') }}" method="POST"
-                          style="display: none;">
+                    <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                         {{ csrf_field() }}
                     </form>
                 </div>
@@ -282,21 +262,12 @@
                         <li class="">
                             <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown"
                                aria-expanded="false">
-                                <img src="{{$auth->ava == "" || $auth->ava == "avatar.png" ?
-                                asset('images/avatar.png') : asset('storage/admins/'.$auth->ava)}}" alt="">
-                                {{$auth->name}}
-                                <span class=" fa fa-angle-down"></span>
+                                <img src="{{$ava}}" alt="">{{$auth->name}}<span class=" fa fa-angle-down"></span>
                             </a>
                             <ul class="dropdown-menu dropdown-usermenu pull-right">
                                 <li>
-                                    <a href="{{route('admin.inbox')}}">
-                                        <i class="fa fa-envelope pull-right"></i> Inbox</a>
-                                </li>
-                                <li>
                                     <a class="btn_editProfile">
-                                        <span class="badge {{$auth->ava == "" || $auth->ava == "avatar.png" ? 'bg-red' :
-                                        'bg-green'}} pull-right">
-                                            {{$auth->ava == "" || $auth->ava == "avatar.png" ? '50%' : '100%'}}</span>
+                                        <span class="badge {{$bg}} pull-right">{{$label}}</span>
                                         <span>Profile</span>
                                     </a>
                                 </li>
@@ -335,19 +306,17 @@
                                             <li>
                                                 <a href="{{route('table.applications').'?q='.$vacancy->judul}}">
                                                     <span class="image">
-                                                        @if($vacancy->agencies->user->ava == "" ||
-                                                        $vacancy->agencies->user->ava == "agency.png")
-                                                            <img src="{{asset('images/agency.png')}}">
-                                                        @else
-                                                            <img src="{{asset('storage/users/'.$vacancy->agencies->user->ava)}}">
-                                                        @endif
+                                                        <img src="{{$vacancy->getAgency->ava == "" ||
+                                                        $vacancy->getAgency->ava == "agency.png" ?
+                                                        asset('images/agency.png') : asset('storage/admins/agencies/ava/'.
+                                                        $vacancy->getAgency->ava)}}">
                                                     </span>
                                                     <span>
                                                         <span>{{$vacancy->judul}}</span>
                                                     </span>
                                                     <span class="message">
                                                         Make sure the application list for this vacancy are sent today
-                                                        to <strong>{{$vacancy->agencies->user->name}}</strong>!
+                                                        to <strong>{{$vacancy->getAgency->company}}</strong>!
                                                         <span style="color: #fa5555">#This message only appears today.</span>
                                                     </span>
                                                 </a>
@@ -394,48 +363,49 @@
                     </button>
                     <h4 class="modal-title">Edit Profile</h4>
                 </div>
-                <form method="post" action="{{route('admin.update.profile')}}" enctype="multipart/form-data">
-                    {{csrf_field()}} {{method_field('PUT')}}
-                    <div class="modal-body">
-                        <div class="row form-group">
-                            <img src="{{$auth->ava == "" || $auth->ava == "avatar.png" ? asset('images/avatar.png') :
-                            asset('storage/admins/'.$auth->ava)}}" class="img-responsive" id="myBtn_img"
-                                 style="margin: 0 auto;width: 50%;cursor: pointer" data-toggle="tooltip"
-                                 data-placement="bottom"
-                                 title="Allowed extension: jpg, jpeg, gif, png. Allowed size: < 2 MB">
-                            <hr style="margin: .5em auto">
-                            <div class="col-lg-12">
-                                <label for="myAva">Avatar</label>
-                                <input type="file" name="myAva" style="display: none;" accept="image/*" id="myAva"
-                                       value="{{$auth->ava}}">
-                                <div class="input-group">
-                                    <input type="text" id="myTxt_ava" value="{{$auth->ava}}"
-                                           class="browse_files form-control"
-                                           placeholder="Upload file here..."
-                                           readonly style="cursor: pointer" data-toggle="tooltip"
-                                           title="Allowed extension: jpg, jpeg, gif, png. Allowed size: < 2 MB">
-                                    <span class="input-group-btn">
+                @auth('admin')
+                    <form method="post" action="{{route('admin.update.profile')}}" enctype="multipart/form-data">
+                        {{csrf_field()}} {{method_field('PUT')}}
+                        <div class="modal-body">
+                            <div class="row form-group">
+                                <img src="{{$ava}}" class="img-responsive" id="myBtn_img"
+                                     style="margin: 0 auto;width: 50%;cursor: pointer" data-toggle="tooltip"
+                                     data-placement="bottom"
+                                     title="Allowed extension: jpg, jpeg, gif, png. Allowed size: < 2 MB">
+                                <hr style="margin: .5em auto">
+                                <div class="col-lg-12">
+                                    <label for="myAva">Avatar</label>
+                                    <input type="file" name="myAva" style="display: none;" accept="image/*" id="myAva"
+                                           value="{{$auth->ava}}">
+                                    <div class="input-group">
+                                        <input type="text" id="myTxt_ava" value="{{$auth->ava}}"
+                                               class="browse_files form-control"
+                                               placeholder="Upload file here..."
+                                               readonly style="cursor: pointer" data-toggle="tooltip"
+                                               title="Allowed extension: jpg, jpeg, gif, png. Allowed size: < 2 MB">
+                                        <span class="input-group-btn">
                                         <button class="browse_files btn btn-info" type="button">
                                             <i class="fa fa-search"></i>
                                         </button>
                                     </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row form-group">
+                                <div class="col-lg-12 has-feedback">
+                                    <label for="myName">Name <span class="required">*</span></label>
+                                    <input id="myName" type="text" class="form-control" maxlength="191" name="myName"
+                                           placeholder="Full name" value="{{$auth->name}}" required>
+                                    <span class="fa fa-id-card form-control-feedback right" aria-hidden="true"></span>
                                 </div>
                             </div>
                         </div>
-                        <div class="row form-group">
-                            <div class="col-lg-12 has-feedback">
-                                <label for="myName">Name <span class="required">*</span></label>
-                                <input id="myName" type="text" class="form-control" maxlength="191" name="myName"
-                                       placeholder="Full name" value="{{$auth->name}}" required>
-                                <span class="fa fa-id-card form-control-feedback right" aria-hidden="true"></span>
-                            </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
                         </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary">Save Changes</button>
-                    </div>
-                </form>
+                    </form>
+                @endauth
             </div>
         </div>
     </div>
@@ -447,49 +417,52 @@
                     </button>
                     <h4 class="modal-title">Account Settings</h4>
                 </div>
-                <form method="post" action="{{route('admin.update.account')}}">
-                    {{csrf_field()}} {{method_field('PUT')}}
-                    <div class="modal-body">
-                        <div class="row form-group">
-                            <div class="col-lg-12 has-feedback">
-                                <label for="myEmail">Email <span class="required">*</span></label>
-                                <input id="myEmail" type="email" class="form-control" name="myEmail"
-                                       placeholder="Email" value="{{$auth->email}}"
-                                        {{$auth->isRoot() ? 'required' : 'readonly'}}>
-                                <span class="fa fa-envelope form-control-feedback right" aria-hidden="true"></span>
+                @auth('admin')
+                    <form method="post" action="{{route('admin.update.account')}}">
+                        {{csrf_field()}} {{method_field('PUT')}}
+                        <div class="modal-body">
+                            <div class="row form-group">
+                                <div class="col-lg-12 has-feedback">
+                                    <label for="myEmail">Email <span class="required">*</span></label>
+                                    <input id="myEmail" type="email" class="form-control" name="myEmail"
+                                           placeholder="Email" value="{{$auth->email}}"
+                                            {{$auth->isRoot() ? 'required' : 'readonly'}}>
+                                    <span class="fa fa-envelope form-control-feedback right" aria-hidden="true"></span>
+                                </div>
+                            </div>
+                            <div class="row form-group">
+                                <div class="col-lg-12 has-feedback">
+                                    <label for="myPassword">Current Password <span class="required">*</span></label>
+                                    <input id="myPassword" type="password" class="form-control" minlength="6"
+                                           name="myPassword"
+                                           placeholder="Current Password" required>
+                                    <span class="fa fa-lock form-control-feedback right" aria-hidden="true"></span>
+                                </div>
+                            </div>
+                            <div class="row form-group">
+                                <div class="col-lg-12 has-feedback">
+                                    <label for="myNew_password">New Password <span class="required">*</span></label>
+                                    <input id="myNew_password" type="password" class="form-control" minlength="6"
+                                           name="myNew_password" placeholder="New Password" required>
+                                    <span class="fa fa-lock form-control-feedback right" aria-hidden="true"></span>
+                                </div>
+                            </div>
+                            <div class="row form-group">
+                                <div class="col-lg-12 has-feedback">
+                                    <label for="myConfirm">Password Confirmation <span class="required">*</span></label>
+                                    <input id="myConfirm" type="password" class="form-control" minlength="6"
+                                           name="myPassword_confirmation" placeholder="Retype password" required>
+                                    <span class="fa fa-sign-in-alt form-control-feedback right"
+                                          aria-hidden="true"></span>
+                                </div>
                             </div>
                         </div>
-                        <div class="row form-group">
-                            <div class="col-lg-12 has-feedback">
-                                <label for="myPassword">Current Password <span class="required">*</span></label>
-                                <input id="myPassword" type="password" class="form-control" minlength="6"
-                                       name="myPassword"
-                                       placeholder="Current Password" required>
-                                <span class="fa fa-lock form-control-feedback right" aria-hidden="true"></span>
-                            </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
                         </div>
-                        <div class="row form-group">
-                            <div class="col-lg-12 has-feedback">
-                                <label for="myNew_password">New Password <span class="required">*</span></label>
-                                <input id="myNew_password" type="password" class="form-control" minlength="6"
-                                       name="myNew_password" placeholder="New Password" required>
-                                <span class="fa fa-lock form-control-feedback right" aria-hidden="true"></span>
-                            </div>
-                        </div>
-                        <div class="row form-group">
-                            <div class="col-lg-12 has-feedback">
-                                <label for="myConfirm">Password Confirmation <span class="required">*</span></label>
-                                <input id="myConfirm" type="password" class="form-control" minlength="6"
-                                       name="myPassword_confirmation" placeholder="Retype password" required>
-                                <span class="fa fa-sign-in-alt form-control-feedback right" aria-hidden="true"></span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary">Save Changes</button>
-                    </div>
-                </form>
+                    </form>
+                @endauth
             </div>
         </div>
     </div>
@@ -681,6 +654,7 @@
         }, 500);
     }(title + " ~ "));
 </script>
+@include('layouts.partials._alert')
 @include('layouts.partials._confirm')
 @include('layouts.partials._pnotify')
 @stack('scripts')

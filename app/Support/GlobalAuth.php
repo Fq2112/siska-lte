@@ -8,8 +8,8 @@
 
 namespace App\Support;
 
-use App\Admin;
-use App\User;
+use App\Models\Admin;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
 
@@ -69,7 +69,7 @@ class GlobalAuth
     /**
      * get user who's logged in from one of the guard
      *
-     * @return \App\User|\App\Admin
+     * @return \App\Models\User|\App\Models\Admin
      */
     public function user()
     {

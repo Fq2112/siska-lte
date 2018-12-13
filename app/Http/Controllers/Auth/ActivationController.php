@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\User;
+use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -20,12 +20,6 @@ class ActivationController extends Controller
         ]);
         Auth::loginUsingId($user->id);
 
-        if (Auth::user()->isSeeker()) {
-            $user->seekers()->create(['user_id' => $user->id]);
-            return back()->with('activated', 'You`re now signed in as Job Seeker.');
-        } elseif (Auth::user()->isAgency()) {
-            $user->agencies()->create(['user_id' => $user->id]);
-            return back()->with('activated', 'You`re now signed in as Job Agency.');
-        }
+        return redirect()->route('home-seeker')->with('activated', 'You`re now signed in as Job Seeker.');
     }
 }

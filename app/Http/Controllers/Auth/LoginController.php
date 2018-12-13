@@ -62,7 +62,7 @@ class LoginController extends Controller
                 session()->forget('intended');
             }
 
-            return back()->with('signed', 'You`re now signed in.');
+            return redirect()->route('home-seeker')->with('signed', 'You`re now signed in.');
         }
 
         return back()->withInput(Input::all())->with([

@@ -21,7 +21,8 @@ class SeekerMiddleware
                 return $next($request);
             }
         } else {
-            return $next($request);
+            return redirect()->guest(route('show.login.form'))
+                ->with('expire', 'The page you requested requires authentication, please login to your account.');
         }
         return response(view('errors.403'), 403);
     }

@@ -6,7 +6,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Account Page &ndash; {{env("APP_NAME")}} | SISKA &mdash; Sistem Informasi Karier</title>
+    <title>{{env("APP_NAME")}} | SISKA &mdash; Sistem Informasi Karier</title>
     <!-- Bootstrap -->
     <link href="{{asset('css/bootstrap.css')}}" rel="stylesheet">
     <!-- Font Awesome -->
@@ -15,6 +15,9 @@
     <link href="{{asset('css/nprogress.css')}}" rel="stylesheet">
     <!-- Animate.css -->
     <link href="{{asset('css/animate.min.css')}}" rel="stylesheet">
+    <!-- Sweet Alert v2 -->
+    <link rel="stylesheet" href="{{ asset('sweetalert2/sweetalert2.min.css') }}">
+    <script src="{{ asset('sweetalert2/sweetalert2.min.js') }}"></script>
     <!-- Custom Theme Style -->
     <link href="{{asset('css/custom.css')}}" rel="stylesheet">
     <link href="{{asset('css/signIn-Up.css')}}" rel="stylesheet">
@@ -74,7 +77,7 @@
                     </div>
                 </div>
                 <div class="row">
-                    <button class="btn btn-signin btn-block">Sign In</button>
+                    <button type="submit" class="btn btn-signin btn-block">Sign In</button>
                 </div>
                 @if(session('error'))
                     <strong>{{ $errors->first('password') }}</strong>
@@ -133,7 +136,7 @@
                            required>
                 </div>
                 <div class="row">
-                    <button class="btn btn-signup btn-block">Sign Up</button>
+                    <button type="submit" class="btn btn-signup btn-block">Sign Up</button>
                 </div>
                 <a href="javascript:void(0)" class="btn-login btn-fade">Already have an account? Sign In
                     <i class="fa fa-long-arrow-right" aria-hidden="true"></i></a>
@@ -154,7 +157,7 @@
                     <span class="error"></span>
                 </div>
                 <div class="row">
-                    <button class="btn-signup btn-password">Submit Reset</button>
+                    <button type="submit" class="btn-signup btn-password">Submit Reset</button>
                 </div>
                 <a href="javascript:void(0)" class="btn-login btn-fade">
                     <i class="fa fa-long-arrow-left" aria-hidden="true"></i> Cancel and go back to Login page </a>
@@ -170,7 +173,7 @@
     </div>
 </div>
 </body>
-
+@include('layouts.partials._alert')
 <!-- jQuery -->
 <script src="{{asset('js/jquery.min.js')}}"></script>
 <script src="{{asset('js/particles.min.js')}}"></script>
@@ -208,6 +211,19 @@
             $('.reset-mail').text($('#resetPassword').val());
             $('.recover-password form').hide();
             $('.notification').fadeIn(300);
+        }
+    });
+
+    $('#form-login').on("submit", function (event) {
+        var verified = grecaptcha.getResponse();
+        if (verified.length === 0) {
+            event.preventDefault();
+            swal({
+                title: 'ATTENTION!',
+                text: 'Please confirm us that you are not a robot, with clicking in the reCAPTCHA dialog-box.',
+                type: 'warning',
+                timer: '3500'
+            });
         }
     });
 
