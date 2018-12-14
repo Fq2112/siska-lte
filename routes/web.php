@@ -64,6 +64,64 @@ Route::group(['namespace' => 'Admins', 'prefix' => 'admin', 'middleware' => 'adm
         'as' => 'admin.update.account'
     ]);
 
+    Route::group(['prefix' => 'agencies'], function () {
+
+        Route::get('/', [
+            'uses' => 'AgencyController@showAgenciesTable',
+            'as' => 'table.agencies'
+        ]);
+
+        Route::post('create', [
+            'uses' => 'AgencyController@createAgencies',
+            'as' => 'create.agencies'
+        ]);
+
+        Route::get('edit/{id}', [
+            'uses' => 'AgencyController@editAgencies',
+            'as' => 'edit.agencies'
+        ]);
+
+        Route::put('{id}/update', [
+            'uses' => 'AgencyController@updateAgencies',
+            'as' => 'update.agencies'
+        ]);
+
+        Route::get('{id}/delete', [
+            'uses' => 'AgencyController@deleteAgencies',
+            'as' => 'delete.agencies'
+        ]);
+
+    });
+
+    Route::group(['prefix' => 'vacancies'], function () {
+
+        Route::get('/', [
+            'uses' => 'VacancyController@showVacanciesTable',
+            'as' => 'table.vacancies'
+        ]);
+
+        Route::post('create', [
+            'uses' => 'VacancyController@createVacancies',
+            'as' => 'create.vacancies'
+        ]);
+
+        Route::get('edit/{id}', [
+            'uses' => 'VacancyController@editVacancies',
+            'as' => 'edit.vacancies'
+        ]);
+
+        Route::put('{id}/update', [
+            'uses' => 'VacancyController@updateVacancies',
+            'as' => 'update.vacancies'
+        ]);
+
+        Route::get('{id}/delete', [
+            'uses' => 'VacancyController@deleteVacancies',
+            'as' => 'delete.vacancies'
+        ]);
+
+    });
+
     Route::group(['prefix' => 'tables'], function () {
 
         Route::group(['namespace' => 'DataMaster'], function () {
@@ -366,43 +424,6 @@ Route::group(['namespace' => 'Admins', 'prefix' => 'admin', 'middleware' => 'adm
         });
 
         Route::group(['namespace' => 'DataTransaction'], function () {
-
-            Route::group(['prefix' => 'agencies'], function () {
-
-                Route::group(['prefix' => 'agencies'], function () {
-
-                    Route::get('/', [
-                        'uses' => 'TransactionAgencyController@showAgenciesTable',
-                        'as' => 'table.agencies'
-                    ]);
-
-                    Route::get('{id}/delete', [
-                        'uses' => 'TransactionAgencyController@deleteAgencies',
-                        'as' => 'delete.agencies'
-                    ]);
-
-                });
-
-                Route::group(['prefix' => 'vacancies'], function () {
-
-                    Route::get('/', [
-                        'uses' => 'TransactionAgencyController@showVacanciesTable',
-                        'as' => 'table.vacancies'
-                    ]);
-
-                    Route::post('create', [
-                        'uses' => 'TransactionAgencyController@createVacancies',
-                        'as' => 'create.vacancies'
-                    ]);
-
-                    Route::get('{id}/delete', [
-                        'uses' => 'TransactionAgencyController@deleteVacancies',
-                        'as' => 'delete.vacancies'
-                    ]);
-
-                });
-
-            });
 
             Route::group(['prefix' => 'seekers'], function () {
 

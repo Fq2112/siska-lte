@@ -583,6 +583,7 @@
         tinymce.init(editor_config);
 
         $('.datepicker').datepicker({format: "yyyy-mm-dd", autoclose: true, todayHighlight: true, todayBtn: true});
+        $('.timepicker').datetimepicker({format: "HH:mm"});
 
         Scrollbar.initAll();
     });

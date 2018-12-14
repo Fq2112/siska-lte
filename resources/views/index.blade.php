@@ -77,7 +77,7 @@
                     </div>
                 </div>
                 <div class="row">
-                    <button type="submit" class="btn btn-signin btn-block">Sign In</button>
+                    <button type="submit" class="btn btn-signin btn-block">SIGN IN</button>
                 </div>
                 @if(session('error'))
                     <strong>{{ $errors->first('password') }}</strong>
@@ -136,7 +136,7 @@
                            required>
                 </div>
                 <div class="row">
-                    <button type="submit" class="btn btn-signup btn-block">Sign Up</button>
+                    <button type="submit" class="btn btn-signup btn-block">CREATE ACCOUNT</button>
                 </div>
                 <a href="javascript:void(0)" class="btn-login btn-fade">Already have an account? Sign In
                     <i class="fa fa-long-arrow-right" aria-hidden="true"></i></a>
@@ -157,7 +157,7 @@
                     <span class="error"></span>
                 </div>
                 <div class="row">
-                    <button type="submit" class="btn-signup btn-password">Submit Reset</button>
+                    <button type="submit" class="btn-signup btn-password">Send Password Reset Link</button>
                 </div>
                 <a href="javascript:void(0)" class="btn-login btn-fade">
                     <i class="fa fa-long-arrow-left" aria-hidden="true"></i> Cancel and go back to Login page </a>

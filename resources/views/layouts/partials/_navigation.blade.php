@@ -1,4 +1,6 @@
 @auth('admin')
+    <li><a href="{{route('table.agencies')}}"><i class="fa fa-building"></i> Agencies</a></li>
+    <li><a href="{{route('table.vacancies')}}"><i class="fa fa-briefcase"></i> Vacancies</a></li>
     <li>
         <a><i class="fa fa-table"></i> Tables
             <span class="fa fa-chevron-down"></span></a>
@@ -36,12 +38,6 @@
             </li>
             <li><a>Data Transaction <span class="fa fa-chevron-down"></span></a>
                 <ul class="nav child_menu">
-                    <li><a>Agencies <span class="fa fa-chevron-down"></span></a>
-                        <ul class="nav child_menu">
-                            <li><a href="{{route('table.agencies')}}">Agencies</a></li>
-                            <li><a href="{{route('table.vacancies')}}">Vacancies</a></li>
-                        </ul>
-                    </li>
                     <li><a>Seekers <span class="fa fa-chevron-down"></span></a>
                         <ul class="nav child_menu">
                             <li><a href="{{route('table.applications')}}">Applications</a>
