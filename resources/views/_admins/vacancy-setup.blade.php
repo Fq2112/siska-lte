@@ -22,6 +22,7 @@
                             <thead>
                             <tr>
                                 <th>No</th>
+                                <th>Vacancy</th>
                                 <th>Details</th>
                                 <th>Action</th>
                             </tr>
@@ -43,7 +44,7 @@
                                 <tr>
                                     <td style="vertical-align: middle" align="center">{{$no++}}</td>
                                     <td style="vertical-align: middle">
-                                        <table style="margin: 0">
+                                        <table>
                                             <tr>
                                                 <td>
                                                     <a href="{{route('agency.profile',['id' => $vacancy->agency_id])}}"
@@ -53,12 +54,16 @@
                                                         || $agency->ava == "agency.png" ? asset('images/agency.png') :
                                                         asset('storage/admins/ava/'.$agency->ava)}}">
                                                     </a>
-                                                    <table style="margin: 0">
+                                                    <table>
                                                         <tr>
                                                             <td>
                                                                 <a href="{{route('detail.vacancy',['id' =>
                                                                 $vacancy->id])}}" target="_blank">
-                                                                    <strong>{{$vacancy->judul}}</strong></a>
+                                                                    <strong>{{$vacancy->judul}}</strong></a> &ndash;
+                                                                <i class="fa fa-calendar"></i>&nbsp;{{\Carbon\Carbon::parse
+                                                                ($vacancy->created_at)->format('j F Y')}} |
+                                                                <i class="fa fa-clock"></i>&nbsp;{{$vacancy->updated_at
+                                                                ->diffForHumans()}}
                                                             </td>
                                                         </tr>
                                                         <tr>
@@ -101,47 +106,45 @@
                                             </tr>
                                         </table>
                                         <hr style="margin: .5em auto">
-                                        <table style="margin: 0">
+                                        <strong>Requirements</strong><br>{!! $vacancy->syarat !!}
+                                        <hr style="margin: .5em auto">
+                                        <strong>Responsibilities</strong><br>{!! $vacancy->tanggungjawab !!}
+                                    </td>
+                                    <td>
+                                        <table>
                                             <tr>
                                                 <td><i class="fa fa-warehouse"></i>&nbsp;</td>
-                                                <td>Job Function</td>
-                                                <td>&nbsp;:&nbsp;</td>
+                                                <td>&nbsp;</td>
                                                 <td>{{$jobfunc->name}}</td>
                                             </tr>
                                             <tr>
                                                 <td><i class="fa fa-industry"></i>&nbsp;</td>
-                                                <td>Industry</td>
-                                                <td>&nbsp;:&nbsp;</td>
+                                                <td>&nbsp;</td>
                                                 <td>{{$industry->name}}</td>
                                             </tr>
                                             <tr>
                                                 <td><i class="fa fa-level-up-alt"></i>&nbsp;</td>
-                                                <td>Job Level</td>
-                                                <td>&nbsp;:&nbsp;</td>
+                                                <td>&nbsp;</td>
                                                 <td>{{$joblevel->name}}</td>
                                             </tr>
                                             <tr>
                                                 <td><i class="fa fa-money-bill-wave"></i>&nbsp;</td>
-                                                <td>Salary</td>
-                                                <td>&nbsp;:&nbsp;</td>
+                                                <td>&nbsp;</td>
                                                 <td>IDR {{$salary->name}}</td>
                                             </tr>
                                             <tr>
                                                 <td><i class="fa fa-graduation-cap"></i>&nbsp;</td>
-                                                <td>Education Degree</td>
-                                                <td>&nbsp;:&nbsp;</td>
+                                                <td>&nbsp;</td>
                                                 <td>{{$degrees->name}}</td>
                                             </tr>
                                             <tr>
                                                 <td><i class="fa fa-user-graduate"></i>&nbsp;</td>
-                                                <td>Education Major</td>
-                                                <td>&nbsp;:&nbsp;</td>
+                                                <td>&nbsp;</td>
                                                 <td>{{$majors->name}}</td>
                                             </tr>
                                             <tr>
                                                 <td><i class="fa fa-briefcase"></i>&nbsp;</td>
-                                                <td>Work Experience</td>
-                                                <td>&nbsp;:&nbsp;</td>
+                                                <td>&nbsp;</td>
                                                 <td>
                                                     At least {{$vacancy->pengalaman > 1 ?
                                                     $vacancy->pengalaman.' years' : $vacancy->pengalaman.' year'}}
@@ -149,30 +152,10 @@
                                             </tr>
                                             <tr>
                                                 <td><i class="fa fa-paper-plane"></i></td>
-                                                <td>Total Applicant</td>
-                                                <td>&nbsp;:&nbsp;</td>
+                                                <td>&nbsp;</td>
                                                 <td><strong>{{\App\Models\Applications::where('vacancy_id',$vacancy->id)
                                                 ->where('isApply',true)->count()}}</strong> applicants
                                                 </td>
-                                            </tr>
-                                        </table>
-                                        <hr style="margin: .5em auto">
-                                        <strong>Requirements</strong><br>{!! $vacancy->syarat !!}
-                                        <hr style="margin: .5em auto">
-                                        <strong>Responsibilities</strong><br>{!! $vacancy->tanggungjawab !!}
-                                        <hr style="margin: .5em auto">
-                                        <table style="margin: 0">
-                                            <tr>
-                                                <td><i class="fa fa-calendar"></i>&nbsp;</td>
-                                                <td>Created at</td>
-                                                <td>&nbsp;:&nbsp;</td>
-                                                <td>{{\Carbon\Carbon::parse($vacancy->created_at)->format('j F Y')}}</td>
-                                            </tr>
-                                            <tr>
-                                                <td><i class="fa fa-clock"></i>&nbsp;</td>
-                                                <td>Last Update</td>
-                                                <td>&nbsp;:&nbsp;</td>
-                                                <td>{{$vacancy->updated_at->diffForHumans()}}</td>
                                             </tr>
                                         </table>
                                     </td>

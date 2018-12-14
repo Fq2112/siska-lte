@@ -56,16 +56,17 @@
                                 <tr>
                                     <td style="vertical-align: middle" align="center">{{$no++}}</td>
                                     <td style="vertical-align: middle" align="center">
-                                        @if($agency->ava == "" || $agency->ava == "agency.png")
+                                        <a target="_blank" href="{{route('agency.profile',['id' => $agency->id])}}">
                                             <img class="img-responsive" width="100" alt="agency.png"
-                                                 src="{{asset('images/agency.png')}}">
-                                        @else
-                                            <img class="img-responsive" width="100" alt="{{$agency->ava}}"
-                                                 src="{{asset('storage/admins/agencies/ava/'.$agency->ava)}}">
-                                        @endif
+                                                 src="{{$agency->ava == "" || $agency->ava == "agency.png" ?
+                                                 asset('images/agency.png') : asset('storage/admins/agencies/ava/'.
+                                                 $agency->ava)}}">
+                                        </a>
                                     </td>
                                     <td style="vertical-align: middle">
-                                        <strong>{{$agency->company}}</strong><br>
+                                        <a target="_blank" href="{{route('agency.profile',['id' => $agency->id])}}">
+                                            <strong>{{$agency->company}}</strong></a> &ndash; <strong>{{$agency
+                                            ->getIndustry->name}}</strong><br>
                                         <a href="mailto:{{$agency->email}}">{{$agency->email}}</a><br>
                                         <strong>Headquarter : </strong>
                                         <span class="label label-default"
@@ -93,13 +94,13 @@
                             </tbody>
                         </table>
                     </div>
-                    <div class="x_content" id="content2" style="display: none">
+                    <div id="content2" class="x_content" style="display: none">
                         <form method="post" action="{{route('create.agencies')}}" id="form-agency">
                             {{csrf_field()}}
                             <input type="hidden" name="_method" id="method">
                             <div class="row form-group">
                                 <img id="agency_ava_img" class="img-responsive"
-                                     style="margin: 0 auto;width: 50%;cursor: pointer" data-toggle="tooltip"
+                                     style="margin: 0 auto;width: 25%;cursor: pointer" data-toggle="tooltip"
                                      data-placement="bottom"
                                      title="Allowed extension: jpg, jpeg, gif, png. Allowed size: < 2 MB">
                                 <hr id="agency_divider" style="margin: .5em auto">
@@ -146,9 +147,10 @@
                                 <div class="col-lg-6">
                                     <div id="map"></div>
                                     <div id="infowindow-content">
-                                        <img src="" width="16" height="16" id="place-icon">
-                                        <span id="place-name" class="title"></span><br>
-                                        <span id="place-address"></span>
+                                        <img src="{{asset('images/unesa.jpg')}}" width="32" height="32" id="place-icon">
+                                        <span id="place-name" class="title">JTIF UNESA</span><br>
+                                        <span id="place-address">Kampus Universitas Negeri Surabaya, Jl. Ketintang,
+                                            Ketintang, Gayungan, Kota SBY, Jawa Timur 60231</span>
                                     </div>
                                 </div>
                                 <div class="col-lg-6">
@@ -288,9 +290,10 @@
 @push("scripts")
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBIljHbKjgtTrpZhEiHum734tF1tolxI68&libraries=places"></script>
     <script>
-        var google, myLatlng = new google.maps.LatLng(-7.317174, 112.725614);
+        var google;
 
-        function init() {
+        function init(lat, long) {
+            var myLatlng = new google.maps.LatLng(lat, long);
             var mapOptions = {
                 zoom: 15,
                 center: myLatlng,
@@ -347,24 +350,34 @@
 
             var map = new google.maps.Map(mapElement, mapOptions);
 
+            var marker = new google.maps.Marker({
+                map: map,
+                icon: '{{asset('images/pin-agency.png')}}',
+                position: myLatlng,
+                anchorPoint: new google.maps.Point(0, -29)
+            });
+
+            var infowindow = new google.maps.InfoWindow();
+            var infowindowContent = document.getElementById('infowindow-content');
+            infowindow.setContent(infowindowContent);
+
+            marker.addListener('click', function () {
+                infowindow.open(map, marker);
+            });
+
+            google.maps.event.addListener(map, 'click', function () {
+                infowindow.close();
+            });
+
             var autocomplete = new google.maps.places.Autocomplete(document.getElementById('address_map'));
 
             autocomplete.bindTo('bounds', map);
 
             autocomplete.setFields(['address_components', 'geometry', 'icon', 'name']);
 
-            var infowindow = new google.maps.InfoWindow();
-            var infowindowContent = document.getElementById('infowindow-content');
-            infowindow.setContent(infowindowContent);
-            var markerSearch = new google.maps.Marker({
-                map: map,
-                icon: '{{asset('images/pin-agency.png')}}',
-                anchorPoint: new google.maps.Point(0, -29)
-            });
-
             autocomplete.addListener('place_changed', function () {
                 infowindow.close();
-                markerSearch.setVisible(false);
+                marker.setVisible(false);
 
                 var place = autocomplete.getPlace();
                 if (!place.geometry) {
@@ -378,8 +391,8 @@
                     map.setCenter(place.geometry.location);
                     map.setZoom(17);
                 }
-                markerSearch.setPosition(place.geometry.location);
-                markerSearch.setVisible(true);
+                marker.setPosition(place.geometry.location);
+                marker.setVisible(true);
 
                 var address = '';
                 if (place.address_components) {
@@ -393,10 +406,10 @@
                 infowindowContent.children['place-icon'].src = place.icon;
                 infowindowContent.children['place-name'].textContent = place.name;
                 infowindowContent.children['place-address'].textContent = address;
-                infowindow.open(map, markerSearch);
+                infowindow.open(map, marker);
 
-                markerSearch.addListener('click', function () {
-                    infowindow.open(map, markerSearch);
+                marker.addListener('click', function () {
+                    infowindow.open(map, marker);
                 });
 
                 google.maps.event.addListener(map, 'click', function () {
@@ -405,9 +418,9 @@
             });
         }
 
-        google.maps.event.addDomListener(window, 'load', init);
-
         $(".btn_agency").on("click", function () {
+            init(-7.317174, 112.725614);
+
             $("#content1").toggle(300);
             $("#content2").toggle(300);
             $(".btn_agency i").toggleClass('fa-plus fa-th-list');
@@ -445,19 +458,96 @@
             $("#agency_ava_img, #agency_divider").show();
 
             $.get("{{route('edit.agencies',['id' => ''])}}/" + id, function (data) {
-                var $ava;
+                var $ava, day = data.hari_kerja, start_day = '', end_day = '', time = data.jam_kerja,
+                    start_time = time != "" ? time.substr(0, 5) : '', end_time = time != "" ? time.substr(8, 5) : '';
+
                 if (data.ava == "" || data.ava == "agency.png") {
                     $ava = '{{asset('images/agency.png')}}';
                 } else {
                     $ava = '{{asset('storage/admins/agencies/ava')}}/' + data.ava;
                 }
+
+                if (day != "") {
+                    if (day.substr(0, 3) == 'Mon') {
+                        start_day = 'Monday';
+                    } else if (day.substr(0, 3) == 'Tue') {
+                        start_day = 'Tuesday';
+                    } else if (day.substr(0, 3) == 'Wed') {
+                        start_day = 'Wednesday';
+                    } else if (day.substr(0, 3) == 'Thu') {
+                        start_day = 'Thursday';
+                    } else if (day.substr(0, 3) == 'Fri') {
+                        start_day = 'Friday';
+                    } else if (day.substr(0, 3) == 'Sat') {
+                        start_day = 'Saturday';
+                    } else if (day.substr(0, 3) == 'Sun') {
+                        start_day = 'Sunday';
+                    }
+
+                    if ((day.substr(9, 3) == 'Mon' && (day.substr(0, 3) == 'Mon' || day.substr(0, 3) == 'Fri' ||
+                        day.substr(0, 3) == 'Sun')) || (day.substr(11, 3) == 'Mon' && (day.substr(0, 3) == 'Thu' ||
+                        day.substr(0, 3) == 'Sat')) || (day.substr(12, 3) == 'Mon' && day.substr(0, 3) == 'Wed') ||
+                        (day.substr(10, 3) == 'Mon' && day.substr(0, 3) == 'Tue')) {
+                        end_day = 'Monday';
+
+                    } else if ((day.substr(9, 3) == 'Tue' && (day.substr(0, 3) == 'Mon' || day.substr(0, 3) == 'Fri' ||
+                        day.substr(0, 3) == 'Sun')) || (day.substr(11, 3) == 'Tue' && (day.substr(0, 3) == 'Thu' ||
+                        day.substr(0, 3) == 'Sat')) || (day.substr(12, 3) == 'Tue' && day.substr(0, 3) == 'Wed') ||
+                        (day.substr(10, 3) == 'Tue' && day.substr(0, 3) == 'Tue')) {
+                        end_day = 'Tuesday';
+
+                    } else if ((day.substr(9, 3) == 'Wed' && (day.substr(0, 3) == 'Mon' || day.substr(0, 3) == 'Fri' ||
+                        day.substr(0, 3) == 'Sun')) || (day.substr(11, 3) == 'Wed' && (day.substr(0, 3) == 'Thu' ||
+                        day.substr(0, 3) == 'Sat')) || (day.substr(12, 3) == 'Wed' && day.substr(0, 3) == 'Wed') ||
+                        (day.substr(10, 3) == 'Wed' && day.substr(0, 3) == 'Tue')) {
+                        end_day = 'Wednesday';
+
+                    } else if ((day.substr(9, 3) == 'Thu' && (day.substr(0, 3) == 'Mon' || day.substr(0, 3) == 'Fri' ||
+                        day.substr(0, 3) == 'Sun')) || (day.substr(11, 3) == 'Thu' && (day.substr(0, 3) == 'Thu' ||
+                        day.substr(0, 3) == 'Sat')) || (day.substr(12, 3) == 'Thu' && day.substr(0, 3) == 'Wed') ||
+                        (day.substr(10, 3) == 'Thu' && day.substr(0, 3) == 'Tue')) {
+                        end_day = 'Thursday';
+
+                    } else if ((day.substr(9, 3) == 'Fri' && (day.substr(0, 3) == 'Mon' || day.substr(0, 3) == 'Fri' ||
+                        day.substr(0, 3) == 'Sun')) || (day.substr(11, 3) == 'Fri' && (day.substr(0, 3) == 'Thu' ||
+                        day.substr(0, 3) == 'Sat')) || (day.substr(12, 3) == 'Fri' && day.substr(0, 3) == 'Wed') ||
+                        (day.substr(10, 3) == 'Fri' && day.substr(0, 3) == 'Tue')) {
+                        end_day = 'Friday';
+
+                    } else if ((day.substr(9, 3) == 'Sat' && (day.substr(0, 3) == 'Mon' || day.substr(0, 3) == 'Fri' ||
+                        day.substr(0, 3) == 'Sun')) || (day.substr(11, 3) == 'Sat' && (day.substr(0, 3) == 'Thu' ||
+                        day.substr(0, 3) == 'Sat')) || (day.substr(12, 3) == 'Sat' && day.substr(0, 3) == 'Wed') ||
+                        (day.substr(10, 3) == 'Sat' && day.substr(0, 3) == 'Tue')) {
+                        end_day = 'Saturday';
+
+                    } else if ((day.substr(9, 3) == 'Sun' && (day.substr(0, 3) == 'Mon' || day.substr(0, 3) == 'Fri' ||
+                        day.substr(0, 3) == 'Sun')) || (day.substr(11, 3) == 'Sun' && (day.substr(0, 3) == 'Thu' ||
+                        day.substr(0, 3) == 'Sat')) || (day.substr(12, 3) == 'Sun' && day.substr(0, 3) == 'Wed') ||
+                        (day.substr(10, 3) == 'Sun' && day.substr(0, 3) == 'Tue')) {
+                        end_day = 'Sunday';
+                    }
+                }
+
                 $("#agency_ava_img").attr("src", $ava);
                 $("#agency_ava_input").val(data.ava);
+                $("#company").val(data.company);
+                $('#industry_id').val(data.industry_id).selectpicker("refresh");
+                $("#agency_email").val(data.email);
+                $("#phone").val(data.phone);
+                $("#address_map").val(data.alamat);
+                $("#kantor_pusat").val(data.kantor_pusat);
+                $("#link").val(data.link);
+                $("#start_day").val(start_day).selectpicker("refresh");
+                $("#end_day").val(end_day).selectpicker("refresh");
+                $("#start_time").val(start_time);
+                $("#end_time").val(end_time);
                 tinyMCE.get('tentang').setContent(data.tentang);
                 tinyMCE.get('alasan').setContent(data.alasan);
 
-                myLatlng = new google.maps.LatLng(data.lat, data.long);
-                google.maps.event.addDomListener(window, 'load', init);
+                init(data.lat, data.long);
+                $("#place-icon").attr('src', '{{asset('images/agency.png')}}');
+                $("#place-name").text(data.company);
+                $("#place-address").text(data.alamat);
             });
 
             $("#method").val('PUT');

@@ -152,14 +152,6 @@
                                                                 <a href="{{route('detail.vacancy',['id' =>
                                                                 $vacancy->id])}}" target="_blank">
                                                                     <strong>{{$vacancy->judul}}</strong></a>&nbsp;&ndash;
-                                                                @if($vacancy->isPost == true)
-                                                                    <span data-toggle="tooltip" data-placement="bottom"
-                                                                          title="Plan" class="label label-info">
-                                                                        <strong style="text-transform: uppercase">
-                                                                            <i class="fa fa-thumbtack"></i>&ensp;
-                                                                            {{\App\Models\Plan::find($vacancy->plan_id)->name}}
-                                                                        </strong> Package</span>&nbsp;|
-                                                                @endif
                                                                 <span data-toggle="tooltip" data-placement="bottom"
                                                                       title="Status" class="label label-default"
                                                                       style="background: {{$vacancy->isPost == true ?
@@ -198,40 +190,6 @@
                                                                     ($vacancy->recruitmentDate_end)
                                                                     ->format('j F Y') : 'Unknown'}}
                                                                 </strong> |
-                                                                @if($vacancy->plan_id != "" && $vacancy->plan_id == 2)
-                                                                    <span data-toggle="tooltip" data-placement="right"
-                                                                          title="Quiz (Online TPA & TKD) Date"
-                                                                          style="line-height: 0">
-                                                                        {{$vacancy->quizDate_start != "" &&
-                                                                        $vacancy->quizDate_end != "" ?
-                                                                        \Carbon\Carbon::parse($vacancy->quizDate_start)
-                                                                        ->format('j F Y').' - '.\Carbon\Carbon::parse
-                                                                        ($vacancy->quizDate_end)->format('j F Y') :
-                                                                        'Unknown'}}
-                                                                    </span><br>
-                                                                @elseif($vacancy->plan_id != "" && $vacancy->plan_id == 3)
-                                                                    <span data-toggle="tooltip" data-placement="right"
-                                                                          title="Quiz (Online TPA & TKD) Date"
-                                                                          style="line-height: 0">
-                                                                        {{$vacancy->quizDate_start != "" &&
-                                                                        $vacancy->quizDate_end != "" ?
-                                                                        \Carbon\Carbon::parse($vacancy->quizDate_start)
-                                                                        ->format('j F Y').' - '.\Carbon\Carbon::parse
-                                                                        ($vacancy->quizDate_end)->format('j F Y') :
-                                                                        'Unknown'}}
-                                                                    </span><br>
-                                                                    <span data-toggle="tooltip" data-placement="left"
-                                                                          title="Psycho Test (Online Interview) Date"
-                                                                          style="line-height: 0">
-                                                                        {{$vacancy->psychoTestDate_start != "" &&
-                                                                        $vacancy->psychoTestDate_end != "" ?
-                                                                        \Carbon\Carbon::parse
-                                                                        ($vacancy->psychoTestDate_start)
-                                                                        ->format('j F Y').' - '.\Carbon\Carbon::parse
-                                                                        ($vacancy->psychoTestDate_end)
-                                                                        ->format('j F Y') : 'Unknown'}}
-                                                                    </span> |
-                                                                @endif
                                                                 <span data-toggle="tooltip" data-placement="right"
                                                                       title="Job Interview Date" style="line-height: 0">
                                                                     {{$vacancy->interview_date != "" ?
