@@ -574,13 +574,13 @@
                                                                         style="font-family:Helvetica, arial,helv,sans-serif;font-size:16px;color:#F9F9F9; font-weight:bold;"
                                                                         bgcolor="#1a1c21">
                                                                         <a name="Privacy Policy"
-                                                                           href="{{route('info.siska')}}#privacy-policy"
+                                                                           href="http://karir.org/info#privacy-policy"
                                                                            class="footerlinks"
                                                                            style="color:#F9F9F9; text-decoration:none;"
                                                                            target="_blank">Privacy Policy</a>&nbsp;&nbsp;&nbsp;&nbsp;
                                                                         <a name="Terms" class="footerlinks"
                                                                            style="color:#F9F9F9; text-decoration:none;"
-                                                                           href="{{route('info.siska')}}#terms-conditions"
+                                                                           href="http://karir.org/info#terms-conditions"
                                                                            target="_blank">Terms of Service</a>
                                                                     </td>
                                                                 </tr>

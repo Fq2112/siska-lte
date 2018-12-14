@@ -58,6 +58,18 @@
 
             <div class="or"><span>OR</span></div>
 
+            @if(session('success'))
+                <div class="alert alert-success alert-dismissible">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                    <h4><i class="icon fa fa-check"></i> Alert!</h4>{{session('success')}}
+                </div>
+            @elseif(session('error') || session('inactive'))
+                <div class="alert alert-danger alert-dismissible">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                    <h4><i class="icon fa fa-times"></i> Alert!</h4>
+                    {{session('error') ? session('error') : session('inactive')}}
+                </div>
+            @endif
             <form class="form-horizontal" method="post" accept-charset="UTF-8" action="{{route('login')}}"
                   id="form-login">
                 {{ csrf_field() }}
@@ -119,21 +131,36 @@
 
             <div class="or"><span>OR</span></div>
 
+            @if ($errors->has('email'))
+                <div class="alert alert-danger alert-dismissible">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                    <h4><i class="icon fa fa-times"></i> Alert!</h4>{{ $errors->first('email') }}
+                </div>
+            @elseif($errors->has('password') || $errors->has('name'))
+                <div class="alert alert-danger alert-dismissible">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;
+                    </button>
+                    <h4><i class="icon fa fa-times"></i> Alert!</h4>
+                    {{ $errors->has('password') ? $errors->first('password') : $errors->first('name') }}
+                </div>
+            @endif
+            <div id="reg_errorAlert"></div>
             <form class="form-horizontal" method="post" accept-charset="UTF-8" action="{{ route('register') }}"
                   id="form-register">
                 {{ csrf_field() }}
                 <div class="row form-group">
-                    <input type="text" placeholder="Full name" name="name" required>
+                    <input id="reg_name" type="text" placeholder="Full name" name="name" required>
                 </div>
                 <div class="row form-group">
-                    <input type="email" placeholder="Email" name="email" required>
+                    <input id="reg_email" type="email" placeholder="Email" name="email" required>
                 </div>
                 <div class="row form-group">
-                    <input type="password" placeholder="Password" name="password" minlength="6" required>
+                    <input id="reg_password" type="password" placeholder="Password" name="password"
+                           minlength="6" required>
                 </div>
                 <div class="row form-group">
-                    <input type="password" placeholder="Retype Password" name="password_confirmation" minlength="6"
-                           required>
+                    <input id="reg_password_confirm" type="password" placeholder="Retype Password"
+                           name="password_confirmation" minlength="6" required>
                 </div>
                 <div class="row">
                     <button type="submit" class="btn btn-signup btn-block">CREATE ACCOUNT</button>
@@ -181,7 +208,6 @@
     $('.signup').hide();
     $('.recover-password').hide();
 
-
     $('.btn-reset').on("click", function () {
         $('.login').hide();
         $('.recover-password').fadeIn(300);
@@ -197,13 +223,10 @@
         $('.signup').hide();
         $('.recover-password').hide();
         $('.login').fadeIn(300);
-
     });
 
     $('.notification').hide();
-
     $('.btn-password').on("click", function () {
-
         if ($('#resetPassword').val() == 0) {
             // $('#resetPassword').after('<span class="error">Email not valid.</span>')
             $('.error').text('Email not valid.')
@@ -224,6 +247,33 @@
                 type: 'warning',
                 timer: '3500'
             });
+        }
+    });
+
+    $("#form-register").on("submit", function (e) {
+        if ($.trim($("#reg_email,#reg_name,#reg_password,#reg_password_confirm").val()) === "") {
+            return false;
+
+        } else {
+            if ($("#reg_password_confirm").val() != $("#reg_password").val()) {
+                return false;
+
+            } else {
+                $("#reg_errorAlert").html('');
+                return true;
+            }
+        }
+    });
+
+    $("#reg_password_confirm").on("change", function () {
+        if ($(this).val() != $("#reg_password").val()) {
+            $("#reg_errorAlert").html(
+                '<div class="alert alert-danger alert-dismissible">' +
+                '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' +
+                '<h4><i class="icon fa fa-times"></i> Alert!</h4>Your password confirmation doesn\'t match!</div>'
+            );
+        } else {
+            $("#reg_errorAlert").html('');
         }
     });
 
