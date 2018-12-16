@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -72,10 +71,5 @@ class User extends Authenticatable
     public function socialProviders()
     {
         return $this->hasMany(SocialProvider::class, 'user_id');
-    }
-
-    public function scopeByActivationColumns(Builder $builder, $email, $verifyToken)
-    {
-        return $builder->where('email', $email)->where('verifyToken', $verifyToken);
     }
 }

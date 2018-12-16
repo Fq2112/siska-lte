@@ -19,8 +19,6 @@ class CreateTableUsers extends Migration
             $table->string('name');
             $table->string('email')->unique();
             $table->string('password');
-            $table->boolean('status');
-            $table->string('verifyToken', 255)->nullable();
             $table->rememberToken();
             $table->string('background')->nullable();
             $table->string('phone')->nullable();

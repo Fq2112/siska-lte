@@ -6,18 +6,11 @@
         type: 'success',
         timer: '5500'
     });
-    @elseif(session('activated'))
+    @elseif(session('register'))
     swal({
-        title: 'Account Activated!',
-        text: '{{ session('activated') }}',
+        title: 'Account Created!',
+        text: '{{ session('register') }}',
         type: 'success',
-        timer: '3500'
-    });
-    @elseif(session('inactive'))
-    swal({
-        title: 'ATTENTION!',
-        text: '{{ session('inactive') }}',
-        type: 'error',
         timer: '3500'
     });
     @elseif(session('token'))

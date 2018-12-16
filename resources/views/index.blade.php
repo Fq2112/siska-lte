@@ -58,16 +58,16 @@
 
             <div class="or"><span>OR</span></div>
 
-            @if(session('success'))
+            @if(session('register'))
                 <div class="alert alert-success alert-dismissible">
                     <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                    <h4><i class="icon fa fa-check"></i> Alert!</h4>{{session('success')}}
+                    <h4><i class="icon fa fa-check"></i> Alert!</h4>{{session('register')}}
                 </div>
-            @elseif(session('error') || session('inactive'))
+            @elseif(session('error'))
                 <div class="alert alert-danger alert-dismissible">
                     <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
                     <h4><i class="icon fa fa-times"></i> Alert!</h4>
-                    {{session('error') ? session('error') : session('inactive')}}
+                    {{session('error')}}
                 </div>
             @endif
             <form class="form-horizontal" method="post" accept-charset="UTF-8" action="{{route('login')}}"
@@ -200,9 +200,11 @@
     </div>
 </div>
 </body>
-@include('layouts.partials._alert')
 <!-- jQuery -->
 <script src="{{asset('js/jquery.min.js')}}"></script>
+<!-- Bootstrap -->
+<script src="{{asset('js/bootstrap.min.js')}}"></script>
+<!-- Particle-js -->
 <script src="{{asset('js/particles.min.js')}}"></script>
 <script>
     $('.signup').hide();
@@ -379,4 +381,5 @@
         }, 500);
     }(title + " ~ "));
 </script>
+@include('layouts.partials._alert')
 </html>
