@@ -42,7 +42,6 @@ class SocialAuthController extends Controller
                     'email' => $userSocial->getEmail(),
                     'name' => $userSocial->getName(),
                     'password' => bcrypt(str_random(15)),
-                    'status' => true,
                 ]);
 
                 $user->socialProviders()->create([

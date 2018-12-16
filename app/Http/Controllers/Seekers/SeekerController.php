@@ -36,22 +36,14 @@ class SeekerController extends Controller
         $this->middleware('seeker.profile')->only('showProfile');
     }
 
-    public function index()
+    public function index(Request $request)
     {
         $provinces = Provinces::all();
-        $id = [4, 9, 13, 26, 29, 30, 38, 40, 41, 45, 47, 49, 52, 58, 59, 61, 62, 63];
-        $favIndustries = Industries::whereIn('id', $id)->get();
+        $keyword = $request->q;
+        $location = $request->loc;
+        $page = $request->page;
 
-        return view('_seekers.home-seeker', compact('provinces', 'favIndustries'));
-    }
-
-    public function showAgencyProfile($id)
-    {
-        $agency = Agencies::findOrFail($id);
-        $industry = Industries::find($agency->industry_id);
-        $vacancies = Vacancies::where('agency_id', $agency->id)->orderByDesc('updated_at')->get();
-
-        return view('_admins.profile-agency', compact('agency', 'industry', 'vacancies'));
+        return view('_seekers.home-seeker', compact('provinces', 'keyword', 'location', 'page'));
     }
 
     public function showSeekerProfile($id)

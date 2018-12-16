@@ -45,8 +45,13 @@
     <link href="{{asset('css/pnotify.nonblock.css')}}" rel="stylesheet">
     <!-- Animate.css -->
     <link href="{{asset('css/animate.min.css')}}" rel="stylesheet">
+    <!-- Loading.io -->
+    <link href="{{ asset('css/loading.css') }}" rel="stylesheet">
     <!-- Custom Theme Style -->
     <link href="{{asset('css/custom.css')}}" rel="stylesheet">
+    <!-- Card -->
+    <link href="{{ asset('css/card.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/downloadCard-gridList.css') }}" rel="stylesheet">
     @stack('styles')
     <style>
         .dropdown-menu li:first-child a:before {
@@ -218,13 +223,8 @@
                 <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
                     <div class="menu_section">
                         <h3>General</h3>
-                        <ul class="nav side-menu">
-                            <li><a href="{{Auth::guard('admin')->check() ? route('home-admin') :
-                            route('home-seeker')}}"><i class="fa fa-home"></i> Dashboard</a></li>
-                            @include('layouts.partials._navigation')
-                        </ul>
+                        <ul class="nav side-menu">@include('layouts.partials._navigation')</ul>
                     </div>
-
                 </div>
                 <!-- /sidebar menu -->
 
@@ -236,7 +236,8 @@
                     <a href="{{route('home-seeker')}}" data-toggle="tooltip" title="SISKA">
                         <span class="glyphicon glyphicon-globe" aria-hidden="true"></span>
                     </a>
-                    <a data-toggle="tooltip" title="Account Settings" class="btn_settings">
+                    <a href="@auth{{route('seeker.settings')}}@else javascript:void(0) @endauth" data-toggle="tooltip"
+                       title="Account Settings" class="btn_settings">
                         <span class="fa fa-user-cog" aria-hidden="true"></span>
                     </a>
                     <a data-toggle="tooltip" title="Sign Out" class="btn_signOut">
@@ -266,14 +267,16 @@
                             </a>
                             <ul class="dropdown-menu dropdown-usermenu pull-right">
                                 <li>
-                                    <a class="btn_editProfile">
+                                    <a href="@auth{{route('seeker.edit.profile')}}@else javascript:void(0) @endauth"
+                                       class="btn_editProfile">
                                         <span class="badge {{$bg}} pull-right">{{$label}}</span>
                                         <span>Profile</span>
                                     </a>
                                 </li>
                                 <li>
-                                    <a class="btn_settings">
-                                        <i class="fa fa-user-cog pull-right"></i> Account Settings</a>
+                                    <a href="@auth{{route('seeker.settings')}}@else javascript:void(0) @endauth"
+                                       class="btn_settings"><i class="fa fa-user-cog pull-right"></i> Account Settings
+                                    </a>
                                 </li>
                                 <li class="divider"></li>
                                 <li>
@@ -355,15 +358,16 @@
         </footer>
         <!-- /footer content -->
     </div>
-    <div id="profileModal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog modal-sm" style="width: 30%">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
-                    </button>
-                    <h4 class="modal-title">Edit Profile</h4>
-                </div>
-                @auth('admin')
+    @auth('admin')
+        <div id="profileModal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog modal-sm" style="width: 30%">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
+                        </button>
+                        <h4 class="modal-title">Edit Profile</h4>
+                    </div>
+
                     <form method="post" action="{{route('admin.update.profile')}}" enctype="multipart/form-data">
                         {{csrf_field()}} {{method_field('PUT')}}
                         <div class="modal-body">
@@ -405,19 +409,17 @@
                             <button type="submit" class="btn btn-primary">Save Changes</button>
                         </div>
                     </form>
-                @endauth
+                </div>
             </div>
         </div>
-    </div>
-    <div id="settingsModal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog modal-sm" style="width: 30%">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
-                    </button>
-                    <h4 class="modal-title">Account Settings</h4>
-                </div>
-                @auth('admin')
+        <div id="settingsModal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog modal-sm" style="width: 30%">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
+                        </button>
+                        <h4 class="modal-title">Account Settings</h4>
+                    </div>
                     <form method="post" action="{{route('admin.update.account')}}">
                         {{csrf_field()}} {{method_field('PUT')}}
                         <div class="modal-body">
@@ -462,10 +464,10 @@
                             <button type="submit" class="btn btn-primary">Save Changes</button>
                         </div>
                     </form>
-                @endauth
+                </div>
             </div>
         </div>
-    </div>
+    @endauth
 </div>
 
 <!-- jQuery -->
@@ -542,6 +544,7 @@
 <script src="{{asset('js/smooth-scrollbar.js')}}"></script>
 <!-- Custom Theme Scripts -->
 <script src="{{asset('js/custom.min.js')}}"></script>
+<script src="{{ asset('js/filter-gridList.js') }}"></script>
 <script>
     var editor_config;
     $(function () {

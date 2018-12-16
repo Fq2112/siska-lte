@@ -1,9 +1,30 @@
+@auth
+    <li><a href="{{route('home-seeker')}}"><i class="fa fa-briefcase"></i> Vacancies</a></li>
+    <li><a><i class="fa fa-home"></i> Dashboard <span class="fa fa-chevron-down"></span></a>
+        <ul class="nav child_menu">
+            <li><a href="{{route('seeker.dashboard')}}"> Application Status</a></li>
+            <li><a href="{{route('seeker.bookmarked.vacancy')}}"> Bookmarked Vacancy</a></li>
+        </ul>
+    </li>
+    <li><a><i class="fa fa-user"></i> Account Settings<span class="fa fa-chevron-down"></span></a>
+        <ul class="nav child_menu">
+            <li><a href="{{route('seeker.edit.profile')}}">Edit Profile</a></li>
+            <li><a href="{{route('seeker.settings')}}">Change Password</a></li>
+        </ul>
+    </li>
+@endauth
+
 @auth('admin')
+    <li><a href="{{route('home-admin')}}"><i class="fa fa-home"></i> Dashboard</a></li>
     <li><a href="{{route('table.agencies')}}"><i class="fa fa-building"></i> Agencies</a></li>
-    <li><a href="{{route('table.vacancies')}}"><i class="fa fa-briefcase"></i> Vacancies</a></li>
+    <li><a><i class="fa fa-briefcase"></i> Vacancies <span class="fa fa-chevron-down"></span></a>
+        <ul class="nav child_menu">
+            <li><a href="{{route('home-seeker')}}">Search</a></li>
+            <li><a href="{{route('table.vacancies')}}">List & Setup</a></li>
+        </ul>
+    </li>
     <li>
-        <a><i class="fa fa-table"></i> Tables
-            <span class="fa fa-chevron-down"></span></a>
+        <a><i class="fa fa-table"></i> Tables <span class="fa fa-chevron-down"></span></a>
         <ul class="nav child_menu">
             <li><a>Data Master <span class="fa fa-chevron-down"></span></a>
                 <ul class="nav child_menu">

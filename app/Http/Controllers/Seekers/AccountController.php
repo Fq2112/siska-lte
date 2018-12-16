@@ -2,26 +2,23 @@
 
 namespace App\Http\Controllers\Seekers;
 
-use App\Accepting;
-use App\Attachments;
-use App\Education;
-use App\Experience;
-use App\FungsiKerja;
-use App\Industri;
-use App\Invitation;
-use App\JobLevel;
-use App\JobType;
-use App\Jurusanpend;
-use App\Languages;
-use App\Nations;
-use App\Organization;
-use App\Salaries;
-use App\Seekers;
-use App\Skills;
-use App\Tingkatpend;
-use App\Training;
-use App\User;
-use App\Provinces;
+use App\Models\Attachments;
+use App\Models\Education;
+use App\Models\Experience;
+use App\Models\JobFunction;
+use App\Models\Industries;
+use App\Models\JobLevel;
+use App\Models\JobType;
+use App\Models\Majors;
+use App\Models\Languages;
+use App\Models\Nations;
+use App\Models\Organization;
+use App\Models\Salaries;
+use App\Models\Skills;
+use App\Models\Degrees;
+use App\Models\Training;
+use App\Models\User;
+use App\Models\Provinces;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -33,7 +30,7 @@ class AccountController extends Controller
 {
     public function __construct()
     {
-        $this->middleware(['auth', 'seeker']);
+        $this->middleware('seeker');
     }
 
     public function editProfile()
@@ -41,31 +38,29 @@ class AccountController extends Controller
         $user = Auth::user();
         $nations = Nations::all();
         $provinces = Provinces::all();
-        $job_functions = FungsiKerja::all();
-        $industries = Industri::all();
+        $job_functions = JobFunction::all();
+        $industries = Industries::all();
         $job_levels = JobLevel::all();
         $job_types = JobType::all();
         $salaries = Salaries::all();
-        $degrees = Tingkatpend::all();
-        $majors = Jurusanpend::all();
+        $degrees = Degrees::all();
+        $majors = Majors::all();
 
-        $seeker = Seekers::where('user_id', $user->id)->firstOrFail();
+        $attachments = Attachments::where('user_id', $user->id)->orderby('created_at', 'desc')->get();
+        $experiences = Experience::where('user_id', $user->id)->orderby('id', 'desc')->get();
+        $educations = Education::where('user_id', $user->id)->orderby('degree_id', 'desc')->get();
+        $trainings = Training::where('user_id', $user->id)->orderby('id', 'desc')->get();
+        $organizations = Organization::where('user_id', $user->id)->orderby('id', 'desc')->get();
+        $languages = Languages::where('user_id', $user->id)->orderby('id', 'desc')->get();
+        $skills = Skills::where('user_id', $user->id)->orderby('id', 'desc')->get();
 
-        $attachments = Attachments::where('seeker_id', $seeker->id)->orderby('created_at', 'desc')->get();
-        $experiences = Experience::where('seeker_id', $seeker->id)->orderby('id', 'desc')->get();
-        $educations = Education::where('seeker_id', $seeker->id)->orderby('tingkatpend_id', 'desc')->get();
-        $trainings = Training::where('seeker_id', $seeker->id)->orderby('id', 'desc')->get();
-        $organizations = Organization::where('seeker_id', $seeker->id)->orderby('id', 'desc')->get();
-        $languages = Languages::where('seeker_id', $seeker->id)->orderby('id', 'desc')->get();
-        $skills = Skills::where('seeker_id', $seeker->id)->orderby('id', 'desc')->get();
-
-        $job_title = Experience::where('seeker_id', $seeker->id)->where('end_date', null)
+        $job_title = Experience::where('user_id', $user->id)->where('end_date', null)
             ->orderby('id', 'desc')->take(1);
 
-        $last_edu = Education::where('seeker_id', $seeker->id)->wherenotnull('end_period')
-            ->orderby('tingkatpend_id', 'desc')->take(1);
+        $last_edu = Education::where('user_id', $user->id)->wherenotnull('end_period')
+            ->orderby('degree_id', 'desc')->take(1);
 
-        return view('auth.seekers.profile', compact(
+        return view('_seekers.profile', compact(
             'user', 'nations', 'provinces', 'job_functions', 'industries', 'job_levels', 'job_types',
             'salaries', 'degrees', 'majors', 'seeker', 'seeker_degree', 'seeker_major', 'attachments',
             'experiences', 'educations', 'trainings', 'organizations', 'languages', 'skills', 'job_title',
@@ -73,21 +68,19 @@ class AccountController extends Controller
         ));
     }
 
-    private function updateContact($seeker, $input)
+    private function updateContact($user, $input)
     {
-        $seeker->update([
+        $user->update([
             'phone' => $input['phone'],
             'address' => $input['address'],
             'zip_code' => $input['zip_code'],
         ]);
     }
 
-    private function updatePersonal($user, $seeker, $input)
+    private function updatePersonal($user, $input)
     {
         $user->update([
-            'name' => $input['name']
-        ]);
-        $seeker->update([
+            'name' => $input['name'],
             'birthday' => $input['birthday'],
             'gender' => $input['gender'],
             'relationship' => $input['relationship'],
@@ -98,7 +91,7 @@ class AccountController extends Controller
         ]);
     }
 
-    private function updateVideoSummary($seeker, $request)
+    private function updateVideoSummary($user, $request)
     {
         $this->validate($request, [
             'video_summary' => 'mimetypes:video/mp4,video/ogg,video/webm|max:30720',
@@ -107,24 +100,24 @@ class AccountController extends Controller
         if ($request->hasFile('video_summary')) {
             $video = $request->file('video_summary');
             $name = $video->getClientOriginalName();
-            if ($seeker->video_summary != '') {
-                Storage::delete('public/users/seekers/video/' . $seeker->video_summary);
+            if ($user->video_summary != '') {
+                Storage::delete('public/users/video/' . $user->video_summary);
             }
             if ($video->isValid()) {
-                $request->video_summary->storeAs('public/users/seekers/video', $name);
-                $seeker->update([
+                $request->video_summary->storeAs('public/users/video', $name);
+                $user->update([
                     'video_summary' => $name
                 ]);
             }
         }
     }
 
-    private function deleteVideoSummary($seeker)
+    private function deleteVideoSummary($user)
     {
-        if ($seeker->video_summary != '') {
-            Storage::delete('public/users/seekers/video/' . $seeker->video_summary);
+        if ($user->video_summary != '') {
+            Storage::delete('public/users/video/' . $user->video_summary);
         }
-        $seeker->update([
+        $user->update([
             'video_summary' => null
         ]);
     }
@@ -134,25 +127,24 @@ class AccountController extends Controller
         $input = $request->all();
         $check = $input['check_form'];
         $user = User::findOrFail(Auth::user()->id);
-        $seeker = Seekers::where('user_id', $user->id)->firstOrFail();
 
         if ($check == 'contact') {
-            $this->updateContact($seeker, $input);
+            $this->updateContact($user, $input);
 
         } elseif ($check == 'personal') {
-            $this->updatePersonal($user, $seeker, $input);
+            $this->updatePersonal($user, $input);
 
         } elseif ($check == 'summary') {
-            $seeker->update([
+            $user->update([
                 'summary' => $input['summary']
             ]);
 
         } elseif ($check == 'video_summary') {
-            $this->updateVideoSummary($seeker, $request);
-            return asset('storage/users/seekers/video/' . $seeker->video_summary);
+            $this->updateVideoSummary($user, $request);
+            return asset('storage/users/video/' . $user->video_summary);
 
         } elseif ($check == 'delete_video_summary') {
-            $this->deleteVideoSummary($seeker);
+            $this->deleteVideoSummary($user);
         }
 
         return back()->with('update', 'Successfully updated!');
@@ -162,15 +154,14 @@ class AccountController extends Controller
     {
         $user = Auth::user();
         $provinces = Provinces::all();
-        $seeker = Seekers::where('user_id', $user->id)->firstOrFail();
 
-        $job_title = Experience::where('seeker_id', $seeker->id)->where('end_date', null)
+        $job_title = Experience::where('user_id', $user->id)->where('end_date', null)
             ->orderby('id', 'desc')->take(1);
 
-        $last_edu = Education::where('seeker_id', $seeker->id)->wherenotnull('end_period')
-            ->orderby('tingkatpend_id', 'desc')->take(1);
+        $last_edu = Education::where('user_id', $user->id)->wherenotnull('end_period')
+            ->orderby('degree_id', 'desc')->take(1);
 
-        return view('auth.seekers.settings', compact('user', 'provinces', 'seeker', 'job_title',
+        return view('_seekers.settings', compact('user', 'provinces', 'seeker', 'job_title',
             'last_edu'));
     }
 
@@ -200,13 +191,13 @@ class AccountController extends Controller
                 $name = $img->getClientOriginalName();
 
                 if ($user->ava != '' || $user->ava != 'seeker.png') {
-                    Storage::delete('public/users/' . $user->ava);
+                    Storage::delete('public/users/ava/' . $user->ava);
                 }
 
                 if ($img->isValid()) {
-                    $request->ava->storeAs('public/users', $name);
+                    $request->ava->storeAs('public/users/ava', $name);
                     $user->update(['ava' => $name]);
-                    return asset('storage/users/' . $name);
+                    return asset('storage/users/ava/' . $name);
                 }
             }
         }
@@ -215,7 +206,6 @@ class AccountController extends Controller
     public function updateBackground(Request $request)
     {
         $user = User::findOrFail(Auth::user()->id);
-        $seeker = Seekers::where('user_id', $user->id)->first();
         $img = $request->file('background');
 
         $this->validate($request, [
@@ -225,13 +215,13 @@ class AccountController extends Controller
         if ($request->hasFile('background')) {
             $name = $img->getClientOriginalName();
 
-            if ($seeker->background != '') {
-                Storage::delete('public/users/seekers/background/' . $seeker->background);
+            if ($user->background != '') {
+                Storage::delete('public/users/background/' . $user->background);
             }
 
             if ($img->isValid()) {
-                $request->background->storeAs('public/users/seekers/background', $name);
-                $seeker->update(['background' => $name]);
+                $request->background->storeAs('public/users/background', $name);
+                $user->update(['background' => $name]);
 
                 return $name;
             }
@@ -241,7 +231,6 @@ class AccountController extends Controller
     public function createAttachments(Request $request)
     {
         $user = User::findOrFail(Auth::user()->id);
-        $seeker = Seekers::where('user_id', $user->id)->firstOrFail();
         $total_files = count($request->file('attachments'));
 
         $this->validate($request, [
@@ -252,10 +241,10 @@ class AccountController extends Controller
         if ($request->hasfile('attachments')) {
             foreach ($request->file('attachments') as $file) {
                 $name = $file->getClientOriginalName();
-                $file->storeAs('public/users/seekers/attachments', $name);
+                $file->storeAs('public/users/attachments', $name);
 
                 Attachments::create([
-                    'seeker_id' => $seeker->id,
+                    'user_id' => $user->id,
                     'files' => $name,
                 ]);
             }
@@ -271,7 +260,7 @@ class AccountController extends Controller
 
         Attachments::whereIn("id", $ids)->delete();
         foreach ($files as $file) {
-            Storage::delete('public/users/seekers/attachments/' . $file);
+            Storage::delete('public/users/attachments/' . $file);
         }
 
         return back()->with('delete', '' . count($files) . ' file(s) are successfully deleted!');
@@ -280,7 +269,6 @@ class AccountController extends Controller
     public function createExperiences(Request $request)
     {
         $user = User::findOrFail(Auth::user()->id);
-        $seeker = Seekers::where('user_id', $user->id)->firstOrFail();
         $input = $request->all();
 
         if ($input['end_date'] != "") {
@@ -291,12 +279,12 @@ class AccountController extends Controller
         }
 
         Experience::create([
-            'seeker_id' => $seeker->id,
+            'user_id' => $user->id,
             'job_title' => $input['job_title'],
             'joblevel_id' => $input['joblevel_id'],
             'company' => $input['company'],
-            'fungsikerja_id' => $input['fungsikerja_id'],
-            'industri_id' => $input['industri_id'],
+            'jobfunction_id' => $input['jobfunction_id'],
+            'industry_id' => $input['industry_id'],
             'city_id' => $input['city_id'],
             'salary_id' => $input['salary_id'],
             'start_date' => $input['start_date'],
@@ -306,12 +294,12 @@ class AccountController extends Controller
             'job_desc' => $input['job_desc']
         ]);
 
-        $exp = Experience::where('seeker_id', $seeker->id)->get();
+        $exp = Experience::where('user_id', $user->id)->get();
         $totalExp = 0;
         foreach ($exp as $row) {
             $totalExp += Carbon::parse($row->start_date)->diffInYears(Carbon::parse($row->end_date));
         }
-        $seeker->update([
+        $user->update([
             'total_exp' => $totalExp
         ]);
 
@@ -327,7 +315,6 @@ class AccountController extends Controller
     public function updateExperiences($id, Request $request)
     {
         $user = User::findOrFail(Auth::user()->id);
-        $seeker = Seekers::where('user_id', $user->id)->firstOrFail();
 
         $findExp = Experience::find(decrypt($id));
         $input = $request->all();
@@ -343,8 +330,8 @@ class AccountController extends Controller
             'job_title' => $input['job_title'],
             'joblevel_id' => $input['joblevel_id'],
             'company' => $input['company'],
-            'fungsikerja_id' => $input['fungsikerja_id'],
-            'industri_id' => $input['industri_id'],
+            'jobfunction_id' => $input['jobfunction_id'],
+            'industry_id' => $input['industry_id'],
             'city_id' => $input['city_id'],
             'salary_id' => $input['salary_id'],
             'start_date' => $input['start_date'],
@@ -354,12 +341,12 @@ class AccountController extends Controller
             'job_desc' => $input['job_desc']
         ]);
 
-        $exp = Experience::where('seeker_id', $seeker->id)->get();
+        $exp = Experience::where('user_id', $user->id)->get();
         $totalExp = 0;
         foreach ($exp as $row) {
             $totalExp += Carbon::parse($row->start_date)->diffInYears(Carbon::parse($row->end_date));
         }
-        $seeker->update([
+        $user->update([
             'total_exp' => $totalExp
         ]);
 
@@ -369,16 +356,15 @@ class AccountController extends Controller
     public function deleteExperiences($id, $exp)
     {
         $user = User::findOrFail(Auth::user()->id);
-        $seeker = Seekers::where('user_id', $user->id)->firstOrFail();
 
         Experience::destroy(decrypt($id));
 
-        $expSeek = Experience::where('seeker_id', $seeker->id)->get();
+        $expSeek = Experience::where('user_id', $user->id)->get();
         $totalExp = 0;
         foreach ($expSeek as $row) {
             $totalExp += Carbon::parse($row->start_date)->diffInYears(Carbon::parse($row->end_date));
         }
-        $seeker->update([
+        $user->update([
             'total_exp' => $totalExp
         ]);
 
@@ -388,7 +374,6 @@ class AccountController extends Controller
     public function createEducations(Request $request)
     {
         $user = User::findOrFail(Auth::user()->id);
-        $seeker = Seekers::where('user_id', $user->id)->firstOrFail();
         $input = $request->all();
 
         if ($input['end_period'] != "") {
@@ -399,10 +384,10 @@ class AccountController extends Controller
         }
 
         Education::create([
-            'seeker_id' => $seeker->id,
+            'user_id' => $user->id,
             'school_name' => $input['school_name'],
-            'tingkatpend_id' => $input['tingkatpend_id'],
-            'jurusanpend_id' => $input['jurusanpend_id'],
+            'degree_id' => $input['degree_id'],
+            'major_id' => $input['major_id'],
             'awards' => $input['awards'],
             'nilai' => $input['nilai'],
             'start_period' => $input['start_period'],
@@ -431,8 +416,8 @@ class AccountController extends Controller
 
         $findEdu->update([
             'school_name' => $input['school_name'],
-            'tingkatpend_id' => $input['tingkatpend_id'],
-            'jurusanpend_id' => $input['jurusanpend_id'],
+            'degree_id' => $input['degree_id'],
+            'major_id' => $input['major_id'],
             'awards' => $input['awards'],
             'nilai' => $input['nilai'],
             'start_period' => $input['start_period'],
@@ -450,11 +435,10 @@ class AccountController extends Controller
     public function createTrainings(Request $request)
     {
         $user = User::findOrFail(Auth::user()->id);
-        $seeker = Seekers::where('user_id', $user->id)->firstOrFail();
         $input = $request->all();
 
         Training::create([
-            'seeker_id' => $seeker->id,
+            'user_id' => $user->id,
             'name' => $input['name'],
             'issuedby' => $input['issuedby'],
             'descript' => $input['descript'],
@@ -494,7 +478,6 @@ class AccountController extends Controller
     public function createOrganizations(Request $request)
     {
         $user = User::findOrFail(Auth::user()->id);
-        $seeker = Seekers::where('user_id', $user->id)->firstOrFail();
         $input = $request->all();
 
         if ($input['end_period'] != "") {
@@ -505,7 +488,7 @@ class AccountController extends Controller
         }
 
         Organization::create([
-            'seeker_id' => $seeker->id,
+            'user_id' => $user->id,
             'name' => $input['name'],
             'title' => $input['title'],
             'start_period' => $input['start_period'],
@@ -554,11 +537,10 @@ class AccountController extends Controller
     public function createLanguages(Request $request)
     {
         $user = User::findOrFail(Auth::user()->id);
-        $seeker = Seekers::where('user_id', $user->id)->firstOrFail();
         $input = $request->all();
 
         Languages::create([
-            'seeker_id' => $seeker->id,
+            'user_id' => $user->id,
             'name' => $input['name'],
             'spoken_lvl' => $input['spoken_lvl'],
             'written_lvl' => $input['written_lvl'],
@@ -596,11 +578,10 @@ class AccountController extends Controller
     public function createSkills(Request $request)
     {
         $user = User::findOrFail(Auth::user()->id);
-        $seeker = Seekers::where('user_id', $user->id)->firstOrFail();
         $input = $request->all();
 
         Skills::create([
-            'seeker_id' => $seeker->id,
+            'user_id' => $user->id,
             'name' => $input['name'],
             'level' => $input['level'],
         ]);

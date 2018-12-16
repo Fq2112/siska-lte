@@ -11,3 +11,11 @@
 |
 */
 
+$router->group(['prefix' => 'api', 'namespace' => 'Api'], function ($router) {
+
+    $router->get('vacancies/search', [
+        'uses' => 'SearchVacancyController@getSearchResult',
+        'as' => 'get.search.vacancy'
+    ]);
+
+});

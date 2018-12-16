@@ -11,27 +11,75 @@
 |
 */
 
-Route::get('agencies/{id}', [
-    'uses' => 'Seekers\SeekerController@showAgencyProfile',
-    'as' => 'agency.profile'
-]);
-
-Route::get('seekers/{id}', [
-    'uses' => 'Seekers\SeekerController@showSeekerProfile',
-    'as' => 'seeker.profile'
-]);
-
 Route::group(['prefix' => '/', 'namespace' => 'Seekers'], function () {
 
-    Route::get('/', [
+    Route::get('search', [
         'uses' => 'SeekerController@index',
         'as' => 'home-seeker'
     ]);
 
-    Route::get('search', [
-        'uses' => 'VacancyController@showVacancy',
-        'as' => 'search.vacancy'
+    Route::get('seekers/{id}', [
+        'uses' => 'SeekerController@showSeekerProfile',
+        'as' => 'seeker.profile'
     ]);
+
+    Route::get('agencies/{id}', [
+        'uses' => 'VacancyController@detailAgency',
+        'as' => 'agency.profile'
+    ]);
+
+    Route::group(['prefix' => 'vacancy'], function () {
+
+        Route::get('{id}', [
+            'uses' => 'VacancyController@detailVacancy',
+            'as' => 'detail.vacancy'
+        ]);
+
+        Route::post('bookmark', [
+            'uses' => 'VacancyController@bookmarkVacancy',
+            'as' => 'bookmark.vacancy'
+        ]);
+
+        Route::post('apply', [
+            'uses' => 'VacancyController@applyVacancy',
+            'as' => 'apply.vacancy'
+        ]);
+
+        Route::get('{id}/requirement', [
+            'uses' => 'VacancyController@getVacancyRequirement',
+            'as' => 'get.vacancy.requirement'
+        ]);
+
+    });
+
+    Route::group(['prefix' => 'dashboard'], function () {
+
+        Route::get('application_status', [
+            'uses' => 'SeekerController@showDashboard',
+            'as' => 'seeker.dashboard'
+        ]);
+
+        Route::get('application_status/vacancies', [
+            'uses' => 'SeekerController@getAccVacancies',
+            'as' => 'get.acc.vacancies'
+        ]);
+
+        Route::get('application_status/compare/{id}', [
+            'uses' => 'SeekerController@showCompare',
+            'as' => 'compare.application'
+        ]);
+
+        Route::get('bookmarked_vacancy', [
+            'uses' => 'SeekerController@showBookmark',
+            'as' => 'seeker.bookmarked.vacancy'
+        ]);
+
+        Route::get('bookmarked_vacancy/vacancies', [
+            'uses' => 'SeekerController@getBookmarkedVacancies',
+            'as' => 'get.bookmarked.vacancies'
+        ]);
+
+    });
 
     Route::group(['prefix' => 'account'], function () {
 
@@ -188,102 +236,6 @@ Route::group(['prefix' => '/', 'namespace' => 'Seekers'], function () {
         Route::get('profile/skills/delete/{id}/{exp}', [
             'uses' => 'AccountController@deleteSkills',
             'as' => 'delete.skills'
-        ]);
-
-        Route::group(['prefix' => 'dashboard'], function () {
-
-            Route::get('application_status', [
-                'uses' => 'SeekerController@showDashboard',
-                'as' => 'seeker.dashboard'
-            ]);
-
-            Route::get('application_status/vacancies', [
-                'uses' => 'SeekerController@getAccVacancies',
-                'as' => 'get.acc.vacancies'
-            ]);
-
-            Route::get('application_status/compare/{id}', [
-                'uses' => 'SeekerController@showCompare',
-                'as' => 'compare.application'
-            ]);
-
-            Route::get('quiz_invitation', [
-                'uses' => 'SeekerController@showQuizInv',
-                'as' => 'seeker.invitation.quiz'
-            ]);
-
-            Route::get('psychoTest_invitation', [
-                'uses' => 'SeekerController@showPsychoTestInv',
-                'as' => 'seeker.invitation.psychoTest'
-            ]);
-
-            Route::get('job_invitation', [
-                'uses' => 'SeekerController@showJobInvitation',
-                'as' => 'seeker.jobInvitation'
-            ]);
-
-            Route::get('job_invitation/vacancies', [
-                'uses' => 'SeekerController@getInvVacancies',
-                'as' => 'get.inv.vacancies'
-            ]);
-
-            Route::put('job_invitation/apply', [
-                'uses' => 'SeekerController@applyJobInvitation',
-                'as' => 'seeker.jobInvitation.apply'
-            ]);
-
-        });
-
-        Route::group(['prefix' => 'job_vacancy'], function () {
-
-            Route::get('recommended_vacancy', [
-                'uses' => 'SeekerController@recommendedVacancy',
-                'as' => 'seeker.recommended.vacancy'
-            ]);
-
-            Route::get('recommended_vacancy/vacancies', [
-                'uses' => 'SeekerController@getRecommendedVacancy',
-                'as' => 'get.recommended.vacancy'
-            ]);
-
-            Route::get('recommended_vacancy/{id}', [
-                'uses' => 'SeekerController@detailRecommendedVacancy',
-                'as' => 'detail.recommended.vacancy'
-            ]);
-
-            Route::get('bookmarked_vacancy', [
-                'uses' => 'SeekerController@showBookmark',
-                'as' => 'seeker.bookmarked.vacancy'
-            ]);
-
-            Route::get('bookmarked_vacancy/vacancies', [
-                'uses' => 'SeekerController@getBookmarkedVacancies',
-                'as' => 'get.bookmarked.vacancies'
-            ]);
-
-        });
-    });
-
-    Route::group(['prefix' => 'vacancy'], function () {
-
-        Route::get('{id}', [
-            'uses' => 'VacancyController@detailVacancy',
-            'as' => 'detail.vacancy'
-        ]);
-
-        Route::post('bookmark', [
-            'uses' => 'VacancyController@bookmarkVacancy',
-            'as' => 'bookmark.vacancy'
-        ]);
-
-        Route::post('apply', [
-            'uses' => 'VacancyController@applyVacancy',
-            'as' => 'apply.vacancy'
-        ]);
-
-        Route::get('{id}/requirement', [
-            'uses' => 'VacancyController@getVacancyRequirement',
-            'as' => 'get.vacancy.requirement'
         ]);
 
     });

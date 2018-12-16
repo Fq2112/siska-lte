@@ -2,22 +2,13 @@
 
 namespace App\Http\Controllers\Seekers;
 
-use App\Accepting;
-use App\Agencies;
-use App\Carousel;
-use App\Cities;
-use App\Education;
-use App\Experience;
-use App\FungsiKerja;
-use App\Industri;
-use App\JobLevel;
-use App\Jurusanpend;
-use App\Provinces;
-use App\Salaries;
-use App\Seekers;
-use App\Tingkatpend;
-use App\User;
-use App\Vacancies;
+use App\Models\Applications;
+use App\Models\Agencies;
+use App\Models\Education;
+use App\Models\Experience;
+use App\Models\Provinces;
+use App\Models\User;
+use App\Models\Vacancies;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
@@ -26,52 +17,33 @@ class VacancyController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('seeker')->except(['showVacancy', 'detailVacancy']);
-
-        $this->middleware('guest')->only(['showVacancy', 'detailVacancy']);
+        $this->middleware('seeker')->except(['detailAgency', 'detailVacancy']);
     }
 
-    public function showVacancy(Request $request)
+    public function detailAgency($id)
     {
-        $provinces = Provinces::all();
-        $salaries = Salaries::all();
-        $job_functions = FungsiKerja::all();
-        $industries = Industri::all();
-        $degrees = Tingkatpend::all();
-        $majors = Jurusanpend::all();
+        $agency = Agencies::findOrFail($id);
+        $industry = $agency->getIndustry;
+        $vacancies = Vacancies::where('agency_id', $agency->id)->orderByDesc('updated_at')->get();
 
-        $keyword = $request->q;
-        $location = $request->loc;
-        $sort = $request->sort;
-        $salary_ids = $request->salary_ids;
-        $jobfunc_ids = $request->jobfunc_ids;
-        $industry_ids = $request->industry_ids;
-        $degrees_ids = $request->degrees_ids;
-        $majors_ids = $request->majors_ids;
-        $page = $request->page;
-
-        return view('_seekers.search-vacancy', compact('provinces', 'salaries', 'job_functions', 'industries',
-            'degrees', 'majors', 'keyword', 'location', 'sort', 'salary_ids', 'jobfunc_ids', 'industry_ids',
-            'degrees_ids', 'majors_ids', 'page'));
+        return view('_admins.profile-agency', compact('agency', 'industry', 'vacancies'));
     }
 
     public function detailVacancy($id)
     {
         $provinces = Provinces::all();
         $vacancy = Vacancies::findOrFail($id);
-        $carousels = Carousel::all();
-        $agency = Agencies::find($vacancy->agency_id);
-        $user = User::find(Agencies::find($vacancy->agency_id)->user_id);
-        $city = Cities::find($vacancy->cities_id)->name;
-        $salary = Salaries::find($vacancy->salary_id);
-        $jobfunc = FungsiKerja::find($vacancy->fungsikerja_id);
-        $joblevel = JobLevel::find($vacancy->joblevel_id);
-        $industry = Industri::find($vacancy->industry_id);
-        $degrees = Tingkatpend::find($vacancy->tingkatpend_id);
-        $majors = Jurusanpend::find($vacancy->jurusanpend_id);
-        $applicants = Accepting::where('vacancy_id', $vacancy->id)->where('isApply', true)->count();
+        $agency = $vacancy->getAgency;
+        $city = $vacancy->getCity->name;
+        $salary = $vacancy->getSalary;
+        $jobfunc = $vacancy->getJobFunction;
+        $joblevel = $vacancy->getJobLevel;
+        $industry = $vacancy->getIndustry;
+        $degrees = $vacancy->getDegree;
+        $majors = $vacancy->getMajor;
+        $applicants = Applications::where('vacancy_id', $vacancy->id)->where('isApply', true)->count();
 
-        return view('_agencies.detail-vacancy', compact('provinces', 'vacancy', 'carousels', 'agency', 'user',
+        return view('_agencies.detail-vacancy', compact('provinces', 'vacancy', 'agency',
             'city', 'salary', 'jobfunc', 'joblevel', 'industry', 'degrees', 'majors', 'applicants'));
     }
 
@@ -79,13 +51,12 @@ class VacancyController extends Controller
     {
         $vacancy = Vacancies::find($request->vacancy_id);
         $user = Auth::user();
-        $seeker = Seekers::where('user_id', $user->id)->firstOrFail();
 
-        $acc = Accepting::where('vacancy_id', $vacancy->id)->where('seeker_id', $seeker->id);
+        $acc = Applications::where('vacancy_id', $vacancy->id)->where('user_id', $user->id);
 
         if (!$acc->count()) {
-            Accepting::create([
-                'seeker_id' => $seeker->id,
+            Applications::create([
+                'user_id' => $user->id,
                 'vacancy_id' => $vacancy->id,
                 'isBookmark' => true,
             ]);
@@ -114,13 +85,12 @@ class VacancyController extends Controller
     {
         $vacancy = Vacancies::find($request->vacancy_id);
         $user = Auth::user();
-        $seeker = Seekers::where('user_id', $user->id)->firstOrFail();
 
-        $acc = Accepting::where('vacancy_id', $vacancy->id)->where('seeker_id', $seeker->id);
+        $acc = Applications::where('vacancy_id', $vacancy->id)->where('user_id', $user->id);
 
         if (count($acc->get()) == 0) {
-            Accepting::create([
-                'seeker_id' => $seeker->id,
+            Applications::create([
+                'user_id' => $user->id,
                 'vacancy_id' => $vacancy->id,
                 'isApply' => true,
             ]);
@@ -148,20 +118,19 @@ class VacancyController extends Controller
     public function getVacancyRequirement($id)
     {
         $vacancy = Vacancies::find($id);
-        $seeker = Seekers::where('user_id', Auth::user()->id)->first();
-        $edu = Education::where('seeker_id', $seeker->id)->get();
-        $exp = Experience::where('seeker_id', $seeker->id)->get();
+        $user = User::find(Auth::user()->id);
+        $edu = Education::where('user_id', $user->id)->get();
+        $exp = Experience::where('user_id', $user->id)->get();
 
         $reqExp = filter_var($vacancy->pengalaman, FILTER_SANITIZE_NUMBER_INT);
-        $checkEdu = Education::whereHas('seekers', function ($seeker) {
-            $seeker->where('user_id', Auth::user()->id);
-        })->where('tingkatpend_id', '>=', $vacancy->tingkatpend_id)->wherenotnull('end_period')->count();
+        $checkEdu = Education::where('user_id', $user->id)->where('degree_id', '>=', $vacancy->degree_id)
+            ->wherenotnull('end_period')->count();
 
-        if (count($edu) == 0 || count($exp) == 0 || $seeker->phone == "" || $seeker->address == "" ||
-            $seeker->birthday == "" || $seeker->gender == "") {
+        if (count($edu) == 0 || count($exp) == 0 || $user->phone == "" || $user->address == "" ||
+            $user->birthday == "" || $user->gender == "") {
             return 0;
         } else {
-            if ($seeker->total_exp < $reqExp) {
+            if ($user->total_exp < $reqExp) {
                 return 1;
             } elseif ($checkEdu < 1) {
                 return 2;
