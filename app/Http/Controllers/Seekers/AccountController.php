@@ -203,31 +203,6 @@ class AccountController extends Controller
         }
     }
 
-    public function updateBackground(Request $request)
-    {
-        $user = User::findOrFail(Auth::user()->id);
-        $img = $request->file('background');
-
-        $this->validate($request, [
-            'background' => 'image|mimes:jpg,jpeg,gif,png|max:2048',
-        ]);
-
-        if ($request->hasFile('background')) {
-            $name = $img->getClientOriginalName();
-
-            if ($user->background != '') {
-                Storage::delete('public/users/background/' . $user->background);
-            }
-
-            if ($img->isValid()) {
-                $request->background->storeAs('public/users/background', $name);
-                $user->update(['background' => $name]);
-
-                return $name;
-            }
-        }
-    }
-
     public function createAttachments(Request $request)
     {
         $user = User::findOrFail(Auth::user()->id);

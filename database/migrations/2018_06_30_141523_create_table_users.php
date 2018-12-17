@@ -20,7 +20,6 @@ class CreateTableUsers extends Migration
             $table->string('email')->unique();
             $table->string('password');
             $table->rememberToken();
-            $table->string('background')->nullable();
             $table->string('phone')->nullable();
             $table->text('address')->nullable();
             $table->string('zip_code', 6)->nullable();

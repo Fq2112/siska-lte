@@ -1,26 +1,25 @@
-<form class="form-horizontal to-animate-2" role="form" method="POST" id="form-ava"
+<style>
+    .image-upload > input {
+        display: none;
+    }
+
+    .image-upload label {
+        cursor: pointer;
+        width: 100%;
+    }
+</style>
+<form class="form-horizontal" role="form" method="POST" id="form-ava"
       enctype="multipart/form-data">
     {{ csrf_field() }}
     {{ method_field('put') }}
     <div class="card">
         <div class="img-card image-upload">
             <label for="file-input">
-                @if($user->ava==null)
-                    <img style="width: 100%" class="show_ava" alt="AVA is here..."
-                         src="{{asset('images/avatar.png')}}"
-                         data-placement="bottom" data-toggle="tooltip"
-                         title="Click here to change your AVA!">
-                @elseif($user->ava=='seeker.png')
-                    <img style="width: 100%" class="show_ava" alt="AVA is here..."
-                         src="{{asset('images/seeker.png')}}"
-                         data-placement="bottom" data-toggle="tooltip"
-                         title="Click here to change your AVA!">
-                @else
-                    <img style="width: 100%" class="show_ava" alt="AVA is here..."
-                         src="{{asset('storage/users/ava/'.$user->ava)}}"
-                         data-placement="bottom" data-toggle="tooltip"
-                         title="Click here to change your AVA!">
-                @endif
+                <img style="width: 100%" class="show_ava" alt="AVA is here..."
+                     src="{{$user->ava == 'seeker.png' || $user->ava == '' ? asset('images/seeker.png') :
+                         asset('storage/users/ava/'.$user->ava)}}"
+                     data-placement="bottom" data-toggle="tooltip"
+                     title="Click here to change your AVA!">
             </label>
             <input id="file-input" name="ava" type="file" accept="image/*">
             <div id="progress-upload-ava">
@@ -33,13 +32,8 @@
         <div class="card-content">
             <div class="card-title text-center">
                 <a href="{{route('seeker.edit.profile')}}">
-                    <h4 class="aj_name" style="color: #872f2f">{{$user->name}}</h4></a>
-                <small>
-                    @if(count($job_title->get()) != 0)
-                        {{$job_title->first()->job_title}}
-                    @else
-                        Current Job Title (-)
-                    @endif
+                    <h4 class="aj_name" style="color: #35495d">{{$user->name}}</h4></a>
+                <small>{{count($job_title->get()) != 0 ? $job_title->first()->job_title : 'Current Job Title (-)'}}
                 </small>
             </div>
             <div class="card-title">
@@ -50,8 +44,8 @@
                         <td style="text-transform: none" id="expected_salary">
                             @if($user->lowest_salary != "")
                                 <script>
-                                    var low = ("{{$user->lowest_salary}}").split(',').join("") / 1000000,
-                                        high = ("{{$user->highest_salary}}").split(',').join("") / 1000000;
+                                    var low = ("{{$user->lowest_salary}}") / 1000000,
+                                        high = ("{{$user->highest_salary}}") / 1000000;
                                     document.getElementById("expected_salary").innerText =
                                         "IDR " + low + " to " + high + " millions";
                                 </script>
@@ -70,35 +64,20 @@
                     <tr>
                         <td><i class="fa fa-graduation-cap"></i></td>
                         <td>&nbsp;</td>
-                        <td>
-                            @if(count($last_edu->get()) != 0)
-                                {{\App\Models\Degrees::find($last_edu->first()->degree_id)->name}}
-                            @else
-                                Latest Education Degree (-)
-                            @endif
-                        </td>
+                        <td>{{count($last_edu->get()) != 0 ? \App\Models\Degrees::find($last_edu->first()->degree_id)
+                        ->name : 'Latest Education Degree (-)'}}</td>
                     </tr>
                     <tr>
                         <td><i class="fa fa-user-graduate"></i></td>
                         <td>&nbsp;</td>
-                        <td>
-                            @if(count($last_edu->get()) != 0)
-                                {{\App\Models\Majors::find($last_edu->first()->major_id)->name}}
-                            @else
-                                Latest Education Major (-)
-                            @endif
-                        </td>
+                        <td>{{count($last_edu->get()) != 0 ? \App\Models\Majors::find($last_edu->first()->major_id)
+                            ->name : 'Latest Education Major (-)'}}</td>
                     </tr>
                     <tr>
                         <td><i class="fa fa-grin-stars"></i></td>
                         <td>&nbsp;</td>
-                        <td>
-                            @if(count($last_edu->get()) != 0 && $last_edu->first()->nilai != "")
-                                {{$last_edu->first()->nilai}}
-                            @else
-                                Latest GPA (-)
-                            @endif
-                        </td>
+                        <td>{{count($last_edu->get()) != 0 && $last_edu->first()->nilai != "" ? $last_edu->first()
+                            ->nilai : 'Latest GPA (-)'}}</td>
                     </tr>
                 </table>
                 <hr>

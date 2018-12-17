@@ -120,7 +120,7 @@ class UserSeeder extends Seeder
                         strtolower($faker->firstName)) . '.com',
                 'lowest_salary' => '1000000',
                 'highest_salary' => '5000000',
-                'summary' => $faker->text($maxNbChars = 500),
+                'summary' => '<p align="justify">' . $faker->text($maxNbChars = 500) . '</p>',
             ]);
 
             Education::create([
@@ -128,7 +128,7 @@ class UserSeeder extends Seeder
                 'school_name' => 'State University of ' . $faker->city,
                 'degree_id' => rand(Degrees::min('id'), Degrees::max('id')),
                 'major_id' => rand(Majors::min('id'), Majors::max('id')),
-                'awards' => $faker->sentence(5, true),
+                'awards' => '<p align="justify">' . $faker->sentence(5, true) . '</p>',
                 'nilai' => $faker->randomFloat(8, 3, 4),
                 'start_period' => (today()->subYears(rand(1, 4)))->format('Y'),
                 'end_period' => today()->format('Y'),
@@ -146,7 +146,7 @@ class UserSeeder extends Seeder
                 'end_date' => rand(0, 1) ? null : today(),
                 'jobtype_id' => rand(JobType::min('id'), JobType::max('id')),
                 'report_to' => $faker->name,
-                'job_desc' => $faker->sentence(10, true)
+                'job_desc' => '<p align="justify">' . $faker->sentence(10, true) . '</p>',
             ]);
             $user->update([
                 'total_exp' => Carbon::parse($exp->start_date)->diffInYears(Carbon::parse($exp->end_date))

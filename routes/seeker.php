@@ -103,11 +103,6 @@ Route::group(['prefix' => '/', 'namespace' => 'Seekers'], function () {
             'as' => 'update.settings'
         ]);
 
-        Route::put('background/update', [
-            'uses' => 'AccountController@updateBackground',
-            'as' => 'update.background'
-        ]);
-
         Route::post('profile/attachments/create', [
             'uses' => 'AccountController@createAttachments',
             'as' => 'create.attachments'

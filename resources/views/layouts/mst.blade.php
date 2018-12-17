@@ -152,6 +152,14 @@
         .scroll-content {
             max-height: 470px;
         }
+
+        .hr-divider {
+            margin-top: 0;
+        }
+
+        .btn-link {
+            color: #35495d;
+        }
     </style>
 </head>
 
@@ -208,7 +216,7 @@
                 <!-- menu profile quick info -->
                 <div class="profile clearfix">
                     <div class="profile_pic">
-                        <img src="{{$ava}}" alt="..." class="img-circle profile_img">
+                        <img src="{{$ava}}" alt="..." class="img-circle profile_img show_ava">
                     </div>
                     <div class="profile_info">
                         <span>Welcome,</span>
@@ -263,7 +271,8 @@
                         <li class="">
                             <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown"
                                aria-expanded="false">
-                                <img src="{{$ava}}" alt="">{{$auth->name}}<span class=" fa fa-angle-down"></span>
+                                <img src="{{$ava}}" class="show_ava" alt="">{{$auth->name}}
+                                <span class=" fa fa-angle-down"></span>
                             </a>
                             <ul class="dropdown-menu dropdown-usermenu pull-right">
                                 <li>
@@ -372,7 +381,7 @@
                         {{csrf_field()}} {{method_field('PUT')}}
                         <div class="modal-body">
                             <div class="row form-group">
-                                <img src="{{$ava}}" class="img-responsive" id="myBtn_img"
+                                <img src="{{$ava}}" class="img-responsive show_ava" id="myBtn_img"
                                      style="margin: 0 auto;width: 50%;cursor: pointer" data-toggle="tooltip"
                                      data-placement="bottom"
                                      title="Allowed extension: jpg, jpeg, gif, png. Allowed size: < 2 MB">
@@ -472,6 +481,8 @@
 
 <!-- jQuery -->
 <script src="{{asset('js/jquery.min.js')}}"></script>
+<script src="{{asset('js/jquery.maskMoney.js')}}"></script>
+<script src="{{asset('js/simple.gpa.format.js')}}"></script>
 <!-- Bootstrap -->
 <script src="{{asset('js/bootstrap.min.js')}}"></script>
 <!-- FastClick -->
@@ -589,6 +600,9 @@
         $('.timepicker').datetimepicker({format: "HH:mm"});
 
         Scrollbar.initAll();
+
+        $('.gpa').simpleGPAFormat();
+        $(".rupiah").maskMoney({thousands: ',', decimal: '.', precision: '0'});
     });
 
     $(".btn_editProfile").on("click", function () {
@@ -611,6 +625,61 @@
         $("#settingsModal").modal("show");
     });
 
+    function checkRupiahValue() {
+        var low = parseInt($("#lowest").val().split(',').join("")), input = $("#highest"),
+            high = parseInt(input.val().split(',').join(""));
+        if (low < 1000 || high < 1000) {
+            $(".checkRupiahValue").addClass('has-error');
+            $(".aj_rp").text("Range invalid! These input value must be greater than or equal to 1000.");
+            $("#btn_save_personal_data").attr('disabled', 'disabled');
+        } else {
+            if (low > high) {
+                $(".checkRupiahValue").addClass('has-error');
+                $(".aj_rp").text("Range invalid! This input value must be greater than or equal to the previous one.");
+                $("#btn_save_personal_data").attr('disabled', 'disabled');
+            } else {
+                $(".checkRupiahValue").removeClass('has-error');
+                $(".aj_rp").text("");
+                $("#btn_save_personal_data").removeAttr('disabled');
+            }
+        }
+        $(document).keypress(function (e) {
+            if (e.which == 13) {
+                checkRupiahValue();
+            }
+        });
+    }
+
+    function thousandSeparator(nStr) {
+        nStr += '';
+        x = nStr.split('.');
+        x1 = x[0];
+        x2 = x.length > 1 ? '.' + x[1] : '';
+        var rgx = /(\d+)(\d{3})/;
+        while (rgx.test(x1)) {
+            x1 = x1.replace(rgx, '$1' + '.' + '$2');
+        }
+        return x1 + x2;
+    }
+
+    function numberOnly(e, decimal) {
+        var key;
+        var keychar;
+        if (window.event) {
+            key = window.event.keyCode;
+        } else if (e) {
+            key = e.which;
+        } else return true;
+        keychar = String.fromCharCode(key);
+        if ((key == null) || (key == 0) || (key == 8) || (key == 9) || (key == 13) || (key == 27) || (key == 188)) {
+            return true;
+        } else if ((("0123456789").indexOf(keychar) > -1)) {
+            return true;
+        } else if (decimal && (keychar == ".")) {
+            return true;
+        } else return false;
+    }
+
     function fullScreen() {
         if ((document.fullScreenElement && document.fullScreenElement !== null) ||
             (!document.mozFullScreen && !document.webkitIsFullScreen)) {
@@ -630,24 +699,6 @@
                 document.webkitCancelFullScreen();
             }
         }
-    }
-
-    function numberOnly(e, decimal) {
-        var key;
-        var keychar;
-        if (window.event) {
-            key = window.event.keyCode;
-        } else if (e) {
-            key = e.which;
-        } else return true;
-        keychar = String.fromCharCode(key);
-        if ((key == null) || (key == 0) || (key == 8) || (key == 9) || (key == 13) || (key == 27) || (key == 188)) {
-            return true;
-        } else if ((("0123456789").indexOf(keychar) > -1)) {
-            return true;
-        } else if (decimal && (keychar == ".")) {
-            return true;
-        } else return false;
     }
 
     var title = document.getElementsByTagName("title")[0].innerHTML;
