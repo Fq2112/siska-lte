@@ -31,7 +31,7 @@ class SeekerController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('seeker')->except(['index', 'showProfile']);
+        $this->middleware('seeker')->except(['index', 'showProfile', 'downloadSeekerAttachments']);
         $this->middleware('seeker.home')->only('index');
         $this->middleware('seeker.profile')->only('showProfile');
         $this->middleware('admin')->only('downloadSeekerAttachments');
