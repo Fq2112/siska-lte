@@ -603,6 +603,9 @@
 
         $('.gpa').simpleGPAFormat();
         $(".rupiah").maskMoney({thousands: ',', decimal: '.', precision: '0'});
+
+        $('[data-toggle="tooltip"]').tooltip();
+        $('[data-toggle="popover"]').popover();
     });
 
     $(".btn_editProfile").on("click", function () {

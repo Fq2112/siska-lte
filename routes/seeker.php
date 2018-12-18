@@ -18,10 +18,19 @@ Route::group(['prefix' => '/', 'namespace' => 'Seekers'], function () {
         'as' => 'home-seeker'
     ]);
 
-    Route::get('seekers/{id}', [
-        'uses' => 'SeekerController@showSeekerProfile',
-        'as' => 'seeker.profile'
-    ]);
+    Route::group(['prefix' => 'seekers'], function () {
+
+        Route::get('{id}', [
+            'uses' => 'SeekerController@detailSeeker',
+            'as' => 'seeker.profile'
+        ]);
+
+        Route::get('attachments/{files}/download', [
+            'uses' => 'SeekerController@downloadSeekerAttachments',
+            'as' => 'download.seeker.attachments'
+        ]);
+
+    });
 
     Route::get('agencies/{id}', [
         'uses' => 'VacancyController@detailAgency',

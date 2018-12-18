@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Seekers;
 use App\Models\Applications;
 use App\Models\Agencies;
 use App\Models\Education;
-use App\Models\Experience;
 use App\Models\Provinces;
 use App\Models\User;
 use App\Models\Vacancies;
@@ -35,7 +34,8 @@ class VacancyController extends Controller
         $provinces = Provinces::all();
         $vacancy = Vacancies::findOrFail($id);
         $agency = $vacancy->getAgency;
-        $city = $vacancy->getCity->name;
+        $city = substr($vacancy->getCity->name, 0, 2) == "Ko" ? substr($vacancy->getCity->name, 5) :
+            substr($vacancy->getCity->name, 10);
         $salary = $vacancy->getSalary;
         $jobfunc = $vacancy->getJobFunction;
         $joblevel = $vacancy->getJobLevel;
@@ -121,15 +121,15 @@ class VacancyController extends Controller
     {
         $vacancy = Vacancies::find($id);
         $user = User::find(Auth::user()->id);
-        $edu = Education::where('user_id', $user->id)->get();
-        $exp = Experience::where('user_id', $user->id)->get();
+        $edu = $user->getEducation->count();
+        $exp = $user->getExperience->count();
 
         $reqExp = filter_var($vacancy->pengalaman, FILTER_SANITIZE_NUMBER_INT);
         $checkEdu = Education::where('user_id', $user->id)->where('degree_id', '>=', $vacancy->degree_id)
             ->wherenotnull('end_period')->count();
 
-        if (count($edu) == 0 || count($exp) == 0 || $user->phone == "" || $user->address == "" ||
-            $user->birthday == "" || $user->gender == "") {
+        if ($edu == 0 || $exp == 0 || $user->phone == "" || $user->address == "" || $user->birthday == "" ||
+            $user->gender == "") {
             return 0;
         } else {
             if ($user->total_exp < $reqExp) {

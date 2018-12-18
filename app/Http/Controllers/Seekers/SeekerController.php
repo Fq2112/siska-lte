@@ -34,6 +34,7 @@ class SeekerController extends Controller
         $this->middleware('seeker')->except(['index', 'showProfile']);
         $this->middleware('seeker.home')->only('index');
         $this->middleware('seeker.profile')->only('showProfile');
+        $this->middleware('admin')->only('downloadSeekerAttachments');
     }
 
     public function index(Request $request)
@@ -46,27 +47,31 @@ class SeekerController extends Controller
         return view('_seekers.home-seeker', compact('provinces', 'keyword', 'location', 'page'));
     }
 
-    public function showSeekerProfile($id)
+    public function detailSeeker($id)
     {
-        $provinces = Provinces::all();
         $user = User::find($id);
-
-        $attachments = Attachments::where('user_id', $id)->orderby('created_at', 'desc')->get();
-        $experiences = Experience::where('user_id', $id)->orderby('id', 'desc')->get();
-        $educations = Education::where('user_id', $id)->orderby('tingkatpend_id', 'desc')->get();
-        $trainings = Training::where('user_id', $id)->orderby('id', 'desc')->get();
-        $organizations = Organization::where('user_id', $id)->orderby('id', 'desc')->get();
-        $languages = Languages::where('user_id', $id)->orderby('id', 'desc')->get();
-        $skills = Skills::where('user_id', $id)->orderby('id', 'desc')->get();
+        $attachments = Attachments::where('user_id', $id)->orderByDesc('created_at')->get();
+        $experiences = Experience::where('user_id', $id)->orderByDesc('id')->get();
+        $educations = Education::where('user_id', $id)->orderByDesc('degree_id')->get();
+        $trainings = Training::where('user_id', $id)->orderByDesc('id')->get();
+        $organizations = Organization::where('user_id', $id)->orderByDesc('id')->get();
+        $languages = Languages::where('user_id', $id)->orderByDesc('id')->get();
+        $skills = Skills::where('user_id', $id)->orderByDesc('id')->get();
 
         $job_title = Experience::where('user_id', $id)->where('end_date', null)
             ->orderby('id', 'desc')->take(1);
 
         $last_edu = Education::where('user_id', $id)->wherenotnull('end_period')
-            ->orderby('tingkatpend_id', 'desc')->take(1);
+            ->orderby('degree_id', 'desc')->take(1);
 
-        return view('_seekers.profile-seeker', compact('provinces', 'seeker', 'user', 'attachments',
-            'experiences', 'educations', 'trainings', 'organizations', 'languages', 'skills', 'job_title', 'last_edu'));
+        return view('_seekers.detail-seeker', compact('user', 'attachments', 'experiences', 'educations',
+            'trainings', 'organizations', 'languages', 'skills', 'job_title', 'last_edu'));
+    }
+
+    public function downloadSeekerAttachments($files)
+    {
+        $file_path = public_path('storage/users/attachments/' . $files);
+        return response()->download($file_path);
     }
 
     public function showDashboard()
@@ -78,7 +83,7 @@ class SeekerController extends Controller
             ->orderby('id', 'desc')->take(1);
 
         $last_edu = Education::where('user_id', $user->id)->wherenotnull('end_period')
-            ->orderby('tingkatpend_id', 'desc')->take(1);
+            ->orderby('degree_id', 'desc')->take(1);
 
         return view('auth.seekers.dashboard', compact('user', 'provinces', 'seeker', 'job_title',
             'last_edu'));
@@ -104,7 +109,7 @@ class SeekerController extends Controller
         $vacancy = Vacancies::find($id)->toArray();
         $agency = Agencies::findOrFail($vacancy['agency_id']);
 
-        $reqEdu = $vacancy['tingkatpend_id'];
+        $reqEdu = $vacancy['degree_id'];
         $reqExp = filter_var($vacancy['pengalaman'], FILTER_SANITIZE_NUMBER_INT);
 
         $acc = Applications::where('vacancy_id', $vacancy['id'])->where('isApply', true);
@@ -168,7 +173,7 @@ class SeekerController extends Controller
             ->orderby('id', 'desc')->take(1);
 
         $last_edu = Education::where('user_id', $user->id)->wherenotnull('end_period')
-            ->orderby('tingkatpend_id', 'desc')->take(1);
+            ->orderby('degree_id', 'desc')->take(1);
 
         $bookmark = Applications::where('user_id', $user->id)->where('isBookmark', true)->paginate(5);
 

@@ -8,6 +8,7 @@
     </li>
     <li><a><i class="fa fa-user"></i> Account Settings<span class="fa fa-chevron-down"></span></a>
         <ul class="nav child_menu">
+            <li><a href="{{route('seeker.profile',['id' => Auth::user()->id])}}">My Profile</a></li>
             <li><a href="{{route('seeker.edit.profile')}}">Edit Profile</a></li>
             <li><a href="{{route('seeker.settings')}}">Change Password</a></li>
         </ul>
