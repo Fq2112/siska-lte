@@ -46,9 +46,10 @@ class CreateTableVacancy extends Migration
             $table->integer('jobfunction_id')->unsigned();
             $table->foreign('jobfunction_id')->references('id')->on('job_functions')
                 ->onUpdate('CASCADE')->onDelete('CASCADE');
-            $table->date('recruitmentDate_start');
-            $table->date('recruitmentDate_end');
-            $table->date('interview_date');
+            $table->boolean('isPost')->default(false);
+            $table->date('recruitmentDate_start')->nullable();
+            $table->date('recruitmentDate_end')->nullable();
+            $table->date('interview_date')->nullable();
             $table->timestamps();
         });
     }

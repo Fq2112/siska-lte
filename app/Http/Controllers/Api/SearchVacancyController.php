@@ -30,13 +30,11 @@ class SearchVacancyController extends Controller
             $agency = Agencies::where('company', 'like', '%' . $keyword . '%')->get()->pluck('id')->toArray();
 
             $result = Vacancies::where('judul', 'like', '%' . $keyword . '%')->whereIn('city_id', $city)
-                ->orwhereIn('agency_id', $agency)->whereIn('city_id', $city)
-                ->wherenotnull('recruitmentDate_start')->wherenotnull('recruitmentDate_end')
+                ->orwhereIn('agency_id', $agency)->whereIn('city_id', $city)->where('isPost', true)
                 ->paginate(12)->appends($request->only(['q', 'loc']))->toArray();
 
         } else {
-            $result = Vacancies::wherenotnull('recruitmentDate_start')->wherenotnull('recruitmentDate_end')
-                ->paginate(12)->toArray();
+            $result = Vacancies::where('isPost', true)->paginate(12)->toArray();
         }
         $result = $this->array_vacancies($result);
         return $result;

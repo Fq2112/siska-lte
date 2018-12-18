@@ -10,11 +10,6 @@ class Agencies extends Model
 
     protected $guarded = ['id'];
 
-    public function getGallery()
-    {
-        return $this->hasMany(Gallery::class,'agency_id');
-    }
-
     public function getIndustry()
     {
         return $this->belongsTo(Industries::class,'industry_id');

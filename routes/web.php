@@ -96,27 +96,27 @@ Route::group(['namespace' => 'Admins', 'prefix' => 'admin', 'middleware' => 'adm
     Route::group(['prefix' => 'vacancies'], function () {
 
         Route::get('/', [
-            'uses' => 'VacancyController@showVacanciesTable',
+            'uses' => 'AgencyController@showVacanciesTable',
             'as' => 'table.vacancies'
         ]);
 
         Route::post('create', [
-            'uses' => 'VacancyController@createVacancies',
+            'uses' => 'AgencyController@createVacancies',
             'as' => 'create.vacancies'
         ]);
 
         Route::get('edit/{id}', [
-            'uses' => 'VacancyController@editVacancies',
+            'uses' => 'AgencyController@editVacancies',
             'as' => 'edit.vacancies'
         ]);
 
-        Route::put('{id}/update', [
-            'uses' => 'VacancyController@updateVacancies',
+        Route::put('update/{id}', [
+            'uses' => 'AgencyController@updateVacancies',
             'as' => 'update.vacancies'
         ]);
 
         Route::get('{id}/delete', [
-            'uses' => 'VacancyController@deleteVacancies',
+            'uses' => 'AgencyController@deleteVacancies',
             'as' => 'delete.vacancies'
         ]);
 

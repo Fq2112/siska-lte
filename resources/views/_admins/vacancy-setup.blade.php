@@ -22,7 +22,6 @@
                             <thead>
                             <tr>
                                 <th>No</th>
-                                <th>Vacancy</th>
                                 <th>Details</th>
                                 <th>Action</th>
                             </tr>
@@ -47,29 +46,53 @@
                                         <table>
                                             <tr>
                                                 <td>
-                                                    <a href="{{route('agency.profile',['id' => $vacancy->agency_id])}}"
-                                                       target="_blank"
-                                                       style="float: left;margin-right: .5em;margin-bottom: 0">
-                                                        <img class="img-responsive" width="64" src="{{$agency->ava == ""
-                                                        || $agency->ava == "agency.png" ? asset('images/agency.png') :
-                                                        asset('storage/admins/ava/'.$agency->ava)}}">
-                                                    </a>
+                                                    <table style="float: left;margin-right: .5em;margin-bottom: 0">
+                                                        <tr>
+                                                            <td style="vertical-align: middle;text-align: center">
+                                                                <a href="{{route('agency.profile',['id' =>
+                                                                $vacancy->agency_id])}}" target="_blank">
+                                                                    <img class="img-responsive" width="100"
+                                                                         style="margin: 0 auto"
+                                                                         src="{{$agency->ava == "" || $agency->ava ==
+                                                                         "agency.png" ? asset('images/agency.png') :
+                                                                         asset('storage/admins/ava/'.$agency->ava)}}">
+                                                                </a>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td style="vertical-align: middle;text-align: center">
+                                                                <span data-toggle="tooltip" data-placement="bottom"
+                                                                      title="Status" class="label label-default"
+                                                                      style="background: {{$vacancy->isPost == true ?
+                                                                      '#00adb5' : '#fa5555'}}"><strong
+                                                                            style="text-transform: uppercase">{{$vacancy->isPost
+                                                                      == true ? 'Active' : 'Inactive'}}</strong>
+                                                                </span>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
                                                     <table>
                                                         <tr>
                                                             <td>
                                                                 <a href="{{route('detail.vacancy',['id' =>
                                                                 $vacancy->id])}}" target="_blank">
                                                                     <strong>{{$vacancy->judul}}</strong></a> &ndash;
-                                                                <i class="fa fa-calendar"></i>&nbsp;{{\Carbon\Carbon::parse
-                                                                ($vacancy->created_at)->format('j F Y')}} |
-                                                                <i class="fa fa-clock"></i>&nbsp;{{$vacancy->updated_at
-                                                                ->diffForHumans()}}
+                                                                <span class="label label-default" data-toggle="tooltip"
+                                                                      data-placement="bottom" title="Created at">
+                                                                <i class="fa fa-calendar-alt"></i>&ensp;
+                                                                    {{\Carbon\Carbon::parse($vacancy->created_at)
+                                                                    ->format('j F Y')}}</span> |
+                                                                <span class="label label-default" data-toggle="tooltip"
+                                                                      data-placement="bottom" title="Last Update">
+                                                                    <i class="fa fa-clock"></i>&ensp;{{$vacancy
+                                                                    ->updated_at->diffForHumans()}}</span>
                                                             </td>
                                                         </tr>
                                                         <tr>
-                                                            <td><a href="{{route('agency.profile',['id' =>
-                                                            $vacancy->agency_id])}}"
-                                                                   target="_blank">{{$agency->company}}</a>
+                                                            <td>
+                                                                <a href="{{route('agency.profile',['id' =>
+                                                                $vacancy->agency_id])}}" target="_blank">
+                                                                    {{$agency->company}}</a>
                                                             </td>
                                                         </tr>
                                                         <tr>
@@ -91,7 +114,7 @@
                                                                     </strong>
                                                                 </span>&nbsp;|
                                                                 <span data-toggle="tooltip" data-placement="bottom"
-                                                                      title="Job Interview Date"
+                                                                      title="Interview Date"
                                                                       class="label label-primary">
                                                                     <strong><i class="fa fa-user-tie"></i>&ensp;
                                                                         {{$vacancy->interview_date != "" ?
@@ -99,6 +122,62 @@
                                                                         ->format('l, j F Y') : 'Unknown'}}
                                                                     </strong>
                                                                 </span>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                    <hr style="margin: .5em auto">
+                                                    <table>
+                                                        <tr data-toggle="tooltip" data-placement="left"
+                                                            title="Job Function">
+                                                            <td><i class="fa fa-warehouse"></i>&nbsp;</td>
+                                                            <td>&nbsp;</td>
+                                                            <td>{{$jobfunc->name}}</td>
+                                                        </tr>
+                                                        <tr data-toggle="tooltip" data-placement="left"
+                                                            title="Industry">
+                                                            <td><i class="fa fa-industry"></i>&nbsp;</td>
+                                                            <td>&nbsp;</td>
+                                                            <td>{{$industry->name}}</td>
+                                                        </tr>
+                                                        <tr data-toggle="tooltip" data-placement="left"
+                                                            title="Job Level">
+                                                            <td><i class="fa fa-level-up-alt"></i>&nbsp;</td>
+                                                            <td>&nbsp;</td>
+                                                            <td>{{$joblevel->name}}</td>
+                                                        </tr>
+                                                        <tr data-toggle="tooltip" data-placement="left"
+                                                            title="Salary">
+                                                            <td><i class="fa fa-money-bill-wave"></i>&nbsp;</td>
+                                                            <td>&nbsp;</td>
+                                                            <td>IDR {{$salary->name}}</td>
+                                                        </tr>
+                                                        <tr data-toggle="tooltip" data-placement="left"
+                                                            title="Education Degree">
+                                                            <td><i class="fa fa-graduation-cap"></i>&nbsp;</td>
+                                                            <td>&nbsp;</td>
+                                                            <td>{{$degrees->name}}</td>
+                                                        </tr>
+                                                        <tr data-toggle="tooltip" data-placement="left"
+                                                            title="Education Major">
+                                                            <td><i class="fa fa-user-graduate"></i>&nbsp;</td>
+                                                            <td>&nbsp;</td>
+                                                            <td>{{$majors->name}}</td>
+                                                        </tr>
+                                                        <tr data-toggle="tooltip" data-placement="left"
+                                                            title="Work Experience">
+                                                            <td><i class="fa fa-briefcase"></i>&nbsp;</td>
+                                                            <td>&nbsp;</td>
+                                                            <td>At least {{$vacancy->pengalaman > 1 ?
+                                                                $vacancy->pengalaman.' years' :
+                                                                $vacancy->pengalaman.' year'}}</td>
+                                                        </tr>
+                                                        <tr data-toggle="tooltip" data-placement="left"
+                                                            title="Total Applicant">
+                                                            <td><i class="fa fa-paper-plane"></i></td>
+                                                            <td>&nbsp;</td>
+                                                            <td><strong>{{\App\Models\Applications::where
+                                                            ('vacancy_id',$vacancy->id)->where('isApply',true)->count()}}
+                                                                </strong> applicants
                                                             </td>
                                                         </tr>
                                                     </table>
@@ -110,64 +189,46 @@
                                         <hr style="margin: .5em auto">
                                         <strong>Responsibilities</strong><br>{!! $vacancy->tanggungjawab !!}
                                     </td>
-                                    <td>
-                                        <table>
-                                            <tr>
-                                                <td><i class="fa fa-warehouse"></i>&nbsp;</td>
-                                                <td>&nbsp;</td>
-                                                <td>{{$jobfunc->name}}</td>
-                                            </tr>
-                                            <tr>
-                                                <td><i class="fa fa-industry"></i>&nbsp;</td>
-                                                <td>&nbsp;</td>
-                                                <td>{{$industry->name}}</td>
-                                            </tr>
-                                            <tr>
-                                                <td><i class="fa fa-level-up-alt"></i>&nbsp;</td>
-                                                <td>&nbsp;</td>
-                                                <td>{{$joblevel->name}}</td>
-                                            </tr>
-                                            <tr>
-                                                <td><i class="fa fa-money-bill-wave"></i>&nbsp;</td>
-                                                <td>&nbsp;</td>
-                                                <td>IDR {{$salary->name}}</td>
-                                            </tr>
-                                            <tr>
-                                                <td><i class="fa fa-graduation-cap"></i>&nbsp;</td>
-                                                <td>&nbsp;</td>
-                                                <td>{{$degrees->name}}</td>
-                                            </tr>
-                                            <tr>
-                                                <td><i class="fa fa-user-graduate"></i>&nbsp;</td>
-                                                <td>&nbsp;</td>
-                                                <td>{{$majors->name}}</td>
-                                            </tr>
-                                            <tr>
-                                                <td><i class="fa fa-briefcase"></i>&nbsp;</td>
-                                                <td>&nbsp;</td>
-                                                <td>
-                                                    At least {{$vacancy->pengalaman > 1 ?
-                                                    $vacancy->pengalaman.' years' : $vacancy->pengalaman.' year'}}
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td><i class="fa fa-paper-plane"></i></td>
-                                                <td>&nbsp;</td>
-                                                <td><strong>{{\App\Models\Applications::where('vacancy_id',$vacancy->id)
-                                                ->where('isApply',true)->count()}}</strong> applicants
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </td>
                                     <td style="vertical-align: middle" align="center">
-                                        <a class="btn btn-warning btn-sm" style="font-size: 16px" data-toggle="tooltip"
-                                           title="Edit" onclick="editVacancy('{{$vacancy->id}}')">
-                                            <i class="fa fa-edit"></i></a>
-                                        <hr style="margin: 5px auto">
-                                        <a href="{{route('delete.vacancies',['id'=>encrypt($vacancy->id)])}}"
-                                           class="btn btn-danger btn-sm delete-data" style="font-size: 16px"
-                                           data-toggle="tooltip"
-                                           title="Delete" data-placement="bottom"><i class="fa fa-trash-alt"></i></a>
+                                        <form method="post" id="form-deactivate{{$vacancy->id}}">
+                                            {{csrf_field()}} {{method_field('PUT')}}
+                                            <input type="hidden" name="check_form" value="schedule">
+                                            <input type="hidden" name="isPost" value="0">
+                                        </form>
+                                        <div class="btn-group">
+                                            <button type="button" class="btn btn-{{$vacancy->isPost == false ? 'success'
+                                            : 'warning'}} btn-sm" style="font-weight: 600"
+                                                    onclick="postVacancy('{{$vacancy->id}}','{{$vacancy->judul}}',
+                                                            '{{$vacancy->recruitmentDate_start}}',
+                                                            '{{$vacancy->recruitmentDate_end}}',
+                                                            '{{$vacancy->interview_date}}')">
+                                                <i class="glyphicon glyphicon-{{$vacancy->isPost == false ? 'check' :
+                                                'calendar'}}"></i>&ensp;{{$vacancy->isPost == false ? 'POST' : 'SCHEDULE'}}
+                                            </button>
+                                            <button type="button" class="btn btn-{{$vacancy->isPost == false ? 'success'
+                                            : 'warning'}} btn-sm dropdown-toggle" data-toggle="dropdown"
+                                                    aria-expanded="false">
+                                                <span class="caret"></span>
+                                                <span class="sr-only">Toggle Dropdown</span>
+                                            </button>
+                                            <ul class="dropdown-menu" role="menu">
+                                                <li>
+                                                    <a onclick="editVacancy('{{$vacancy->id}}')">
+                                                        <i class="fa fa-edit"></i>&ensp;Edit</a>
+                                                </li>
+                                                <li>
+                                                    <a href="{{route('delete.vacancies',['id'=>encrypt($vacancy->id)])}}"
+                                                       class="delete-data">
+                                                        <i class="fa fa-trash-alt"></i>&ensp;Delete</a>
+                                                </li>
+                                                @if($vacancy->isPost == true)
+                                                    <li>
+                                                        <a onclick="deactivateVacancy('{{$vacancy->id}}','{{$vacancy->judul}}')">
+                                                            <i class="fa fa-power-off"></i>&ensp;Deactivate</a>
+                                                    </li>
+                                                @endif
+                                            </ul>
+                                        </div>
                                     </td>
                                 </tr>
                             @endforeach
@@ -177,6 +238,7 @@
                     <div id="content2" class="x_content" style="display: none;">
                         <form method="post" action="{{route('create.vacancies')}}" id="form-vacancy">
                             {{csrf_field()}}
+                            <input type="hidden" name="check_form" value="vacancy">
                             <input type="hidden" name="_method" id="method">
                             <div class="row form-group">
                                 <div class="col-lg-12">
@@ -346,6 +408,54 @@
             </div>
         </div>
     </div>
+    <div id="scheduleModal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
+                    </button>
+                    <h4 class="modal-title"><strong id="vacancy_title"></strong> &ndash; Vacancy Schedule</h4>
+                </div>
+                <form method="post" id="form-schedule">
+                    {{csrf_field()}} {{method_field('PUT')}}
+                    <input type="hidden" name="check_form" value="schedule">
+                    <input type="hidden" name="isPost" value="1">
+                    <div class="modal-body">
+                        <div class="row form-group">
+                            <div class="col-lg-12">
+                                <label>Recruitment Date <span class="required">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="fa fa-user"></i></span>
+                                    <input style="background-color: #fff;width: 50%" class="form-control" type="text"
+                                           maxlength="10" placeholder="yyyy-mm-dd" name="recruitmentDate_start"
+                                           id="recruitmentDate_start" required>
+                                    <input style="background-color: #fff;width:50%" class="form-control" type="text"
+                                           maxlength="10" placeholder="yyyy-mm-dd" name="recruitmentDate_end"
+                                           id="recruitmentDate_end" required>
+                                    <span class="input-group-addon"><i class="fa fa-users"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row form-group">
+                            <div class="col-lg-12">
+                                <label>Interview Date <span class="required">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="fa fa-comments"></i></span>
+                                    <input style="background-color: #fff" class="form-control" type="text"
+                                           maxlength="10" placeholder="yyyy-mm-dd" name="interview_date"
+                                           id="interview_date" required>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 @endsection
 @push("scripts")
     <script>
@@ -411,8 +521,73 @@
             });
 
             $("#method").val('PUT');
-            $("#form-vacancy").attr('action', '{{url('admin/vacancies')}}/' + id + '/update');
+            $("#form-vacancy").attr('action', '{{route('update.vacancies',['id'=> ''])}}/' + id);
             $("#btn_submit").html("<strong>SAVE CHANGES</strong>");
+        }
+
+        function postVacancy(id, judul, start, end, interview) {
+            var $start = $("#recruitmentDate_start"), $end = $("#recruitmentDate_end"),
+                $interview = $("#interview_date");
+
+            $("#vacancy_title").text(judul);
+            $("#form-schedule").attr('action', '{{route('update.vacancies',['id'=> ''])}}/' + id);
+
+            $start.val(start);
+            $end.val(end);
+            $interview.val(interview);
+
+            if (start == "") {
+                $start.datepicker({
+                    format: "yyyy-mm-dd", autoclose: true, todayHighlight: true, todayBtn: true, startDate: new Date()
+                }).on('changeDate', function (selected) {
+                    var minDate = new Date(selected.date.valueOf());
+                    $end.datepicker({
+                        format: "yyyy-mm-dd", autoclose: true, todayHighlight: true, todayBtn: true, startDate: minDate,
+                    }).on('changeDate', function (selected) {
+                        var minDate = new Date(selected.date.valueOf());
+                        $interview.datepicker({
+                            format: "yyyy-mm-dd",
+                            autoclose: true,
+                            todayHighlight: true,
+                            todayBtn: true,
+                            startDate: minDate
+                        });
+                    });
+                });
+
+            } else {
+                $start.datepicker({
+                    format: "yyyy-mm-dd", autoclose: true, todayHighlight: true, todayBtn: true, startDate: new Date(),
+                });
+                $end.datepicker({
+                    format: "yyyy-mm-dd", autoclose: true, todayHighlight: true, todayBtn: true, startDate: start,
+                });
+                $interview.datepicker({
+                    format: "yyyy-mm-dd", autoclose: true, todayHighlight: true, todayBtn: true, startDate: end
+                });
+            }
+
+            $("#scheduleModal").modal('show');
+        }
+
+        function deactivateVacancy(id, judul) {
+            swal({
+                title: 'Deactivate Vacancy - ' + judul,
+                text: 'The status of the vacancy will be change into "INACTIVE". Are you sure to deactivate it?',
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#fa5555',
+                confirmButtonText: 'Yes, deactivate it!',
+                showLoaderOnConfirm: true,
+
+                preConfirm: function () {
+                    return new Promise(function (resolve) {
+                        $("#form-deactivate" + id).attr("action", "{{route('update.vacancies',['id'=> ''])}}/" + id)[0].submit();
+                    });
+                },
+                allowOutsideClick: false
+            });
+            return false;
         }
 
         $("#form-vacancy").on("submit", function (e) {

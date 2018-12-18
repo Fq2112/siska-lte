@@ -5,7 +5,6 @@ use Faker\Factory;
 use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Agencies;
-use App\Models\Gallery;
 use App\Models\Experience;
 use App\Models\Education;
 use App\Models\Admin;
@@ -47,18 +46,6 @@ class UserSeeder extends Seeder
                 'lat' => $faker->latitude(-8, -6),
                 'long' => $faker->longitude(111, 113)
             ]);
-            Gallery::create([
-                'agency_id' => $agency->id,
-                'image' => 'c1.jpg',
-            ]);
-            Gallery::create([
-                'agency_id' => $agency->id,
-                'image' => 'c2.jpg',
-            ]);
-            Gallery::create([
-                'agency_id' => $agency->id,
-                'image' => 'c3.jpg',
-            ]);
 
             Vacancies::create([
                 'judul' => Factory::create()->jobTitle,
@@ -76,6 +63,7 @@ class UserSeeder extends Seeder
                 'degree_id' => rand(Degrees::min('id'), Degrees::max('id')),
                 'major_id' => rand(Majors::min('id'), Majors::max('id')),
                 'jobfunction_id' => rand(JobFunction::min('id'), JobFunction::max('id')),
+                'isPost' => true,
                 'recruitmentDate_start' => today(),
                 'recruitmentDate_end' => today()->addMonth(),
                 'interview_date' => today()->addMonth()->addWeek(),
@@ -96,6 +84,7 @@ class UserSeeder extends Seeder
                 'degree_id' => rand(Degrees::min('id'), Degrees::max('id')),
                 'major_id' => rand(Majors::min('id'), Majors::max('id')),
                 'jobfunction_id' => rand(JobFunction::min('id'), JobFunction::max('id')),
+                'isPost' => true,
                 'recruitmentDate_start' => today(),
                 'recruitmentDate_end' => today()->addMonth(),
                 'interview_date' => today()->addMonth()->addWeek(),

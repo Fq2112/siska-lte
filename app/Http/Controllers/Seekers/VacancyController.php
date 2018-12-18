@@ -18,6 +18,7 @@ class VacancyController extends Controller
     public function __construct()
     {
         $this->middleware('seeker')->except(['detailAgency', 'detailVacancy']);
+        $this->middleware('seeker.home')->only(['detailAgency', 'detailVacancy']);
     }
 
     public function detailAgency($id)
@@ -26,7 +27,7 @@ class VacancyController extends Controller
         $industry = $agency->getIndustry;
         $vacancies = Vacancies::where('agency_id', $agency->id)->orderByDesc('updated_at')->get();
 
-        return view('_admins.profile-agency', compact('agency', 'industry', 'vacancies'));
+        return view('_admins.detail-agency', compact('agency', 'industry', 'vacancies'));
     }
 
     public function detailVacancy($id)
@@ -38,13 +39,14 @@ class VacancyController extends Controller
         $salary = $vacancy->getSalary;
         $jobfunc = $vacancy->getJobFunction;
         $joblevel = $vacancy->getJobLevel;
+        $jobtype = $vacancy->getJobType;
         $industry = $vacancy->getIndustry;
-        $degrees = $vacancy->getDegree;
-        $majors = $vacancy->getMajor;
+        $degree = $vacancy->getDegree;
+        $major = $vacancy->getMajor;
         $applicants = Applications::where('vacancy_id', $vacancy->id)->where('isApply', true)->count();
 
-        return view('_agencies.detail-vacancy', compact('provinces', 'vacancy', 'agency',
-            'city', 'salary', 'jobfunc', 'joblevel', 'industry', 'degrees', 'majors', 'applicants'));
+        return view('_admins.detail-vacancy', compact('provinces', 'vacancy', 'agency',
+            'city', 'salary', 'jobfunc', 'joblevel', 'jobtype', 'industry', 'degree', 'major', 'applicants'));
     }
 
     public function bookmarkVacancy(Request $request)
