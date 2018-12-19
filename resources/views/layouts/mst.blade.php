@@ -216,7 +216,7 @@
             <div class="left_col scroll-view">
                 <div class="navbar nav_title" style="border: 0;">
                     <a href="{{route('home-seeker')}}" class="site_title">
-                        <i class="fa fa-university"></i> <span>{{env('APP_NAME')." ".$logo}}</span></a>
+                        <i class="fa fa-graduation-cap"></i> <span>{{env('APP_NAME')." ".$logo}}</span></a>
                 </div>
 
                 <div class="clearfix"></div>

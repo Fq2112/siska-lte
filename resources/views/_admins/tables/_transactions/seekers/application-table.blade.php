@@ -231,12 +231,12 @@
                         <div class="row form-group">
                             <div class="col-sm-4" id="action-btn">
                                 <div class="btn-group" style="float: right">
-                                    <button id="btn_send_app" type="button" class="btn btn-success btn-sm"
-                                            style="font-weight: 600" disabled>
-                                        <i class="fa fa-envelope"></i>&ensp;SEND
+                                    <button id="btn_pdf" type="button" class="btn btn-primary btn-sm"
+                                            style="font-weight: 600">
+                                        <i class="fa fa-file-pdf"></i>&ensp;PDF
                                     </button>
                                     <button id="btn_remove_app" type="button" class="btn btn-danger btn-sm"
-                                            style="font-weight: 600" disabled>
+                                            style="font-weight: 600">
                                         <i class="fa fa-trash"></i>&ensp;REMOVE
                                     </button>
                                 </div>
@@ -285,10 +285,8 @@
             $("#check-all").on("ifToggled", function () {
                 if ($(this).is(":checked")) {
                     $("#myDataTable tbody tr").addClass("selected").find('input[type=checkbox]').iCheck("check");
-                    $("#btn_send_app, #btn_remove_app").removeAttr("disabled");
                 } else {
                     $("#myDataTable tbody tr").removeClass("selected").find('input[type=checkbox]').iCheck("uncheck");
-                    $("#btn_send_app, #btn_remove_app").attr("disabled", "disabled");
                 }
             });
 
@@ -297,40 +295,51 @@
                 $(this).find('input[type=checkbox]').iCheck("toggle");
             });
 
-            $("#myDataTable tbody tr").find('input[type=checkbox]').on("ifToggled", function () {
-                var selected = table.rows('.selected').data().length;
-
-                if ($(this).is(":checked") || selected > 0) {
-                    $("#btn_send_app, #btn_remove_app").removeAttr("disabled");
-                } else {
-                    $("#btn_send_app, #btn_remove_app").attr("disabled", "disabled");
-                }
-            });
-
-            $('#btn_send_app').on("click", function () {
+            $('#btn_pdf').on("click", function () {
                 var ids = $.map(table.rows('.selected').data(), function (item) {
                     return item[1]
                 });
                 $("#applicant_ids").val(ids);
-                $("#form-application").attr("action", "{{route('table.applications.massSend')}}");
+                $("#form-application").attr("action", "{{route('table.applications.massPDF')}}");
 
-                swal({
-                    title: 'Send Applications',
-                    text: 'Are you sure to send this ' + ids.length + ' selected records to the Agency\'s email? ' +
-                        'You won\'t be able to revert this!',
-                    type: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#00adb5',
-                    confirmButtonText: 'Yes, send it!',
-                    showLoaderOnConfirm: true,
+                if (ids.length > 0) {
+                    swal({
+                        title: 'Generate PDF',
+                        text: 'Are you sure to generate this ' + ids.length + ' selected records into a pdf file? ' +
+                            'You won\'t be able to revert this!',
+                        type: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#00adb5',
+                        confirmButtonText: 'Yes, generate now!',
+                        showLoaderOnConfirm: true,
 
-                    preConfirm: function () {
-                        return new Promise(function (resolve) {
-                            $("#form-application")[0].submit();
-                        });
-                    },
-                    allowOutsideClick: false
-                });
+                        preConfirm: function () {
+                            return new Promise(function (resolve) {
+                                $.ajax({
+                                    type: "POST",
+                                    url: "{{route('table.applications.massPDF')}}",
+                                    data: new FormData($("#form-application")[0]),
+                                    contentType: false,
+                                    processData: false,
+                                    success: function (data) {
+                                        if (data == 0) {
+                                            swal("Error!", "Couldn't zip the file! Please try again.", "error");
+                                        } else {
+                                            swal("Success!", "Pdf file(s) is successfully generated and " +
+                                                "zipped into PDFs.zip file!", "success");
+                                        }
+                                    },
+                                    error: function () {
+                                        swal("Error!", "Something went wrong, please refresh the page.", "error");
+                                    }
+                                });
+                            });
+                        },
+                        allowOutsideClick: false
+                    });
+                } else {
+                    swal("Error!", "There's no any selected record!", "error");
+                }
                 return false;
             });
 
@@ -341,23 +350,27 @@
                 $("#applicant_ids").val(ids);
                 $("#form-application").attr("action", "{{route('table.applications.massDelete')}}");
 
-                swal({
-                    title: 'Remove Applications',
-                    text: 'Are you sure to remove this ' + ids.length + ' selected records? ' +
-                        'You won\'t be able to revert this!',
-                    type: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#fa5555',
-                    confirmButtonText: 'Yes, delete it!',
-                    showLoaderOnConfirm: true,
+                if (ids.length > 0) {
+                    swal({
+                        title: 'Remove Applications',
+                        text: 'Are you sure to remove this ' + ids.length + ' selected records? ' +
+                            'You won\'t be able to revert this!',
+                        type: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#fa5555',
+                        confirmButtonText: 'Yes, delete it!',
+                        showLoaderOnConfirm: true,
 
-                    preConfirm: function () {
-                        return new Promise(function (resolve) {
-                            $("#form-application")[0].submit();
-                        });
-                    },
-                    allowOutsideClick: false
-                });
+                        preConfirm: function () {
+                            return new Promise(function (resolve) {
+                                $("#form-application")[0].submit();
+                            });
+                        },
+                        allowOutsideClick: false
+                    });
+                } else {
+                    swal("Error!", "There's no any selected record!", "error");
+                }
                 return false;
             });
         });

@@ -435,8 +435,8 @@ Route::group(['namespace' => 'Admins', 'prefix' => 'admin', 'middleware' => 'adm
                     ]);
 
                     Route::post('send', [
-                        'uses' => 'TransactionSeekerController@massSendApplications',
-                        'as' => 'table.applications.massSend'
+                        'uses' => 'TransactionSeekerController@massGeneratePDF',
+                        'as' => 'table.applications.massPDF'
                     ]);
 
                     Route::post('delete', [

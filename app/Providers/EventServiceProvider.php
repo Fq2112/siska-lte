@@ -13,8 +13,8 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
-        'App\Events\Agencies\ApplicantList' => [
-            'App\Listeners\Agencies\SendApplicantList',
+        'App\Events\Event' => [
+            'App\Listeners\EventListener',
         ],
     ];
 

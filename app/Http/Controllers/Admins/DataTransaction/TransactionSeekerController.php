@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Admins\DataTransaction;
 
+use ZipArchive;
 use App\Models\Applications;
-use App\Events\Agencies\ApplicantList;
 use App\Models\Vacancies;
 use Barryvdh\DomPDF\Facade as PDF;
 use Carbon\Carbon;
@@ -27,15 +27,17 @@ class TransactionSeekerController extends Controller
             'applications', 'findVac'));
     }
 
-    public function massSendApplications(Request $request)
+    public function massGeneratePDF(Request $request)
     {
         $ids = explode(",", $request->applicant_ids);
         $vacancies = Vacancies::whereHas('getApplication', function ($acc) use ($ids) {
             $acc->whereIn('id', $ids);
         })->get();
 
+        $files = [];
+        $i = 0;
         foreach ($vacancies as $vacancy) {
-            $applicants = Applications::where('vacancy_id', $vacancy->id)->where('isApply', true)->toArray();
+            $applicants = Applications::where('vacancy_id', $vacancy->id)->where('isApply', true)->get()->toArray();
             $date = Carbon::parse($vacancy->recruitmentDate_start)->format('dmy') . '-' .
                 Carbon::parse($vacancy->recruitmentDate_end)->format('dmy');
 
@@ -43,10 +45,26 @@ class TransactionSeekerController extends Controller
             $pdf = PDF::loadView('reports.applicantList-pdf', compact('applicants', 'vacancy'));
             Storage::put('public/admins/agencies/reports/applications/' . $filename, $pdf->output());
 
-            event(new ApplicantList($vacancy, $vacancy->getAgency->email, $filename));
+            $files[$i] = $filename;
+            $i = $i + 1;
         }
 
-        return back()->with('success', '' . count($ids) . ' application(s) is successfully sent to their email!');
+        $public_dir = public_path();
+        $zipFileName = 'PDFs.zip';
+        $zip = new ZipArchive;
+        if ($zip->open($public_dir . '/' . $zipFileName, ZipArchive::CREATE) === TRUE) {
+            foreach ($files as $file) {
+                $zip->addFile(public_path('storage/admins/agencies/reports/applications/' . $file), $file);
+            }
+            $zip->close();
+        }
+        $headers = array('Content-Type' => 'application/octet-stream');
+        $filetopath = $public_dir . '/' . $zipFileName;
+        if (!file_exists($filetopath)) {
+            return 0;
+        } else {
+            return response()->download($filetopath, $zipFileName, $headers)->deleteFileAfterSend(true);
+        }
     }
 
     public function massDeleteApplications(Request $request)
