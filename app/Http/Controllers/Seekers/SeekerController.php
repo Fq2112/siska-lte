@@ -31,9 +31,9 @@ class SeekerController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('seeker')->except(['index', 'showProfile', 'downloadSeekerAttachments']);
+        $this->middleware('seeker')->except(['index', 'detailSeeker', 'downloadSeekerAttachments']);
         $this->middleware('seeker.home')->only('index');
-        $this->middleware('seeker.profile')->only('showProfile');
+        $this->middleware('seeker.profile')->only('detailSeeker');
         $this->middleware('admin')->only('downloadSeekerAttachments');
     }
 
@@ -76,20 +76,16 @@ class SeekerController extends Controller
 
     public function showDashboard()
     {
-        $provinces = Provinces::all();
         $user = Auth::user();
-
         $job_title = Experience::where('user_id', $user->id)->where('end_date', null)
             ->orderby('id', 'desc')->take(1);
-
         $last_edu = Education::where('user_id', $user->id)->wherenotnull('end_period')
             ->orderby('degree_id', 'desc')->take(1);
 
-        return view('auth.seekers.dashboard', compact('user', 'provinces', 'seeker', 'job_title',
-            'last_edu'));
+        return view('_seekers.dashboard-application', compact('user', 'job_title', 'last_edu'));
     }
 
-    public function getAccVacancies(Request $request)
+    public function getAppVacancies(Request $request)
     {
         $start = $request->start_date;
         $end = $request->end_date;
@@ -97,7 +93,7 @@ class SeekerController extends Controller
         $result = Applications::where('user_id', $request->user_id)->whereBetween('created_at', [$start, $end])
             ->where('isApply', true)->orderByDesc('id')->paginate(6)->toArray();
 
-        $result = $this->array_applications($result);
+        $result = $this->array_appsBooks($result);
 
         return $result;
     }
@@ -115,9 +111,9 @@ class SeekerController extends Controller
         $acc = Applications::where('vacancy_id', $vacancy['id'])->where('isApply', true);
         $totalApp = array('total_app' => $acc->count());
 
-        $cities = substr(Cities::find($vacancy['cities_id'])->name, 0, 2) == "Ko" ?
-            substr(Cities::find($vacancy['cities_id'])->name, 5) :
-            substr(Cities::find($vacancy['cities_id'])->name, 10);
+        $cities = substr(Cities::find($vacancy['city_id'])->name, 0, 2) == "Ko" ?
+            substr(Cities::find($vacancy['city_id'])->name, 5) :
+            substr(Cities::find($vacancy['city_id'])->name, 10);
 
         $filename = $agency->ava == "agency.png" || $agency->ava == "" ? asset('images/agency.png') :
             asset('storage/admins/agencies/ava/' . $agency->ava);
@@ -167,18 +163,12 @@ class SeekerController extends Controller
     public function showBookmark()
     {
         $user = Auth::user();
-        $provinces = Provinces::all();
-
         $job_title = Experience::where('user_id', $user->id)->where('end_date', null)
             ->orderby('id', 'desc')->take(1);
-
         $last_edu = Education::where('user_id', $user->id)->wherenotnull('end_period')
             ->orderby('degree_id', 'desc')->take(1);
 
-        $bookmark = Applications::where('user_id', $user->id)->where('isBookmark', true)->paginate(5);
-
-        return view('auth.seekers.dashboard-bookmarked', compact('user', 'provinces',
-            'job_title', 'last_edu', 'bookmark'));
+        return view('_seekers.dashboard-bookmarked', compact('user', 'job_title', 'last_edu'));
     }
 
     public function getBookmarkedVacancies(Request $request)
@@ -189,26 +179,27 @@ class SeekerController extends Controller
         $result = Applications::where('user_id', $request->user_id)->whereBetween('created_at', [$start, $end])
             ->where('isBookmark', true)->orderByDesc('id')->paginate(6)->toArray();
 
-        $result = $this->array_applications($result);
+        $result = $this->array_appsBooks($result);
 
         return $result;
     }
 
-    private function array_applications($result)
+    private function array_appsBooks($result)
     {
         $i = 0;
         foreach ($result['data'] as $row) {
             $vacancy = Vacancies::find($row['vacancy_id']);
 
-            $cities = substr(Cities::find($vacancy->cities_id)->name, 0, 2) == "Ko" ?
-                substr(Cities::find($vacancy->cities_id)->name, 5) :
-                substr(Cities::find($vacancy->cities_id)->name, 10);
+            $cities = substr(Cities::find($vacancy->city_id)->name, 0, 2) == "Ko" ?
+                substr(Cities::find($vacancy->city_id)->name, 5) :
+                substr(Cities::find($vacancy->city_id)->name, 10);
 
             $agency = $vacancy->getAgency;
             $filename = $agency->ava == "agency.png" || $agency->ava == "" ?
                 asset('images/agency.png') : asset('storage/admins/agencies/ava/' . $agency->ava);
 
             $judul['vacancy'] = array('id' => $vacancy->id, 'judul' => $vacancy->judul, 'city' => $cities,
+                'pengalaman' => filter_var($vacancy->pengalaman, FILTER_SANITIZE_NUMBER_INT),
                 'degrees' => Degrees::findOrFail($vacancy->degree_id)->name,
                 'majors' => Majors::findOrFail($vacancy->major_id)->name,
                 'job_func' => JobFunction::findOrFail($vacancy->jobfunction_id)->name,
@@ -222,19 +213,13 @@ class SeekerController extends Controller
                     Carbon::parse($vacancy->recruitmentDate_start)->format('j F Y'),
                 'recruitmentDate_end' => is_null($vacancy->recruitmentDate_end) ? '-' :
                     Carbon::parse($vacancy->recruitmentDate_end)->format('j F Y'),
-                'quizDate' => is_null($vacancy->quizDate_start) || is_null($vacancy->quizDate_end) ? '-' :
-                    Carbon::parse($vacancy->quizDate_start)->format('j F Y') . ' - ' .
-                    Carbon::parse($vacancy->quizDate_end)->format('j F Y'),
-                'psychoTestDate' => is_null($vacancy->psychoTestDate_start) || is_null($vacancy->psychoTestDate_end) ?
-                    '-' : Carbon::parse($vacancy->psychoTestDate_start)->format('j F Y') . ' - ' .
-                    Carbon::parse($vacancy->psychoTestDate_end)->format('j F Y'),
                 'total_app' => Applications::where('vacancy_id', $vacancy->id)->where('isApply', true)->count(),
                 'checkDate_end' => is_null($vacancy->recruitmentDate_end) ? '-' : $vacancy->recruitmentDate_end,
                 'created_at' => Carbon::parse($vacancy->created_at)->format('j F Y'),
                 'updated_at' => Carbon::parse($vacancy->updated_at)->diffForHumans()
             );
 
-            $ava['user'] = array('ava' => $filename, 'name' => $agency->name, 'id' => $vacancy->agency_id);
+            $ava['user'] = array('ava' => $filename, 'name' => $agency->company, 'id' => $vacancy->agency_id);
 
             $created_at = array('created_at' => Carbon::parse($row['created_at'])->format('j F Y'));
             $update_at = array('updated_at' => Carbon::parse($row['updated_at'])->diffForHumans());

@@ -468,6 +468,7 @@
             @endauth
         });
         $btnApply.on("click", function () {
+            @auth
             $("#applyModal").modal('show');
             $("#btn-apply button").on("click", function () {
                 $.get("{{route('get.vacancy.requirement',['id' => $vacancy->id])}}", function (data) {
@@ -497,6 +498,7 @@
                     }
                 });
             });
+            @endauth
         });
 
         $(document).on('show.bs.modal', '.modal', function (event) {

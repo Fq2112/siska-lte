@@ -69,8 +69,8 @@ Route::group(['prefix' => '/', 'namespace' => 'Seekers'], function () {
         ]);
 
         Route::get('application_status/vacancies', [
-            'uses' => 'SeekerController@getAccVacancies',
-            'as' => 'get.acc.vacancies'
+            'uses' => 'SeekerController@getAppVacancies',
+            'as' => 'get.app.vacancies'
         ]);
 
         Route::get('application_status/compare/{id}', [

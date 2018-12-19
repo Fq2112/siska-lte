@@ -160,6 +160,14 @@
         .btn-link {
             color: #35495d;
         }
+
+        .myDateRangePicker {
+            cursor: pointer;
+            padding: 5px 10px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+            color: #5a738e;
+        }
     </style>
 </head>
 
