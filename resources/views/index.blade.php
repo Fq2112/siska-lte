@@ -85,11 +85,12 @@
                         <label for="remember">Keep me sign in</label>
                     </div>
                     <div class="col-lg-8">
-                        <div class="g-recaptcha" data-sitekey="{{env('reCAPTCHA_v2_SITEKEY')}}"></div>
+                        <div class="g-recaptcha" data-sitekey="{{env('reCAPTCHA_v2_SITEKEY')}}"
+                             data-callback="enable_btn" data-expiry-callback="disabled_btn"></div>
                     </div>
                 </div>
                 <div class="row">
-                    <button type="submit" class="btn btn-signin btn-block">SIGN IN</button>
+                    <button type="submit" class="btn btn-signin btn-block" disabled>SIGN IN</button>
                 </div>
                 @if(session('error'))
                     <strong>{{ $errors->first('password') }}</strong>
@@ -278,6 +279,14 @@
             $("#reg_errorAlert").html('');
         }
     });
+
+    function enable_btn() {
+        $(".btn-signin").removeAttr('disabled')
+    }
+
+    function disable_btn() {
+        $(".btn-signin").attr('disabled', 'disabled')
+    }
 
     (function () {
         particlesJS('particles-js', {

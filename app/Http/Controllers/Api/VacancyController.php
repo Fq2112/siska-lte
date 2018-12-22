@@ -12,14 +12,34 @@ use App\Models\Salaries;
 use App\Models\Degrees;
 use App\Models\Majors;
 use App\Models\Vacancies;
+use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Carbon;
 
-class SearchVacancyController extends Controller
+class VacancyController extends Controller
 {
+    protected $key, $secret;
+
+    public function __construct()
+    {
+        $this->key = env('SISKA_API_KEY');
+        $this->secret = env('SISKA_API_SECRET');
+    }
+
     public function getSearchResult(Request $request)
     {
+        $client = new Client([
+            'base_uri' => 'http://localhost:8000',
+            'defaults' => [
+                'exceptions' => false
+            ]
+        ]);
+
+        $response = $client->get('http://localhost:8000/api/partners/vacancies?key=' . $this->key .
+            '&secret=' . $this->secret . '&q=' . $request->q . '&loc=' . $request->loc);
+        $data = json_decode($response->getBody(), true);
+
         $input = $request->all();
 
         if ($request->has(['q']) || $request->has(['loc'])) {
@@ -30,14 +50,33 @@ class SearchVacancyController extends Controller
             $agency = Agencies::where('company', 'like', '%' . $keyword . '%')->get()->pluck('id')->toArray();
 
             $result = Vacancies::where('judul', 'like', '%' . $keyword . '%')->whereIn('city_id', $city)
-                ->orwhereIn('agency_id', $agency)->whereIn('city_id', $city)->where('isPost', true)
-                ->paginate(12)->appends($request->only(['q', 'loc']))->toArray();
+                ->orwhereIn('agency_id', $agency)->whereIn('city_id', $city)->where('isPost', true)->get()->toArray();
 
         } else {
-            $result = Vacancies::where('isPost', true)->paginate(12)->toArray();
+            $result = Vacancies::where('isPost', true)->get()->toArray();
         }
+        $result = array_merge($data, $result);
+        return $result;
+
         $result = $this->array_vacancies($result);
         return $result;
+    }
+
+    private function setPaginate($arr, $row, $delimiter)
+    {
+        $limit = ceil(count($arr) / $row);
+        $toward = $row * $delimiter;
+        $from = $toward - $row;
+        if ($limit >= $delimiter) {
+            return response()->json([
+                'max_page' => $limit,
+                'current_page' => $delimiter,
+                'data' => array_slice($arr, $from, $row),
+                'quantity_list' => count($arr)
+            ]);
+        } else {
+            return response()->json(['msg' => 'Halaman Kosong'], 403);
+        }
     }
 
     public function array_vacancies($result)

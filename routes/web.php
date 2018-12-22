@@ -434,7 +434,7 @@ Route::group(['namespace' => 'Admins', 'prefix' => 'admin', 'middleware' => 'adm
                         'as' => 'table.applications'
                     ]);
 
-                    Route::post('send', [
+                    Route::post('pdf', [
                         'uses' => 'TransactionSeekerController@massGeneratePDF',
                         'as' => 'table.applications.massPDF'
                     ]);
