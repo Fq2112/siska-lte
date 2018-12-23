@@ -38,9 +38,10 @@ class VacancyController extends Controller
 
         $response = $client->get('http://localhost:8000/api/partners/vacancies?key=' . $this->key .
             '&secret=' . $this->secret . '&q=' . $request->q . '&loc=' . $request->loc);
-        $data = json_decode($response->getBody(), true);
 
-        $input = $request->all();
+        return json_decode($response->getBody(), true);
+
+        /*$input = $request->all();
 
         if ($request->has(['q']) || $request->has(['loc'])) {
             $keyword = $input['q'];
@@ -55,28 +56,9 @@ class VacancyController extends Controller
         } else {
             $result = Vacancies::where('isPost', true)->get()->toArray();
         }
-        $result = array_merge($data, $result);
-        return $result;
 
         $result = $this->array_vacancies($result);
-        return $result;
-    }
-
-    private function setPaginate($arr, $row, $delimiter)
-    {
-        $limit = ceil(count($arr) / $row);
-        $toward = $row * $delimiter;
-        $from = $toward - $row;
-        if ($limit >= $delimiter) {
-            return response()->json([
-                'max_page' => $limit,
-                'current_page' => $delimiter,
-                'data' => array_slice($arr, $from, $row),
-                'quantity_list' => count($arr)
-            ]);
-        } else {
-            return response()->json(['msg' => 'Halaman Kosong'], 403);
-        }
+        return $result;*/
     }
 
     public function array_vacancies($result)
