@@ -21,7 +21,7 @@
     <!-- Custom Theme Style -->
     <link href="{{asset('css/custom.css')}}" rel="stylesheet">
     <link href="{{asset('css/signIn-Up.css')}}" rel="stylesheet">
-    <script src='https://www.google.com/recaptcha/api.js'></script>
+    <script src='https://www.google.com/recaptcha/api.js?onload=recaptchaCallback&render=explicit' async defer></script>
 </head>
 
 <body>
@@ -84,13 +84,10 @@
                         <input type="checkbox" id="remember" name="remember" {{ old('remember') ? 'checked' : '' }}>
                         <label for="remember">Keep me sign in</label>
                     </div>
-                    <div class="col-lg-8">
-                        <div class="g-recaptcha" data-sitekey="{{env('reCAPTCHA_v2_SITEKEY')}}"
-                             data-callback="enable_btn" data-expiry-callback="disabled_btn"></div>
-                    </div>
+                    <div class="col-lg-8" id="recaptcha-login"></div>
                 </div>
                 <div class="row">
-                    <button type="submit" class="btn btn-signin btn-block" disabled>SIGN IN</button>
+                    <button id="btn_login" type="submit" class="btn btn-signin btn-block" disabled>SIGN IN</button>
                 </div>
                 @if(session('error'))
                     <strong>{{ $errors->first('password') }}</strong>
@@ -164,7 +161,10 @@
                            name="password_confirmation" minlength="6" required>
                 </div>
                 <div class="row">
-                    <button type="submit" class="btn btn-signup btn-block">CREATE ACCOUNT</button>
+                    <div class="col-lg-6" id="recaptcha-register"></div>
+                    <div class="col-lg-6">
+                        <button id="btn_register" type="submit" class="btn btn-signup" disabled>CREATE ACCOUNT</button>
+                    </div>
                 </div>
                 <a href="javascript:void(0)" class="btn-login btn-fade">Already have an account? Sign In
                     <i class="fa fa-long-arrow-right" aria-hidden="true"></i></a>
@@ -240,20 +240,50 @@
         }
     });
 
-    $('#form-login').on("submit", function (event) {
-        var verified = grecaptcha.getResponse();
-        if (verified.length === 0) {
-            event.preventDefault();
-            swal({
-                title: 'ATTENTION!',
-                text: 'Please confirm us that you are not a robot, with clicking in the reCAPTCHA dialog-box.',
-                type: 'warning',
-                timer: '3500'
-            });
+    var recaptcha_login, recaptcha_register, recaptchaCallback = function () {
+        recaptcha_login = grecaptcha.render(document.getElementById('recaptcha-login'), {
+            'sitekey': '{{env('reCAPTCHA_v2_SITEKEY')}}',
+            'callback': 'enable_btnLogin',
+            'expired-callback': 'disabled_btnLogin'
+        });
+        recaptcha_register = grecaptcha.render(document.getElementById('recaptcha-register'), {
+            'sitekey': '{{env('reCAPTCHA_v2_SITEKEY')}}',
+            'callback': 'enable_btnRegister',
+            'expired-callback': 'disabled_btnRegister'
+        });
+    };
+
+    function enable_btnLogin() {
+        $("#btn_login").removeAttr('disabled');
+    }
+
+    function disabled_btnLogin() {
+        $("#btn_login").attr('disabled', 'disabled');
+    }
+
+    function enable_btnRegister() {
+        $("#btn_register").removeAttr('disabled');
+    }
+
+    function disabled_btnRegister() {
+        $("#btn_register").attr('disabled', 'disabled');
+    }
+
+    $("#form-login").on("submit", function (e) {
+        if (grecaptcha.getResponse(recaptcha_login).length === 0) {
+            e.preventDefault();
+            swal('ATTENTION!', 'Please confirm us that you\'re not a robot by clicking in ' +
+                'the reCAPTCHA dialog-box.', 'warning');
         }
     });
 
     $("#form-register").on("submit", function (e) {
+        if (grecaptcha.getResponse(recaptcha_register).length === 0) {
+            e.preventDefault();
+            swal('ATTENTION!', 'Please confirm us that you\'re not a robot by clicking in ' +
+                'the reCAPTCHA dialog-box.', 'warning');
+        }
+
         if ($.trim($("#reg_email,#reg_name,#reg_password,#reg_password_confirm").val()) === "") {
             return false;
 
@@ -279,14 +309,6 @@
             $("#reg_errorAlert").html('');
         }
     });
-
-    function enable_btn() {
-        $(".btn-signin").removeAttr('disabled')
-    }
-
-    function disable_btn() {
-        $(".btn-signin").attr('disabled', 'disabled')
-    }
 
     (function () {
         particlesJS('particles-js', {

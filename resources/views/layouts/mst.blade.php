@@ -174,10 +174,10 @@
 <body class="nav-md">
 @php
     $auth = Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::user();
+    $notifications = 0;
 
     if(Auth::guard('admin')->check()){
         $logo = 'Admins';
-
         if($auth->ava == "" || $auth->ava == "avatar.png"){
             $ava = asset('images/avatar.png');
             $bg = 'bg-red';
@@ -187,6 +187,12 @@
             $bg = 'bg-green';
             $label = '100%';
         }
+
+        $applications = \App\Models\Vacancies::whereHas('getApplication', function ($acc){
+            $acc->where('isApply', true);
+        })->whereDate('recruitmentDate_end', today())->get();
+
+        $notifications = count($applications);
 
     } else {
        if(Auth::check()){
@@ -203,12 +209,6 @@
             }
        }
     }
-
-    $applications = \App\Models\Vacancies::whereHas('getApplication', function ($acc){
-        $acc->where('isApply', true);
-    })->whereDate('recruitmentDate_end', today())->get();
-
-    $notifications = count($applications);
 @endphp
 <div class="container body">
     <div class="main_container">
@@ -315,36 +315,37 @@
                             </a>
                             <ul id="menu2" class="dropdown-menu list-unstyled msg_list" role="menu">
                                 @if($notifications > 0)
-                                    @if(count($applications) > 0)
-                                        <li style="padding: 0">
-                                            <a style="text-decoration: none;cursor: text">
-                                                <span><i class="fa fa-paper-plane"></i>
+                                    @auth('admin')
+                                        @if(count($applications) > 0)
+                                            <li style="padding: 0">
+                                                <a style="text-decoration: none;cursor: text"><span><i
+                                                                class="fa fa-paper-plane"></i>
                                                     <strong style="margin-left: 5px;text-transform: uppercase">Job Applications</strong></span>
-                                            </a>
-                                        </li>
-                                        @foreach($applications as $vacancy)
-                                            <li>
-                                                <a href="{{route('table.applications').'?q='.$vacancy->judul}}">
+                                                </a>
+                                            </li>
+                                            @foreach($applications as $vacancy)
+                                                <li>
+                                                    <a href="{{route('table.applications').'?q='.$vacancy->judul}}">
                                                     <span class="image">
                                                         <img src="{{$vacancy->getAgency->ava == "" ||
                                                         $vacancy->getAgency->ava == "agency.png" ?
                                                         asset('images/agency.png') : asset('storage/admins/agencies/ava/'.
                                                         $vacancy->getAgency->ava)}}">
                                                     </span>
-                                                    <span>
+                                                        <span>
                                                         <span>{{$vacancy->judul}}</span>
                                                     </span>
-                                                    <span class="message">
-                                                        Make sure the application list for this vacancy are sent today
-                                                        to <strong>{{$vacancy->getAgency->company}}</strong>!
-                                                        <span style="color: #fa5555">#This message only appears today.</span>
-                                                    </span>
-                                                </a>
-                                            </li>
-                                        @endforeach
-                                        <li class="divider"
-                                            style="margin: 0 6px;padding: 3px;background: none;border-bottom: 2px solid #d8d8d845;"></li>
-                                    @endif
+                                                        <span class="message">Make sure the application list for this
+                                                            vacancy are generated to pdf!
+                                                            <span style="color: #fa5555">#This message only appears today.</span>
+                                                        </span>
+                                                    </a>
+                                                </li>
+                                            @endforeach
+                                            <li class="divider"
+                                                style="margin: 0 6px;padding: 3px;background: none;border-bottom: 2px solid #d8d8d845;"></li>
+                                        @endif
+                                    @endauth
                                 @else
                                     <li>
                                         <a style="text-decoration: none;cursor: text">

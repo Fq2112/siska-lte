@@ -79,4 +79,9 @@ class AdminController extends Controller
         }
     }
 
+    public function showSynchronize()
+    {
+        return view('_admins.synchronize', compact('vacancies'));
+    }
+
 }

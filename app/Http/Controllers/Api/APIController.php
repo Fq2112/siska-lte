@@ -12,36 +12,60 @@ use App\Models\Salaries;
 use App\Models\Degrees;
 use App\Models\Majors;
 use App\Models\Vacancies;
+use Illuminate\Support\Carbon;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Carbon;
 
-class VacancyController extends Controller
+class APIController extends Controller
 {
-    protected $key, $secret;
+    protected $key, $secret, $client, $uri;
 
     public function __construct()
     {
         $this->key = env('SISKA_API_KEY');
         $this->secret = env('SISKA_API_SECRET');
-    }
+        $this->uri = 'http://localhost:8000';
 
-    public function getSearchResult(Request $request)
-    {
-        $client = new Client([
-            'base_uri' => 'http://localhost:8000',
+        $this->client = new Client([
+            'base_uri' => $this->uri,
             'defaults' => [
                 'exceptions' => false
             ]
         ]);
+    }
 
-        $response = $client->get('http://localhost:8000/api/partners/vacancies?key=' . $this->key .
-            '&secret=' . $this->secret . '&q=' . $request->q . '&loc=' . $request->loc);
+    public function getCredentials()
+    {
+        $response = $this->client->get($this->uri . '/api/partners?key=' . $this->key . '&secret=' . $this->secret);
 
         return json_decode($response->getBody(), true);
+    }
 
-        /*$input = $request->all();
+
+    public function syncVacancies()
+    {
+        $vacancies = Vacancies::where('isPost', true)->get()->toArray();
+
+        $response = $this->client->post($this->uri . '/api/partners/vacancies/sync', [
+            'form_params' => [
+                'key' => $this->key,
+                'secret' => $this->secret,
+                'vacancies' => $vacancies,
+            ]
+        ]);
+
+        return $response->getBody()->getContents();
+    }
+
+    public function getSearchResult(Request $request)
+    {
+        /*$response = $this->client->get($this->uri . '/api/partners/vacancies?key=' . $this->key .
+            '&secret=' . $this->secret . '&q=' . $request->q . '&loc=' . $request->loc);
+
+        return json_decode($response->getBody(), true);*/
+
+        $input = $request->all();
 
         if ($request->has(['q']) || $request->has(['loc'])) {
             $keyword = $input['q'];
@@ -51,18 +75,13 @@ class VacancyController extends Controller
             $agency = Agencies::where('company', 'like', '%' . $keyword . '%')->get()->pluck('id')->toArray();
 
             $result = Vacancies::where('judul', 'like', '%' . $keyword . '%')->whereIn('city_id', $city)
-                ->orwhereIn('agency_id', $agency)->whereIn('city_id', $city)->where('isPost', true)->get()->toArray();
+                ->orwhereIn('agency_id', $agency)->whereIn('city_id', $city)->where('isPost', true)
+                ->paginate(12)->toArray();
 
         } else {
-            $result = Vacancies::where('isPost', true)->get()->toArray();
+            $result = Vacancies::where('isPost', true)->paginate(12)->toArray();
         }
 
-        $result = $this->array_vacancies($result);
-        return $result;*/
-    }
-
-    public function array_vacancies($result)
-    {
         $i = 0;
         foreach ($result['data'] as $row) {
             $cities = substr(Cities::find($row['city_id'])->name, 0, 2) == "Ko" ?
@@ -82,7 +101,7 @@ class VacancyController extends Controller
             $jobtype = array('job_type' => JobType::findOrFail($row['jobtype_id'])->name);
             $joblevel = array('job_level' => JobLevel::findOrFail($row['joblevel_id'])->name);
             $salary = array('salary' => Salaries::findOrFail($row['salary_id'])->name);
-            $ava['agency'] = array('ava' => $filename, 'company' => $agency->company);
+            $ava['user'] = array('ava' => $filename, 'name' => $agency->company);
             $update_at = array('updated_at' => Carbon::createFromFormat('Y-m-d H:i:s', $row['updated_at'])
                 ->diffForHumans());
 

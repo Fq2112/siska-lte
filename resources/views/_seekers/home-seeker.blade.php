@@ -57,14 +57,13 @@
                                                         @foreach($province->getCity as $city)
                                                             <li data-value="{{$city->id}}"
                                                                 data-id="{{$province->id}}">
-                                                                <a style="font-size: 15px;cursor: pointer;">{{substr($city->name, 0, 2)=="Ko" ?
-                                                    substr($city->name,5) : substr($city->name,10)}}</a>
+                                                                <a style="font-size: 15px;cursor: pointer;">{{substr($city->name, 0, 2) == "Ko" ?
+                                                                substr($city->name,5) : substr($city->name,10)}}</a>
                                                             </li>
                                                         @endforeach
                                                         <li class="province{{$province->id}} divider"></li>
                                                     @endforeach
-                                                    <li class="not_found dropdown-header"
-                                                        style="display: none;">
+                                                    <li class="not_found dropdown-header" style="display: none;">
                                                         <strong>&nbsp;</strong></li>
                                                 </ul>
                                             </div>
@@ -76,15 +75,15 @@
                                             <input type="hidden" name="loc" id="txt_location"
                                                    value="{{!empty($location) ? $location : ''}}">
                                             <span class="input-group-btn">
-                                                        <button type="reset" class="btn btn-info btn-lg" id="btn_reset">
-                                                            <span class="glyphicon glyphicon-remove">
-                                                                <span class="sr-only">Close</span>
-                                                            </span>
-                                                        </button>
-                                                        <button id="cari" class="btn btn-info btn-lg" type="submit">
-                                                            <i class="glyphicon glyphicon-search"></i>
-                                                        </button>
+                                                <button type="reset" class="btn btn-info btn-lg" id="btn_reset">
+                                                    <span class="glyphicon glyphicon-remove">
+                                                        <span class="sr-only">Close</span>
                                                     </span>
+                                                </button>
+                                                <button id="cari" class="btn btn-info btn-lg" type="submit">
+                                                    <i class="glyphicon glyphicon-search"></i>
+                                                </button>
+                                            </span>
                                         </div>
                                     </div>
                                 </form>
@@ -134,7 +133,10 @@
         });
 
         $("#list-lokasi li a").on("click", function () {
-            $("#txt_location").val($(this).text());
+            var location = $(this).text();
+            $('#lokasi').html(location + '&nbsp;<span class="fa fa-caret-down">' + '</span>');
+            $("#btn_reset").show();
+            $("#txt_location").val(location);
             loadVacancy();
         });
 
@@ -274,22 +276,20 @@
 
             $result = '';
             $.each(data.data, function (i, val) {
-                if (val.pengalaman > 1) {
-                    $pengalaman = 'At least ' + val.pengalaman + ' years';
-                } else {
-                    $pengalaman = 'At least ' + val.pengalaman + ' year';
-                }
+                $pengalaman = val.pengalaman > 1 ? 'At least ' + val.pengalaman + ' years' :
+                    'At least ' + val.pengalaman + ' year';
+
                 $result +=
                     '<article class="download-card">' +
                     '<a href="{{route('agency.profile',['id' => ''])}}/' + val.agency_id + '">' +
-                    '<div class="download-card__icon-box"><img src="' + val.agency.ava + '"></div></a>' +
+                    '<div class="download-card__icon-box"><img src="' + val.user.ava + '"></div></a>' +
                     '<div class="download-card__content-box">' +
                     '<div class="content">' +
                     '<h2 class="download-card__content-box__catagory">' + val.updated_at + '</h2>' +
                     '<a href="{{route('detail.vacancy',['id' => ''])}}/' + val.id + '">' +
                     '<h3 class="download-card__content-box__title">' + val.judul + '</h3></a>' +
                     '<a href="{{route('agency.profile',['id' => ''])}}/' + val.agency_id + '">' +
-                    '<p class="download-card__content-box__description">' + val.agency.company + '</p></a>' +
+                    '<p class="download-card__content-box__description">' + val.user.name + '</p></a>' +
                     '<table style="font-size: 14px"><tbody>' +
                     '<tr><td><i class="fa fa-industry"></i></td>' +
                     '<td>&nbsp;</td>' +

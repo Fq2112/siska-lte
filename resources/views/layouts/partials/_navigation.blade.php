@@ -70,4 +70,5 @@
             </li>
         </ul>
     </li>
+    <li><a href="{{route('show.synchronize')}}"><i class="fa fa-sync"></i> Synchronize</a></li>
 @endauth
