@@ -121,7 +121,7 @@
                                     <form method="post" action="{{route('bookmark.vacancy')}}" id="form-bookmark">
                                         {{csrf_field()}}
                                         <div class="anim-icon anim-icon-md bookmark ld ld-breath"
-                                             style="margin-left: 1em;margin-right: 6px">
+                                             style="margin-right: 6px">
                                             <input type="hidden" name="vacancy_id" value="{{$vacancy->id}}">
                                             <input type="checkbox" id="bookmark" {{$vacancy->isPost == false ?
                                             'disabled' : ''}}>
@@ -147,9 +147,9 @@
                                     <td>&nbsp;</td>
                                     <td>
                                         <span>{{$vacancy->recruitmentDate_start && $vacancy->recruitmentDate_end != "" ?
-                                        \Carbon\Carbon::parse($vacancy->recruitmentDate_start)->format('j F Y').
-                                        " - ".\Carbon\Carbon::parse($vacancy->recruitmentDate_end)
-                                        ->format('j F Y') : '-'}}</span>
+                                        \Carbon\Carbon::parse($vacancy->recruitmentDate_start)
+                                        ->formatLocalized('%d %b %Y'). " - ".\Carbon\Carbon::parse
+                                        ($vacancy->recruitmentDate_end)->formatLocalized('%d %b %Y') : '-'}}</span>
                                     </td>
                                 </tr>
                                 <tr data-placement="left" data-toggle="tooltip" title="Job Interview Date">

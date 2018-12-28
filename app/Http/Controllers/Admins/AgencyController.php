@@ -5,11 +5,28 @@ namespace App\Http\Controllers\Admins;
 use App\Models\Vacancies;
 use App\Models\Agencies;
 use App\Http\Controllers\Controller;
+use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class AgencyController extends Controller
 {
+    protected $key, $secret, $client, $uri;
+
+    public function __construct()
+    {
+        $this->key = env('SISKA_API_KEY');
+        $this->secret = env('SISKA_API_SECRET');
+        $this->uri = 'http://localhost:8000';
+
+        $this->client = new Client([
+            'base_uri' => $this->uri,
+            'defaults' => [
+                'exceptions' => false
+            ]
+        ]);
+    }
+
     public function showAgenciesTable()
     {
         $agencies = Agencies::orderByDesc('id')->get();
@@ -90,6 +107,15 @@ class AgencyController extends Controller
             $name = $agency->ava;
         }
 
+        $this->client->put($this->uri . '/api/partners/agencies/update', [
+            'form_params' => [
+                'key' => $this->key,
+                'secret' => $this->secret,
+                'agency' => $agency->toArray(),
+                'data' => $request->toArray(),
+            ]
+        ]);
+
         $agency->update([
             'ava' => $name,
             'email' => $request->email,
@@ -118,6 +144,14 @@ class AgencyController extends Controller
         }
         $agency->delete();
 
+        $this->client->delete($this->uri . '/api/partners/agencies/delete', [
+            'form_params' => [
+                'key' => $this->key,
+                'secret' => $this->secret,
+                'agency' => $agency->toArray(),
+            ]
+        ]);
+
         return back()->with('success', '' . $agency->company . ' is successfully deleted!');
     }
 
@@ -130,7 +164,7 @@ class AgencyController extends Controller
 
     public function createVacancies(Request $request)
     {
-        Vacancies::create([
+        $vacancy = Vacancies::create([
             'judul' => $request->judul,
             'city_id' => $request->city_id,
             'syarat' => $request->syarat,
@@ -144,9 +178,22 @@ class AgencyController extends Controller
             'degree_id' => $request->degree_id,
             'major_id' => $request->major_id,
             'jobfunction_id' => $request->jobfunction_id,
+            'isPost' => true,
+            'recruitmentDate_start' => $request->recruitmentDate_start,
+            'recruitmentDate_end' => $request->recruitmentDate_end,
+            'interview_date' => $request->interview_date,
         ]);
 
-        return back()->with('success', '' . $request->judul . ' is successfully created!');
+        $this->client->post($this->uri . '/api/partners/vacancies/create', [
+            'form_params' => [
+                'key' => $this->key,
+                'secret' => $this->secret,
+                'vacancy' => $vacancy->toArray(),
+                'agency' => $vacancy->getAgency->toArray(),
+            ]
+        ]);
+
+        return back()->with('success', '' . $vacancy->judul . ' is successfully created!');
     }
 
     public function editVacancies($id)
@@ -158,34 +205,35 @@ class AgencyController extends Controller
     public function updateVacancies(Request $request)
     {
         $vacancy = Vacancies::find($request->id);
-        if ($request->check_form == 'vacancy') {
-            $vacancy->update([
-                'judul' => $request->judul,
-                'city_id' => $request->city_id,
-                'syarat' => $request->syarat,
-                'tanggungjawab' => $request->tanggungjawab,
-                'pengalaman' => $request->pengalaman,
-                'jobtype_id' => $request->jobtype_id,
-                'joblevel_id' => $request->joblevel_id,
-                'industry_id' => $request->industry_id,
-                'salary_id' => $request->salary_id,
-                'agency_id' => $request->agency_id,
-                'degree_id' => $request->degree_id,
-                'major_id' => $request->major_id,
-                'jobfunction_id' => $request->jobfunction_id,
-                'recruitmentDate_start' => $request->recruitmentDate_start,
-                'recruitmentDate_end' => $request->recruitmentDate_end,
-                'interview_date' => $request->interview_date,
-            ]);
 
-        } elseif ($request->check_form == 'schedule') {
-            $vacancy->update([
-                'isPost' => $request->isPost,
-                'recruitmentDate_start' => $request->isPost == 1 ? $request->recruitmentDate_start : null,
-                'recruitmentDate_end' => $request->isPost == 1 ? $request->recruitmentDate_end : null,
-                'interview_date' => $request->isPost == 1 ? $request->interview_date : null,
-            ]);
-        }
+        $this->client->put($this->uri . '/api/partners/vacancies/update', [
+            'form_params' => [
+                'key' => $this->key,
+                'secret' => $this->secret,
+                'agency' => $vacancy->getAgency->toArray(),
+                'vacancy' => $vacancy->toArray(),
+                'data' => $request->toArray(),
+            ]
+        ]);
+
+        $vacancy->update([
+            'judul' => $request->judul,
+            'city_id' => $request->city_id,
+            'syarat' => $request->syarat,
+            'tanggungjawab' => $request->tanggungjawab,
+            'pengalaman' => $request->pengalaman,
+            'jobtype_id' => $request->jobtype_id,
+            'joblevel_id' => $request->joblevel_id,
+            'industry_id' => $request->industry_id,
+            'salary_id' => $request->salary_id,
+            'degree_id' => $request->degree_id,
+            'major_id' => $request->major_id,
+            'jobfunction_id' => $request->jobfunction_id,
+            'isPost' => $request->isPost,
+            'recruitmentDate_start' => $request->isPost == 1 ? $request->recruitmentDate_start : null,
+            'recruitmentDate_end' => $request->isPost == 1 ? $request->recruitmentDate_end : null,
+            'interview_date' => $request->isPost == 1 ? $request->interview_date : null,
+        ]);
 
         return back()->with('success', '' . $vacancy->judul . ' is successfully updated!');
     }
@@ -194,6 +242,15 @@ class AgencyController extends Controller
     {
         $vacancy = Vacancies::find(decrypt($id));
         $vacancy->delete();
+
+        $this->client->delete($this->uri . '/api/partners/vacancies/delete', [
+            'form_params' => [
+                'key' => $this->key,
+                'secret' => $this->secret,
+                'agency' => $vacancy->getAgency->toArray(),
+                'vacancy' => $vacancy->toArray(),
+            ]
+        ]);
 
         return back()->with('success', '' . $vacancy->judul . ' is successfully deleted!');
     }

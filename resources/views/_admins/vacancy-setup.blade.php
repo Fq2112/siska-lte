@@ -192,30 +192,20 @@
                                     <td style="vertical-align: middle" align="center">
                                         <form method="post" id="form-deactivate{{$vacancy->id}}">
                                             {{csrf_field()}} {{method_field('PUT')}}
-                                            <input type="hidden" name="check_form" value="schedule">
                                             <input type="hidden" name="isPost" value="0">
                                         </form>
                                         <div class="btn-group">
-                                            <button type="button" class="btn btn-{{$vacancy->isPost == false ? 'success'
-                                            : 'warning'}} btn-sm" style="font-weight: 600"
-                                                    onclick="postVacancy('{{$vacancy->id}}','{{$vacancy->judul}}',
-                                                            '{{$vacancy->recruitmentDate_start}}',
-                                                            '{{$vacancy->recruitmentDate_end}}',
-                                                            '{{$vacancy->interview_date}}')">
-                                                <i class="glyphicon glyphicon-{{$vacancy->isPost == false ? 'check' :
-                                                'calendar'}}"></i>&ensp;{{$vacancy->isPost == false ? 'POST' : 'SCHEDULE'}}
+                                            <button type="button" class="btn btn-warning btn-sm"
+                                                    style="font-weight: 600"
+                                                    onclick="editVacancy('{{$vacancy->id}}')">
+                                                <i class="fa fa-edit"></i>&ensp;EDIT
                                             </button>
-                                            <button type="button" class="btn btn-{{$vacancy->isPost == false ? 'success'
-                                            : 'warning'}} btn-sm dropdown-toggle" data-toggle="dropdown"
-                                                    aria-expanded="false">
+                                            <button type="button" class="btn btn-warning btn-sm dropdown-toggle"
+                                                    data-toggle="dropdown" aria-expanded="false">
                                                 <span class="caret"></span>
                                                 <span class="sr-only">Toggle Dropdown</span>
                                             </button>
                                             <ul class="dropdown-menu" role="menu">
-                                                <li>
-                                                    <a onclick="editVacancy('{{$vacancy->id}}')">
-                                                        <i class="fa fa-edit"></i>&ensp;Edit</a>
-                                                </li>
                                                 <li>
                                                     <a href="{{route('delete.vacancies',['id'=>encrypt($vacancy->id)])}}"
                                                        class="delete-data">
@@ -238,8 +228,8 @@
                     <div id="content2" class="x_content" style="display: none;">
                         <form method="post" action="{{route('create.vacancies')}}" id="form-vacancy">
                             {{csrf_field()}}
-                            <input type="hidden" name="check_form" value="vacancy">
                             <input type="hidden" name="_method" id="method">
+                            <input type="hidden" name="isPost" value="1">
                             <div class="row form-group">
                                 <div class="col-lg-12">
                                     <label for="agency_id">Agency <span class="required">*</span></label>
@@ -398,6 +388,33 @@
                             </div>
                             <div class="row form-group">
                                 <div class="col-lg-12">
+                                    <label>Recruitment Date <span class="required">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-addon"><i class="fa fa-user"></i></span>
+                                        <input style="background-color: #fff;width: 50%" class="form-control"
+                                               type="text"
+                                               maxlength="10" placeholder="yyyy-mm-dd" name="recruitmentDate_start"
+                                               id="recruitmentDate_start" required>
+                                        <input style="background-color: #fff;width:50%" class="form-control" type="text"
+                                               maxlength="10" placeholder="yyyy-mm-dd" name="recruitmentDate_end"
+                                               id="recruitmentDate_end" required>
+                                        <span class="input-group-addon"><i class="fa fa-users"></i></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row form-group">
+                                <div class="col-lg-12">
+                                    <label>Interview Date <span class="required">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-addon"><i class="fa fa-comments"></i></span>
+                                        <input style="background-color: #fff" class="form-control" type="text"
+                                               maxlength="10" placeholder="yyyy-mm-dd" name="interview_date"
+                                               id="interview_date" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row form-group">
+                                <div class="col-lg-12">
                                     <button id="btn_submit" type="submit" class="btn btn-block btn-primary">Submit
                                     </button>
                                 </div>
@@ -408,58 +425,13 @@
             </div>
         </div>
     </div>
-    <div id="scheduleModal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
-                    </button>
-                    <h4 class="modal-title"><strong id="vacancy_title"></strong> &ndash; Vacancy Schedule</h4>
-                </div>
-                <form method="post" id="form-schedule">
-                    {{csrf_field()}} {{method_field('PUT')}}
-                    <input type="hidden" name="check_form" value="schedule">
-                    <input type="hidden" name="isPost" value="1">
-                    <div class="modal-body">
-                        <div class="row form-group">
-                            <div class="col-lg-12">
-                                <label>Recruitment Date <span class="required">*</span></label>
-                                <div class="input-group">
-                                    <span class="input-group-addon"><i class="fa fa-user"></i></span>
-                                    <input style="background-color: #fff;width: 50%" class="form-control" type="text"
-                                           maxlength="10" placeholder="yyyy-mm-dd" name="recruitmentDate_start"
-                                           id="recruitmentDate_start" required>
-                                    <input style="background-color: #fff;width:50%" class="form-control" type="text"
-                                           maxlength="10" placeholder="yyyy-mm-dd" name="recruitmentDate_end"
-                                           id="recruitmentDate_end" required>
-                                    <span class="input-group-addon"><i class="fa fa-users"></i></span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row form-group">
-                            <div class="col-lg-12">
-                                <label>Interview Date <span class="required">*</span></label>
-                                <div class="input-group">
-                                    <span class="input-group-addon"><i class="fa fa-comments"></i></span>
-                                    <input style="background-color: #fff" class="form-control" type="text"
-                                           maxlength="10" placeholder="yyyy-mm-dd" name="interview_date"
-                                           id="interview_date" required>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary">Submit</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
 @endsection
 @push("scripts")
     <script>
         $(".btn_vacancy").on("click", function () {
+            var $start = $("#recruitmentDate_start"), $end = $("#recruitmentDate_end"),
+                $interview = $("#interview_date");
+
             $("#content1").toggle(300);
             $("#content2").toggle(300);
             $(".btn_vacancy i").toggleClass('fa-plus fa-th-list');
@@ -472,7 +444,7 @@
                 return v === "Vacancy Setup<small>Form</small>" ? "Vacancy<small>List</small>" : "Vacancy Setup<small>Form</small>";
             });
 
-            $('#agency_id').val('default').selectpicker("refresh");
+            $('#agency_id').val('default').removeAttr('disabled').selectpicker("refresh");
             $('#judul').val('');
             $('#pengalaman').val('');
             $('#jobfunction_id').val('default').selectpicker("refresh");
@@ -485,6 +457,28 @@
             $('#major_id').val('default').selectpicker("refresh");
             tinyMCE.get('syarat').setContent('');
             tinyMCE.get('tanggungjawab').setContent('');
+
+            $start.val('');
+            $end.val('');
+            $interview.val('');
+
+            $start.datepicker({
+                format: "yyyy-mm-dd", autoclose: true, todayHighlight: true, todayBtn: true, startDate: new Date()
+            }).on('changeDate', function (selected) {
+                var minDate = new Date(selected.date.valueOf());
+                $end.datepicker({
+                    format: "yyyy-mm-dd", autoclose: true, todayHighlight: true, todayBtn: true, startDate: minDate,
+                }).on('changeDate', function (selected) {
+                    var minDate = new Date(selected.date.valueOf());
+                    $interview.datepicker({
+                        format: "yyyy-mm-dd",
+                        autoclose: true,
+                        todayHighlight: true,
+                        todayBtn: true,
+                        startDate: minDate
+                    });
+                });
+            });
 
             $("#method").val('');
             $("#form-vacancy").attr('action', '{{route('create.vacancies')}}');
@@ -505,7 +499,10 @@
             });
 
             $.get("{{route('edit.vacancies',['id' => ''])}}/" + id, function (data) {
-                $('#agency_id').val(data.agency_id).selectpicker("refresh");
+                var $start = $("#recruitmentDate_start"), $end = $("#recruitmentDate_end"),
+                    $interview = $("#interview_date");
+
+                $('#agency_id').val(data.agency_id).attr('disabled', 'disabled').selectpicker("refresh");
                 $('#judul').val(data.judul);
                 $('#pengalaman').val(data.pengalaman);
                 $('#jobfunction_id').val(data.jobfunction_id).selectpicker("refresh");
@@ -518,56 +515,28 @@
                 $('#major_id').val(data.major_id).selectpicker("refresh");
                 tinyMCE.get('syarat').setContent(data.syarat);
                 tinyMCE.get('tanggungjawab').setContent(data.tanggungjawab);
+
+                $start.val(data.recruitmentDate_start);
+                $end.val(data.recruitmentDate_end);
+                $interview.val(data.interview_date);
+                $start.datepicker({
+                    format: "yyyy-mm-dd", autoclose: true, todayHighlight: true, todayBtn: true, startDate: new Date(),
+                });
+                $end.datepicker({
+                    format: "yyyy-mm-dd",
+                    autoclose: true,
+                    todayHighlight: true,
+                    todayBtn: true,
+                    startDate: $start.val(),
+                });
+                $interview.datepicker({
+                    format: "yyyy-mm-dd", autoclose: true, todayHighlight: true, todayBtn: true, startDate: $end.val()
+                });
             });
 
             $("#method").val('PUT');
             $("#form-vacancy").attr('action', '{{route('update.vacancies',['id'=> ''])}}/' + id);
             $("#btn_submit").html("<strong>SAVE CHANGES</strong>");
-        }
-
-        function postVacancy(id, judul, start, end, interview) {
-            var $start = $("#recruitmentDate_start"), $end = $("#recruitmentDate_end"),
-                $interview = $("#interview_date");
-
-            $("#vacancy_title").text(judul);
-            $("#form-schedule").attr('action', '{{route('update.vacancies',['id'=> ''])}}/' + id);
-
-            $start.val(start);
-            $end.val(end);
-            $interview.val(interview);
-
-            if (start == "") {
-                $start.datepicker({
-                    format: "yyyy-mm-dd", autoclose: true, todayHighlight: true, todayBtn: true, startDate: new Date()
-                }).on('changeDate', function (selected) {
-                    var minDate = new Date(selected.date.valueOf());
-                    $end.datepicker({
-                        format: "yyyy-mm-dd", autoclose: true, todayHighlight: true, todayBtn: true, startDate: minDate,
-                    }).on('changeDate', function (selected) {
-                        var minDate = new Date(selected.date.valueOf());
-                        $interview.datepicker({
-                            format: "yyyy-mm-dd",
-                            autoclose: true,
-                            todayHighlight: true,
-                            todayBtn: true,
-                            startDate: minDate
-                        });
-                    });
-                });
-
-            } else {
-                $start.datepicker({
-                    format: "yyyy-mm-dd", autoclose: true, todayHighlight: true, todayBtn: true, startDate: new Date(),
-                });
-                $end.datepicker({
-                    format: "yyyy-mm-dd", autoclose: true, todayHighlight: true, todayBtn: true, startDate: start,
-                });
-                $interview.datepicker({
-                    format: "yyyy-mm-dd", autoclose: true, todayHighlight: true, todayBtn: true, startDate: end
-                });
-            }
-
-            $("#scheduleModal").modal('show');
         }
 
         function deactivateVacancy(id, judul) {

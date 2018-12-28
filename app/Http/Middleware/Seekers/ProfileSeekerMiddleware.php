@@ -19,11 +19,9 @@ class ProfileSeekerMiddleware
     {
         $findUser = $request->id;
         if (Auth::check()) {
-            if (Auth::user()->isSeeker()) {
-                $user = User::find(Auth::user()->id);
-                if ($user->id == $findUser) {
-                    return $next($request);
-                }
+            $user = User::find(Auth::user()->id);
+            if ($user->id == $findUser) {
+                return $next($request);
             }
 
         } elseif (Auth::guard('admin')->check()) {

@@ -50,9 +50,7 @@
                 <div class="col-md-4 col-sm-4 col-xs-12">
                     <div class="x_panel">
                         <div class="x_title">
-                            <h2>Admins & Users
-                                <small>Chart</small>
-                            </h2>
+                            <h2>Admins & Users</h2>
                             <ul class="nav navbar-right panel_toolbox">
                                 <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
                                 <li><a class="close-link"><i class="fa fa-times"></i></a></li>
@@ -67,9 +65,7 @@
                 <div class="col-md-4 col-sm-4 col-xs-12">
                     <div class="x_panel">
                         <div class="x_title">
-                            <h2>Agencies & Seekers
-                                <small>Chart</small>
-                            </h2>
+                            <h2>Agencies & Seekers</h2>
                             <ul class="nav navbar-right panel_toolbox">
                                 <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
                                 <li><a class="close-link"><i class="fa fa-times"></i></a></li>
@@ -84,9 +80,7 @@
                 <div class="col-md-4 col-sm-4 col-xs-12">
                     <div class="x_panel">
                         <div class="x_title">
-                            <h2>Vacancy & Application
-                                <small>Chart</small>
-                            </h2>
+                            <h2>Vacancy & Application</h2>
                             <ul class="nav navbar-right panel_toolbox">
                                 <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
                                 <li><a class="close-link"><i class="fa fa-times"></i></a></li>

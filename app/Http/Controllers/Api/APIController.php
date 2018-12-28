@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\Agencies;
 use App\Models\Cities;
 use App\Models\JobFunction;
 use App\Models\Industries;
@@ -11,8 +10,10 @@ use App\Models\JobType;
 use App\Models\Salaries;
 use App\Models\Degrees;
 use App\Models\Majors;
-use App\Models\Vacancies;
 use Illuminate\Support\Carbon;
+use App\Models\User;
+use App\Models\Agencies;
+use App\Models\Vacancies;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -42,10 +43,64 @@ class APIController extends Controller
         return json_decode($response->getBody(), true);
     }
 
+    public function createSeekers(Request $request)
+    {
+        $seeker = $request->seeker;
+        User::firstOrCreate([
+            'name' => $seeker['name'],
+            'email' => $seeker['email'],
+            'password' => $seeker['password'],
+        ]);
+
+        return response()->json([
+            'status' => "200 OK",
+            'success' => true,
+            'message' => $seeker['name'] . ' is successfully created!'
+        ], 200);
+    }
+
+    public function updateSeekers(Request $request)
+    {
+        $seeker = $request->seeker;
+        $user = User::where('email', $seeker['email'])->first();
+        if ($user != null) {
+            $user->update([
+                'password' => $seeker['new_password']
+            ]);
+        }
+
+        return response()->json([
+            'status' => "200 OK",
+            'success' => true,
+            'message' => $seeker['name'] . ' is successfully updated!'
+        ], 200);
+    }
+
+    public function deleteSeekers(Request $request)
+    {
+        $seeker = $request->seeker;
+        $user = User::where('email', $seeker['email'])->first();
+        if ($user != null) {
+            $user->forceDelete();
+        }
+
+        return response()->json([
+            'status' => "200 OK",
+            'success' => true,
+            'message' => $seeker['name'] . ' is successfully deleted!'
+        ], 200);
+    }
 
     public function syncVacancies()
     {
-        $vacancies = Vacancies::where('isPost', true)->get()->toArray();
+        $vacancies = Vacancies::where('isPost', true)->orderBy('agency_id')->get()->toArray();
+
+        $i = 0;
+        foreach ($vacancies as $vacancy) {
+            $agency = array('agency_id' => Agencies::find($vacancy['agency_id'])->toArray());
+            $vacancies[$i] = array_replace($vacancies[$i], $agency);
+            $i = $i + 1;
+        }
 
         $response = $this->client->post($this->uri . '/api/partners/vacancies/sync', [
             'form_params' => [
@@ -53,18 +108,66 @@ class APIController extends Controller
                 'secret' => $this->secret,
                 'vacancies' => $vacancies,
             ]
-        ]);
+        ])->getBody()->getContents();
 
-        return $response->getBody()->getContents();
+        $response = json_decode($response, true);
+
+        foreach ($response['data'] as $row) {
+            $checkAgency = Agencies::where('email', $row['agency']['email'])->first();
+            if (!$checkAgency) {
+                $agency = Agencies::firstOrCreate([
+                    'ava' => 'agency.png',
+                    'email' => $row['agency']['email'],
+                    'company' => $row['agency']['company'],
+                    'kantor_pusat' => $row['agency']['kantor_pusat'],
+                    'industry_id' => $row['agency']['industry_id'],
+                    'tentang' => $row['agency']['tentang'],
+                    'alasan' => $row['agency']['alasan'],
+                    'link' => $row['agency']['link'],
+                    'alamat' => $row['agency']['alamat'],
+                    'phone' => $row['agency']['phone'],
+                    'hari_kerja' => $row['agency']['hari_kerja'],
+                    'jam_kerja' => $row['agency']['jam_kerja'],
+                    'lat' => $row['agency']['lat'],
+                    'long' => $row['agency']['long'],
+                ]);
+            } else {
+                $agency = $checkAgency;
+            }
+
+            Vacancies::create([
+                'judul' => $row['judul'],
+                'city_id' => $row['cities_id'],
+                'syarat' => $row['syarat'],
+                'tanggungjawab' => $row['tanggungjawab'],
+                'pengalaman' => $row['pengalaman'],
+                'jobtype_id' => $row['jobtype_id'],
+                'joblevel_id' => $row['joblevel_id'],
+                'industry_id' => $row['industry_id'],
+                'salary_id' => $row['salary_id'],
+                'agency_id' => $agency->id,
+                'degree_id' => $row['tingkatpend_id'],
+                'major_id' => $row['jurusanpend_id'],
+                'jobfunction_id' => $row['fungsikerja_id'],
+                'isPost' => true,
+                'recruitmentDate_start' => $row['recruitmentDate_start'],
+                'recruitmentDate_end' => $row['recruitmentDate_end'],
+                'interview_date' => $row['interview_date'],
+            ]);
+        }
+
+        $total = count($vacancies) + count($response['data']);
+        $status = $total > 1 ? $total . ' vacancies!' : 'a vacancy!';
+
+        return response()->json([
+            'status' => "200 OK",
+            'success' => true,
+            'message' => 'Successfully synchronized ' . $status,
+        ], 200);
     }
 
     public function getSearchResult(Request $request)
     {
-        /*$response = $this->client->get($this->uri . '/api/partners/vacancies?key=' . $this->key .
-            '&secret=' . $this->secret . '&q=' . $request->q . '&loc=' . $request->loc);
-
-        return json_decode($response->getBody(), true);*/
-
         $input = $request->all();
 
         if ($request->has(['q']) || $request->has(['loc'])) {
@@ -75,8 +178,9 @@ class APIController extends Controller
             $agency = Agencies::where('company', 'like', '%' . $keyword . '%')->get()->pluck('id')->toArray();
 
             $result = Vacancies::where('judul', 'like', '%' . $keyword . '%')->whereIn('city_id', $city)
-                ->orwhereIn('agency_id', $agency)->whereIn('city_id', $city)->where('isPost', true)
-                ->paginate(12)->toArray();
+                ->where('isPost', true)
+                ->orwhereIn('agency_id', $agency)->whereIn('city_id', $city)
+                ->where('isPost', true)->paginate(12)->toArray();
 
         } else {
             $result = Vacancies::where('isPost', true)->paginate(12)->toArray();
