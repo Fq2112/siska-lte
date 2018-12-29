@@ -19,17 +19,17 @@ $router->group(['prefix' => 'api', 'namespace' => 'Api'], function ($router) {
         $router->delete('delete', 'APIController@deleteSeekers');
     });
 
-    $router->get('vacancies/sync', [
-        'uses' => 'APIController@syncVacancies',
-        'as' => 'sync.vacancy'
-    ]);
+    $router->group(['prefix' => 'vacancies'], function ($router) {
+        $router->post('create', 'APIController@createVacancies');
+        $router->put('update', 'APIController@updateVacancies');
+        $router->delete('delete', 'APIController@deleteVacancies');
+        $router->get('search', 'APIController@getSearchResult');
+    });
 
-    $router->get('vacancies/search', [
-        'uses' => 'APIController@getSearchResult',
-        'as' => 'get.search.vacancy'
-    ]);
-
-    // mohon tidak melakukan perubahan apapun terhadap routing berikut :)
+    /**
+     * Mohon tidak melakukan perubahan apapun pada
+     * routing berikut! Terimakasih :)
+     */
     $router->get('credentials', [
         'uses' => 'APIController@getCredentials',
         'as' => 'get.credentials'

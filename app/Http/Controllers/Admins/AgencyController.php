@@ -29,7 +29,9 @@ class AgencyController extends Controller
 
     public function showAgenciesTable()
     {
-        $agencies = Agencies::orderByDesc('id')->get();
+        $agencies = Agencies::whereHas('getVacancy', function ($vac) {
+            $vac->where('isSISKA', false);
+        })->orderByDesc('id')->get();
 
         return view('_admins.agency-setup', compact('agencies'));
     }
@@ -77,13 +79,18 @@ class AgencyController extends Controller
 
     public function editAgencies($id)
     {
-        $findAgency = Agencies::find($id);
+        $findAgency = Agencies::whereHas('getVacancy', function ($vac) {
+            $vac->where('isSISKA', false);
+        })->where('id', $id)->firstOrFail();
+
         return $findAgency;
     }
 
     public function updateAgencies(Request $request)
     {
-        $agency = Agencies::find($request->id);
+        $agency = Agencies::whereHas('getVacancy', function ($vac) {
+            $vac->where('isSISKA', false);
+        })->where('id', $request->id)->firstOrFail();
 
         $address = str_replace(" ", "+", $request->address);
         $json = file_get_contents("https://maps.googleapis.com/maps/api/geocode/json?address=" .
@@ -138,7 +145,10 @@ class AgencyController extends Controller
 
     public function deleteAgencies($id)
     {
-        $agency = Agencies::find(decrypt($id));
+        $agency = Agencies::whereHas('getVacancy', function ($vac) {
+            $vac->where('isSISKA', false);
+        })->where('id', decrypt($id))->firstOrFail();
+
         if ($agency->ava != '' || $agency->ava != 'agency.png') {
             Storage::delete('public/admins/agencies/ava/' . $agency->ava);
         }
@@ -157,7 +167,7 @@ class AgencyController extends Controller
 
     public function showVacanciesTable()
     {
-        $vacancies = Vacancies::orderByDesc('id')->get();
+        $vacancies = Vacancies::where('isSISKA', false)->orderByDesc('id')->get();
 
         return view('_admins.vacancy-setup', compact('vacancies'));
     }
@@ -198,13 +208,13 @@ class AgencyController extends Controller
 
     public function editVacancies($id)
     {
-        $findVacancy = Vacancies::find($id);
+        $findVacancy = Vacancies::where('isSISKA', false)->where('id', $id)->firstOrFail();
         return $findVacancy;
     }
 
     public function updateVacancies(Request $request)
     {
-        $vacancy = Vacancies::find($request->id);
+        $vacancy = Vacancies::where('isSISKA', false)->where('id', $request->id)->firstOrFail();
 
         $this->client->put($this->uri . '/api/partners/vacancies/update', [
             'form_params' => [
@@ -240,7 +250,7 @@ class AgencyController extends Controller
 
     public function deleteVacancies($id)
     {
-        $vacancy = Vacancies::find(decrypt($id));
+        $vacancy = Vacancies::where('isSISKA', false)->where('id', decrypt($id))->firstOrFail();
         $vacancy->delete();
 
         $this->client->delete($this->uri . '/api/partners/vacancies/delete', [

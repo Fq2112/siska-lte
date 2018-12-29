@@ -167,9 +167,10 @@
                                     juga perlu melakukan
                                     <em>synchronize setup</em> untuk data job seeker. Dengan begitu, ketika seeker
                                     membuat akun melalui situs utama SISKA maka datanya juga akan disimpan ke dalam
-                                    database Anda maupun database SiskaLTE lainnya yang telah bermitra dengan SISKA
-                                    dan apabila seeker tersebut membuat akun melalui SiskaLTE instansi Anda maka
-                                    datanya hanya akan tersimpan di dalam database Anda sendiri.
+                                    database Anda maupun database SiskaLTE lainnya yang telah bermitra serta
+                                    melakukan sinkronisasi dengan SISKA dan apabila seeker tersebut membuat akun
+                                    melalui SiskaLTE instansi Anda maka datanya hanya akan tersimpan di dalam
+                                    database Anda sendiri.
                                 </p>
                                 <ol style="font-size: 15px;">
                                     <li>Buka file <code>routes/api.php</code>.</li>
@@ -184,11 +185,14 @@
                                                 <span style="margin-left: 4em">$router->delete('delete', 'APIController@deleteSeekers');</span><br>
                                                 <span style="margin-left: 2em">});</span><br><br>
 
-                                                <span style="margin-left: 2em">$router->get('vacancies/sync', [</span><br>
-                                                <span style="margin-left: 4em">'uses' => 'APIController@syncVacancies',</span><br>
-                                                <span style="margin-left: 4em">'as' => 'sync.vacancy'</span><br>
-                                                <span style="margin-left: 2em">]);</span><br><br>
-                                                <span style="margin-left: 2em"><em>// here is your other api routes&hellip;</em></span><br><br>
+                                                <span style="margin-left: 2em">$router->group(['prefix' => 'vacancies'], function ($router) {</span><br>
+                                                <span style="margin-left: 4em">$router->post('create', 'APIController@createVacancies');</span><br>
+                                                <span style="margin-left: 4em">$router->put('update', 'APIController@updateVacancies');</span><br>
+                                                <span style="margin-left: 4em">$router->delete('delete', 'APIController@deleteVacancies');</span><br><br>
+                                                <span style="margin-left: 4em"><em>// here is your search vacancy route&hellip;</em></span><br>
+                                                <span style="margin-left: 2em">});</span><br><br>
+
+                                                <span style="margin-left: 2em"><em>// here is your other api routes&hellip;</em></span><br>
                                                 });
                                             </code>
                                         </blockquote>
@@ -265,72 +269,70 @@
                             </div>
                             <div id="sync-vacancy-1">
                                 <h2 class="StepTitle">Step 3 Sync&ndash;Vacancy <sub>(Part 1)</sub></h2>
-                                <p style="text-align: justify;font-size: 15px;">Tahap ini bertujuan untuk memigrasikan
-                                    seluruh data lowongan Anda.
-                                    Apabila Anda <strong>belum</strong> menambahkan data lowongan sama sekali,
-                                    silahkan <strong>skip</strong> nomor 6 &ndash; 7 dan lanjut ke nomor 8.</p>
                                 <ol start="6" style="font-size: 15px;">
                                     <li>Masih di dalam file <code>app/Http/Controllers/Api/APIController.php</code>,
                                         tambahkan code berikut :
                                         <blockquote>
                                             <em>// here is your sync seekers functions&hellip;</em><br><br>
                                             <code>
-                                                public function syncVacancies()<br>
+                                                public function createSeekers(Request $request)<br>
                                                 {<br>
-                                                <span style="margin-left: 2em">$vacancies = Vacancies::where('isPost', true)->orderBy('agency_id')</span><br>
-                                                <span style="margin-left: 5em">->get()->toArray();</span><br>
-                                                <span style="margin-left: 2em">$i = 0;</span><br>
-                                                <span style="margin-left: 2em">foreach ($vacancies as $vacancy){</span><br>
-                                                <span style="margin-left: 4em">$agency = array('agency_id' => Agencies::find($vacancy['agency_id'])</span><br>
-                                                <span style="margin-left: 6em">->toArray());</span><br>
-                                                <span style="margin-left: 4em">$vacancies[$i] = array_replace($vacancies[$i], $agency);</span><br>
-                                                <span style="margin-left: 4em">$i = $i + 1;</span><br>
+                                                <span style="margin-left: 2em">$seeker = $request->seeker;</span><br>
+                                                <span style="margin-left: 2em">User::firstOrCreate([</span><br>
+                                                <span style="margin-left: 4em">'name' => $seeker['name'],</span><br>
+                                                <span style="margin-left: 4em">'email' => $seeker['email'],</span><br>
+                                                <span style="margin-left: 4em">'password' => $seeker['password'],</span><br>
+                                                <span style="margin-left: 2em">]);</span><br><br>
+
+                                                <span style="margin-left: 2em">return response()->json([</span><br>
+                                                <span style="margin-left: 4em">'status' => "200 OK",</span><br>
+                                                <span style="margin-left: 4em">'success' => true,</span><br>
+                                                <span style="margin-left: 4em">'message' => $seeker['name'] . ' is successfully created!'</span><br>
+                                                <span style="margin-left: 2em">], 200);</span><br>
+                                                }<br><br>
+
+                                                public function updateSeekers(Request $request)<br>
+                                                {<br>
+                                                <span style="margin-left: 2em">$seeker = $request->seeker;</span><br>
+
+                                                <span style="margin-left: 2em">$user = User::where('email', $seeker['email'])->first();</span><br>
+                                                <span style="margin-left: 2em">if($user != null){</span><br>
+                                                <span style="margin-left: 4em">$user->update([</span><br>
+                                                <span style="margin-left: 6em">'password' => $seeker['new_password']</span><br>
+                                                <span style="margin-left: 4em">]);</span><br>
                                                 <span style="margin-left: 2em">}</span><br><br>
-                                                <span style="margin-left: 2em">$response = $this->client->post($this->uri .</span><br>
-                                                <span style="margin-left: 4em">'/api/partners/vacancies/sync', [</span><br>
-                                                <span style="margin-left: 6em">'form_params' => [</span><br>
-                                                <span style="margin-left: 8em">'key' => $this->key,</span><br>
-                                                <span style="margin-left: 8em">'secret' => $this->secret,</span><br>
-                                                <span style="margin-left: 8em">'vacancies' => $vacancies,</span><br>
-                                                <span style="margin-left: 6em">]</span><br>
-                                                <span style="margin-left: 2em">]);</span>
-                                                <br><br>
-                                                <span style="margin-left: 2em">return json_decode($response->getBody(), true);</span>
-                                                <br>
+
+                                                <span style="margin-left: 2em">return response()->json([</span><br>
+                                                <span style="margin-left: 4em">'status' => "200 OK",</span><br>
+                                                <span style="margin-left: 4em">'success' => true,</span><br>
+                                                <span style="margin-left: 4em">'message' => $seeker['name'] . ' is successfully updated!'</span><br>
+                                                <span style="margin-left: 2em">], 200);</span><br>
                                                 }<br><br>
-                                            </code>
-                                        </blockquote>
-                                    </li>
-                                    <li>Jangan lupa untuk <em>import model</em> vacancy dan agency Anda :
-                                        <blockquote>
-                                            <code>
-                                                use App\Models\Agencies;<br>
-                                                use App\Models\Vacancies;
-                                            </code>
-                                        </blockquote>
-                                    </li>
-                                    <li>Ubah fungsi <code>getSearchResult()</code> dengan code berikut :
-                                        <blockquote>
-                                            <em>// here is your sync seekers/vacancies functions&hellip;</em><br><br>
-                                            <code>
-                                                public function getSearchResult()<br>
+
+                                                public function deleteSeekers(Request $request)<br>
                                                 {<br>
-                                                <span style="margin-left: 2em">$response = $response = $this->client->get($this->uri . </span><br>
-                                                <span style="margin-left: 5em">'/api/partners/vacancies?' .</span><br>
-                                                <span style="margin-left: 5em">'key=' . $this->key . '&secret=' . $this->secret . </span><br>
-                                                <span style="margin-left: 5em">'&q=' . $request->q . '&loc=' . $request->loc);</span>
-                                                <br><br>
-                                                <span style="margin-left: 2em">return json_decode($response->getBody(), true);</span>
-                                                <br>
-                                                }<br><br>
-                                            </code>
+                                                <span style="margin-left: 2em">$seeker = $request->seeker;</span><br>
+
+                                                <span style="margin-left: 2em">$user = User::where('email', $seeker['email'])->first();</span><br>
+                                                <span style="margin-left: 2em">if($user != null){</span><br>
+                                                <span style="margin-left: 4em">$user->forceDelete();</span><br>
+                                                <span style="margin-left: 2em">}</span><br><br>
+
+                                                <span style="margin-left: 2em">return response()->json([</span><br>
+                                                <span style="margin-left: 4em">'status' => "200 OK",</span><br>
+                                                <span style="margin-left: 4em">'success' => true,</span><br>
+                                                <span style="margin-left: 4em">'message' => $seeker['name'] . ' is successfully deleted!'</span><br>
+                                                <span style="margin-left: 2em">], 200);</span><br>
+                                                }
+                                            </code><br><br>
+                                            <em>// here is your other functions&hellip;</em>
                                         </blockquote>
                                     </li>
                                 </ol>
                             </div>
                             <div id="sync-vacancy-2">
                                 <h2 class="StepTitle">Step 4 Sync&ndash;Vacancy <sub>(Part 2)</sub></h2>
-                                <ol start="9" style="font-size: 15px;">
+                                <ol start="7" style="font-size: 15px;">
                                     <li>Buka file <code>app/Http/Controllers/Admins/AgencyController.php</code>.</li>
                                     <li>Tambahkan construct code berikut :
                                         <blockquote>
@@ -437,15 +439,13 @@
                                 </ol>
                             </div>
                             <div id="finish">
-                                <h2 class="StepTitle">Step 4 Finish</h2>
-                                <ol start="13" style="text-align: justify;font-size: 15px;">
+                                <h2 class="StepTitle">Step 5 Finish</h2>
+                                <ol start="11" style="text-align: justify;font-size: 15px;">
                                     <li>Untuk mengakhiri <em>synchronize setup</em>, tekan tombol
-                                        "<strong>Finish</strong>" berikut.
-                                    </li>
-                                    <li>Dengan menekan tombol tersebut maka seluruh data lowongan Anda akan dimigrasikan
-                                        ke dalam database <strong>SISKA</strong> yang tentunya akan diproses terlebih
-                                        dahulu oleh pihak <strong>SISKA</strong>, lowongan manakah yang akan ditampilkan
-                                        pada situs utama <strong>SISKA</strong>.
+                                        "<strong>Finish</strong>" berikut. Dengan menekan tombol tersebut maka seluruh
+                                        data lowongan Anda akan dimigrasikan ke dalam database <strong>SISKA</strong>
+                                        yang tentunya akan diproses terlebih dahulu oleh pihak <strong>SISKA</strong>,
+                                        lowongan manakah yang akan ditampilkan pada situs utama <strong>SISKA</strong>.
                                     </li>
                                     <li>Atas perhatian dan kerjasamanya, kami ucapkan terimakasih banyak
                                         <i class="fa fa-grin-beam"></i>.
@@ -453,6 +453,11 @@
                                 </ol>
                             </div>
                         </div>
+                        <form method="post" id="form-submit-sync">
+                            {{csrf_field()}}
+                            <input type="hidden" name="key" value="{{env('SISKA_API_KEY')}}">
+                            <input type="hidden" name="secret" value="{{env('SISKA_API_SECRET')}}">
+                        </form>
                     </div>
                 </div>
             </div>
@@ -462,66 +467,84 @@
 @push("scripts")
     <script>
         $(function () {
-            $.ajax({
-                url: "{{route('get.credentials')}}",
-                type: "GET",
-                beforeSend: function () {
-                    $('#image').show();
-                    $("#sync-info").hide();
-                },
-                complete: function () {
-                    $('#image').hide();
-                    $("#sync-info").show();
-                },
-                success: function (data) {
-                    $("#sync-info").html(
-                        '<div class="bs-example" data-example-id="simple-jumbotron">' +
-                        '<div id="sync-info" class="jumbotron">' +
-                        '<h1>Halo, ' + data.name + '</h1>' +
-                        '<p>Selamat, partnership setup berhasil! Instansi Anda dinyatakan telah resmi bermitra ' +
-                        'dengan <strong>SISKA</strong>. Selanjutnya, sinkronisasikan data lowongan Anda dengan ' +
-                        'data lowongan SiskaLTE dari seluruh instansi yang telah bermitra dengan ' +
-                        '<strong>SISKA</strong>.</p>' +
-                        '<small style="color: #c7254e">P.S.: Jika Anda telah menyelesaikan ' +
-                        '<em>synchronize setup</em> dengan baik dan benar maka setiap kali ada penambahan maupun ' +
-                        'perubahan terhadap data lowongan, Anda tidak perlu melakukan sinkronisasi ulang.</small><hr>' +
-                        '<a href="javascript:void(0)" class="btn btn-primary btn-lg" ' +
-                        'style="text-transform: capitalize" onclick="startSync()">' +
-                        '<strong><i class="fa fa-sync-alt"></i>&ensp;sinkronisasi sekarang!</strong></a></div></div>'
-                    );
+            loadCredentials();
 
-                    $("#wizard .stepContainer").css('height', 'auto');
-                    $("#wizard a.buttonFinish").attr('href', 'javascript:void(0)')
-                        .attr('onclick', 'submitSync()');
-                },
-                error: function () {
-                    $("#sync-info").html(
-                        '<div class="bs-example" data-example-id="simple-jumbotron">' +
-                        '<div id="sync-info" class="jumbotron">' +
-                        '<h1>Halo, {{Auth::guard('admin')->user()->name}}</h1>' +
-                        '<p>Untuk dapat melakukan sinkronisasi data, Anda memerlukan sebuah hak akses ' +
-                        '(<em>credential</em>) berupa <strong>API Key & API Secret</strong> dari SISKA ' +
-                        'dan dengan bermitra Anda akan mendapatkan hak akses tersebut.</p>' +
-                        '<small style="color: #c7254e">P.S.: Jika Anda masih melihat pesan ini maka Anda belum ' +
-                        'menyelesaikan <em>partnership setup</em> dengan benar atau kredensial Anda sudah kadaluarsa.' +
-                        '</small><hr>' +
-                        '<a href="javascript:void(0)" class="btn btn-primary btn-lg" onclick="startPartner()"' +
-                        'style="text-transform: capitalize;"><strong><i class="fa fa-handshake"></i>&ensp;' +
-                        'bermitra sekarang!</strong></a></div></div>'
-                    );
-
-                    $("#wizard_verticle .stepContainer").css('height', 'auto');
-                    $("#wizard_verticle a.buttonFinish").attr('href', 'javascript:void(0)')
-                        .attr('onclick', 'submitPartner()');
-                }
-            });
-
-            $("#wizard a.buttonNext, #wizard_verticle a.buttonNext").on("click", function () {
+            $("#wizard a.buttonNext, #wizard a.buttonPrevious, #wizard .wizard_steps li a, #wizard_verticle a.buttonNext, #wizard_verticle a.buttonPrevious, #wizard_verticle .wizard_steps li a").on("click", function () {
                 $('html, body').animate({
                     scrollTop: $("#panel_title").offset().top
                 }, 500);
             });
         });
+
+        function loadCredentials() {
+            clearTimeout(this.delay);
+            this.delay = setTimeout(function () {
+                $.ajax({
+                    url: "{{route('get.credentials')}}",
+                    type: "GET",
+                    beforeSend: function () {
+                        $('#image').show();
+                        $("#sync-info").hide();
+                    },
+                    complete: function () {
+                        $('#image').hide();
+                        $("#sync-info").show();
+                    },
+                    success: function (data) {
+                        if (data.isSync == 0) {
+                            $("#sync-info").html(
+                                '<div class="bs-example" data-example-id="simple-jumbotron">' +
+                                '<div id="sync-info" class="jumbotron">' +
+                                '<h1>Halo, ' + data.name + '</h1>' +
+                                '<p>Selamat, partnership setup berhasil! Instansi Anda dinyatakan telah resmi bermitra ' +
+                                'dengan <strong>SISKA</strong>. Selanjutnya, sinkronisasikan data lowongan Anda dengan ' +
+                                'data lowongan SiskaLTE dari seluruh instansi yang telah bermitra dengan ' +
+                                '<strong>SISKA</strong>.</p><hr>' +
+                                '<a href="javascript:void(0)" class="btn btn-primary btn-lg" ' +
+                                'style="text-transform: capitalize" onclick="startSync()">' +
+                                '<strong><i class="fa fa-sync-alt"></i>&ensp;sinkronisasi sekarang!</strong></a></div></div>'
+                            );
+
+                        } else {
+                            $("#sync-info").html(
+                                '<div class="bs-example" data-example-id="simple-jumbotron">' +
+                                '<div id="sync-info" class="jumbotron">' +
+                                '<h1>Halo, ' + data.name + '</h1>' +
+                                '<p>Selamat! SiskaLTE instansi Anda telah berhasil disinkronisasikan, baik dengan ' +
+                                '<strong>SISKA</strong> maupun SiskaLTE lainnya yang juga telah bermitra dan ' +
+                                'melakukan sinkronisasi dengan <strong>SISKA</strong>.</p></div></div>'
+                            );
+                        }
+
+                        $("#wizard .stepContainer").css('height', 'auto');
+                        $("#wizard a.buttonFinish").attr('href', 'javascript:void(0)')
+                            .attr('onclick', 'submitSync()');
+                    },
+                    error: function () {
+                        $("#sync-info").html(
+                            '<div class="bs-example" data-example-id="simple-jumbotron">' +
+                            '<div id="sync-info" class="jumbotron">' +
+                            '<h1>Halo, {{Auth::guard('admin')->user()->name}}</h1>' +
+                            '<p>Untuk dapat melakukan sinkronisasi data, Anda memerlukan sebuah hak akses ' +
+                            '(<em>credential</em>) berupa <strong>API Key & API Secret</strong> dari SISKA ' +
+                            'dan dengan bermitra Anda akan mendapatkan hak akses tersebut.</p>' +
+                            '<small style="color: #c7254e">P.S.: Jika Anda masih melihat pesan ini maka Anda belum ' +
+                            'menyelesaikan <em>partnership setup</em> dengan benar atau kredensial Anda sudah kadaluarsa.' +
+                            '</small><hr>' +
+                            '<a href="javascript:void(0)" class="btn btn-primary btn-lg" onclick="startPartner()"' +
+                            'style="text-transform: capitalize;"><strong><i class="fa fa-handshake"></i>&ensp;' +
+                            'bermitra sekarang!</strong></a></div></div>'
+                        );
+
+                        $("#wizard_verticle .stepContainer").css('height', 'auto');
+                        $("#wizard_verticle a.buttonFinish").attr('href', 'javascript:void(0)')
+                            .attr('onclick', 'submitPartner()');
+                    }
+                });
+            }.bind(this), 800);
+
+            return false;
+        }
 
         function startPartner() {
             $("#sync-info").fadeOut('fast', function () {
@@ -582,9 +605,20 @@
 
                 preConfirm: function () {
                     return new Promise(function (resolve) {
-                        $.get('{{route('sync.vacancy')}}', function (data) {
-                            swal('Synchronize Setup', data.message, 'success');
-                            cancelSync();
+                        $.ajax({
+                            type: "POST",
+                            url: "{{route('submit.synchronize')}}",
+                            data: new FormData($("#form-submit-sync")[0]),
+                            contentType: false,
+                            processData: false,
+                            success: function (data) {
+                                swal('Synchronize Setup', data, 'success');
+                                loadCredentials();
+                                cancelSync();
+                            },
+                            error: function () {
+                                swal('Synchronize Setup', 'Something went wrong! Please refresh the page.', 'error');
+                            }
                         });
                     });
                 },

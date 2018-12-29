@@ -64,11 +64,6 @@ Route::group(['namespace' => 'Admins', 'prefix' => 'admin', 'middleware' => 'adm
         'as' => 'admin.update.account'
     ]);
 
-    Route::get('synchronize', [
-        'uses' => 'AdminController@showSynchronize',
-        'as' => 'show.synchronize'
-    ]);
-
     Route::group(['prefix' => 'agencies'], function () {
 
         Route::get('/', [
@@ -454,6 +449,25 @@ Route::group(['namespace' => 'Admins', 'prefix' => 'admin', 'middleware' => 'adm
             });
 
         });
+
+    });
+
+    /**
+     * Mohon tidak melakukan perubahan apapun pada
+     * kedua synchronize route berikut!
+     * Terimakasih :)
+     */
+    Route::group(['prefix' => 'synchronize'], function () {
+
+        Route::get('/', [
+            'uses' => 'AdminController@showSynchronize',
+            'as' => 'show.synchronize'
+        ]);
+
+        Route::post('submit', [
+            'uses' => 'AdminController@submitSynchronize',
+            'as' => 'submit.synchronize'
+        ]);
 
     });
 

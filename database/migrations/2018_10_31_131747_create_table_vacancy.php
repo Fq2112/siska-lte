@@ -50,6 +50,7 @@ class CreateTableVacancy extends Migration
             $table->date('recruitmentDate_start')->nullable();
             $table->date('recruitmentDate_end')->nullable();
             $table->date('interview_date')->nullable();
+            $table->boolean('isSISKA')->default(false);
             $table->timestamps();
         });
     }

@@ -8,6 +8,7 @@ use App\Models\Agencies;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Vacancies;
+use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -79,9 +80,123 @@ class AdminController extends Controller
         }
     }
 
+    /**
+     * Mohon tidak melakukan perubahan apapun pada
+     * kedua synchronize function berikut!
+     * Terimakasih :)
+     */
+
     public function showSynchronize()
     {
         return view('_admins.synchronize', compact('vacancies'));
     }
 
+    public function submitSynchronize(Request $request)
+    {
+        $client = new Client([
+            'base_uri' => 'http://localhost:8000',
+            'defaults' => [
+                'exceptions' => false
+            ]
+        ]);
+
+        $vacancies = Vacancies::where('isPost', true)->orderBy('agency_id')->get()->toArray();
+
+        $i = 0;
+        foreach ($vacancies as $vacancy) {
+            $agency = array('agency_id' => Agencies::find($vacancy['agency_id'])->toArray());
+            $vacancies[$i] = array_replace($vacancies[$i], $agency);
+            $i = $i + 1;
+        }
+
+        $response = $client->post('http://localhost:8000/api/partners/sync', [
+            'form_params' => [
+                'key' => $request->key,
+                'secret' => $request->secret,
+                'vacancies' => $vacancies,
+            ]
+        ])->getBody()->getContents();
+
+        $response = json_decode($response, true);
+
+        if ($response['success'] == true) {
+            foreach ($response['seekers'] as $row) {
+                $checkSeeker = User::where('email', $row['user']['email'])->first();
+                if (!$checkSeeker) {
+                    User::firstOrCreate([
+                        'ava' => 'seeker.png',
+                        'name' => $row['user']['name'],
+                        'email' => $row['user']['email'],
+                        'password' => $row['user']['password'],
+                        'phone' => $row['phone'],
+                        'address' => $row['address'],
+                        'zip_code' => $row['zip_code'],
+                        'birthday' => $row['birthday'],
+                        'gender' => $row['gender'],
+                        'relationship' => $row['relationship'],
+                        'nationality' => $row['nationality'],
+                        'website' => $row['website'],
+                        'lowest_salary' => $row['lowest_salary'],
+                        'highest_salary' => $row['highest_salary'],
+                        'summary' => $row['summary'],
+                    ]);
+                }
+            }
+
+            $totalSeeker = User::count() + count($response['seekers']);
+            $statusSeeker = $totalSeeker > 1 ? $totalSeeker . ' seekers' : 'a seeker';
+
+            foreach ($response['vacancies'] as $row) {
+                $checkAgency = Agencies::where('email', $row['agency']['email'])->first();
+                if (!$checkAgency) {
+                    $agency = Agencies::firstOrCreate([
+                        'ava' => 'agency.png',
+                        'email' => $row['agency']['email'],
+                        'company' => $row['agency']['company'],
+                        'kantor_pusat' => $row['agency']['kantor_pusat'],
+                        'industry_id' => $row['agency']['industry_id'],
+                        'tentang' => $row['agency']['tentang'],
+                        'alasan' => $row['agency']['alasan'],
+                        'link' => $row['agency']['link'],
+                        'alamat' => $row['agency']['alamat'],
+                        'phone' => $row['agency']['phone'],
+                        'hari_kerja' => $row['agency']['hari_kerja'],
+                        'jam_kerja' => $row['agency']['jam_kerja'],
+                        'lat' => $row['agency']['lat'],
+                        'long' => $row['agency']['long'],
+                    ]);
+                } else {
+                    $agency = $checkAgency;
+                }
+
+                Vacancies::create([
+                    'judul' => $row['judul'],
+                    'city_id' => $row['cities_id'],
+                    'syarat' => $row['syarat'],
+                    'tanggungjawab' => $row['tanggungjawab'],
+                    'pengalaman' => $row['pengalaman'],
+                    'jobtype_id' => $row['jobtype_id'],
+                    'joblevel_id' => $row['joblevel_id'],
+                    'industry_id' => $row['industry_id'],
+                    'salary_id' => $row['salary_id'],
+                    'agency_id' => $agency->id,
+                    'degree_id' => $row['tingkatpend_id'],
+                    'major_id' => $row['jurusanpend_id'],
+                    'jobfunction_id' => $row['fungsikerja_id'],
+                    'isPost' => true,
+                    'recruitmentDate_start' => $row['recruitmentDate_start'],
+                    'recruitmentDate_end' => $row['recruitmentDate_end'],
+                    'interview_date' => $row['interview_date'],
+                    'isSISKA' => $row['isSISKA']
+                ]);
+            }
+
+            $totalVac = count($vacancies) + count($response['vacancies']);
+            $statusVac = $totalVac > 1 ? $totalVac . ' vacancies' : 'a vacancy';
+
+            return 'Successfully synchronized ' . $statusSeeker . ' and ' . $statusVac . '!';
+        }
+
+        return $response['message'];
+    }
 }
