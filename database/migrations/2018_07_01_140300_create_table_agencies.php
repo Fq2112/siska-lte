@@ -31,6 +31,7 @@ class CreateTableAgencies extends Migration
             $table->string('jam_kerja', 30);
             $table->double('lat', 20, 10)->nullable();
             $table->double('long', 20, 10)->nullable();
+            $table->boolean('isSISKA')->default(false);
             $table->timestamps();
         });
     }

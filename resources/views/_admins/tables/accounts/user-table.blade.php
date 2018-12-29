@@ -54,10 +54,7 @@
                                                             <td>
                                                                 <a href="{{route('seeker.profile',['id' => $user->id])}}"
                                                                    target="_blank">
-                                                                    <strong>{{$user->name}}</strong></a> &ndash;
-                                                                <span class="label label-{{$user->status == true ?
-                                                                'success' : 'warning'}}">{{$user->status == true ?
-                                                                'Active' : 'Inactive'}}</span>
+                                                                    <strong>{{$user->name}}</strong></a>
                                                             </td>
                                                         </tr>
                                                         <tr>

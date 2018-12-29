@@ -164,6 +164,7 @@ class AdminController extends Controller
                         'jam_kerja' => $row['agency']['jam_kerja'],
                         'lat' => $row['agency']['lat'],
                         'long' => $row['agency']['long'],
+                        'isSISKA' => $row['agency']['isSISKA']
                     ]);
                 } else {
                     $agency = $checkAgency;
@@ -187,7 +188,6 @@ class AdminController extends Controller
                     'recruitmentDate_start' => $row['recruitmentDate_start'],
                     'recruitmentDate_end' => $row['recruitmentDate_end'],
                     'interview_date' => $row['interview_date'],
-                    'isSISKA' => $row['isSISKA']
                 ]);
             }
 

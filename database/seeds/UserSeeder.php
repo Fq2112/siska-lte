@@ -153,8 +153,8 @@ class UserSeeder extends Seeder
         }
 
         Admin::find(1)->update([
-            'email' => 'jquinn211215@gmail.com',
-            'name' => 'jQuinn',
+            'email' => 'adminLTE@gmail.com',
+            'name' => 'AdminLTE',
             'role' => 'root'
         ]);
     }

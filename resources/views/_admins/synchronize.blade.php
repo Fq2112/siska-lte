@@ -10,7 +10,6 @@
                             <small>SISKA Partnership</small>
                         </h2>
                         <ul class="nav navbar-right panel_toolbox">
-                            <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
                             <li><a class="close-link"><i class="fa fa-times"></i></a></li>
                         </ul>
                         <div class="clearfix"></div>
@@ -120,10 +119,10 @@
                             <div id="finish">
                                 <h2 class="StepTitle">Step 4 Finish</h2>
                                 <ol start="10" style="text-align: justify;font-size: 15px;">
-                                    <li>Untuk mengakhiri setup ini dan lanjut ke tahap sinkronisasi data lowongan,
-                                        refresh halaman ini dengan menekan tombol refresh pada browser Anda atau
-                                        dengan menekan tombol "<strong>Finish</strong>" berikut.
-                                        Atas perhatian dan kerjasamanya terimakasih <i class="fa fa-grin-beam"></i>.
+                                    <li>Untuk mengakhiri setup ini dan lanjut ke tahap sinkronisasi data, tekan tombol
+                                        "<strong>Finish</strong>" berikut.
+                                    </li>
+                                    <li>Atas perhatian dan kerjasamanya, terimakasih <i class="fa fa-grin-beam"></i>
                                     </li>
                                 </ol>
                             </div>
@@ -442,10 +441,14 @@
                                 <h2 class="StepTitle">Step 5 Finish</h2>
                                 <ol start="11" style="text-align: justify;font-size: 15px;">
                                     <li>Untuk mengakhiri <em>synchronize setup</em>, tekan tombol
-                                        "<strong>Finish</strong>" berikut. Dengan menekan tombol tersebut maka seluruh
-                                        data lowongan Anda akan dimigrasikan ke dalam database <strong>SISKA</strong>
-                                        yang tentunya akan diproses terlebih dahulu oleh pihak <strong>SISKA</strong>,
-                                        lowongan manakah yang akan ditampilkan pada situs utama <strong>SISKA</strong>.
+                                        "<strong>Finish</strong>" berikut. Dengan menekan tombol tersebut maka data
+                                        agensi dan lowongannya serta data job seeker dari <strong>SISKA</strong>
+                                        akan disimpan kedalam database SiskaLTE instansi Anda.
+                                    </li>
+                                    <li>Begitu pula dengan seluruh data lowongan beserta agensi Anda akan dimigrasikan
+                                        ke dalam database<strong>SISKA</strong> yang tentunya akan melalui proses
+                                        filter terlebih dahulu, manakah yang akan ditampilkan pada situs utama
+                                        <strong>SISKA</strong>.
                                     </li>
                                     <li>Atas perhatian dan kerjasamanya, kami ucapkan terimakasih banyak
                                         <i class="fa fa-grin-beam"></i>.

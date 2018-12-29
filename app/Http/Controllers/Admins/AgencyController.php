@@ -29,9 +29,7 @@ class AgencyController extends Controller
 
     public function showAgenciesTable()
     {
-        $agencies = Agencies::whereHas('getVacancy', function ($vac) {
-            $vac->where('isSISKA', false);
-        })->orderByDesc('id')->get();
+        $agencies = Agencies::where('isSISKA', false)->get();
 
         return view('_admins.agency-setup', compact('agencies'));
     }
@@ -42,8 +40,10 @@ class AgencyController extends Controller
         $json = file_get_contents("https://maps.googleapis.com/maps/api/geocode/json?address=" .
             $address . "&key=AIzaSyBIljHbKjgtTrpZhEiHum734tF1tolxI68");
 
-        $lat = json_decode($json)->{'results'}[0]->{'geometry'}->{'location'}->{'lat'};
-        $long = json_decode($json)->{'results'}[0]->{'geometry'}->{'location'}->{'lng'};
+        $request->request->add([
+            'lat' => json_decode($json)->{'results'}[0]->{'geometry'}->{'location'}->{'lat'},
+            'long' => json_decode($json)->{'results'}[0]->{'geometry'}->{'location'}->{'lng'}
+        ]);
 
         if ($request->hasfile('ava')) {
             $this->validate($request, [
@@ -70,8 +70,8 @@ class AgencyController extends Controller
             'phone' => $request->phone,
             'hari_kerja' => $request->start_day . ' - ' . $request->end_day,
             'jam_kerja' => $request->start_time . ' - ' . $request->end_time,
-            'lat' => $lat,
-            'long' => $long
+            'lat' => $request->lat,
+            'long' => $request->long
         ]);
 
         return back()->with('success', '' . $request->company . ' is successfully created!');
@@ -79,25 +79,22 @@ class AgencyController extends Controller
 
     public function editAgencies($id)
     {
-        $findAgency = Agencies::whereHas('getVacancy', function ($vac) {
-            $vac->where('isSISKA', false);
-        })->where('id', $id)->firstOrFail();
-
+        $findAgency = Agencies::where('isSISKA', false)->where('id', $id)->firstOrFail();
         return $findAgency;
     }
 
     public function updateAgencies(Request $request)
     {
-        $agency = Agencies::whereHas('getVacancy', function ($vac) {
-            $vac->where('isSISKA', false);
-        })->where('id', $request->id)->firstOrFail();
+        $agency = Agencies::where('isSISKA', false)->where('id', $request->id)->firstOrFail();
 
         $address = str_replace(" ", "+", $request->address);
         $json = file_get_contents("https://maps.googleapis.com/maps/api/geocode/json?address=" .
             $address . "&key=AIzaSyBIljHbKjgtTrpZhEiHum734tF1tolxI68");
 
-        $lat = json_decode($json)->{'results'}[0]->{'geometry'}->{'location'}->{'lat'};
-        $long = json_decode($json)->{'results'}[0]->{'geometry'}->{'location'}->{'lng'};
+        $request->request->add([
+            'lat' => json_decode($json)->{'results'}[0]->{'geometry'}->{'location'}->{'lat'},
+            'long' => json_decode($json)->{'results'}[0]->{'geometry'}->{'location'}->{'lng'}
+        ]);
 
         if ($request->hasFile('ava')) {
             $this->validate($request, [
@@ -136,8 +133,8 @@ class AgencyController extends Controller
             'phone' => $request->phone,
             'hari_kerja' => $request->start_day . ' - ' . $request->end_day,
             'jam_kerja' => $request->start_time . ' - ' . $request->end_time,
-            'lat' => $lat,
-            'long' => $long
+            'lat' => $request->lat,
+            'long' => $request->long
         ]);
 
         return back()->with('success', '' . $request->company . ' is successfully updated!');
@@ -145,13 +142,12 @@ class AgencyController extends Controller
 
     public function deleteAgencies($id)
     {
-        $agency = Agencies::whereHas('getVacancy', function ($vac) {
-            $vac->where('isSISKA', false);
-        })->where('id', decrypt($id))->firstOrFail();
+        $agency = Agencies::where('isSISKA', false)->where('id', decrypt($id))->firstOrFail();
 
         if ($agency->ava != '' || $agency->ava != 'agency.png') {
             Storage::delete('public/admins/agencies/ava/' . $agency->ava);
         }
+
         $agency->delete();
 
         $this->client->delete($this->uri . '/api/partners/agencies/delete', [
@@ -167,7 +163,9 @@ class AgencyController extends Controller
 
     public function showVacanciesTable()
     {
-        $vacancies = Vacancies::where('isSISKA', false)->orderByDesc('id')->get();
+        $vacancies = Vacancies::whereHas('getAgency', function ($q) {
+            $q->where('isSISKA', false);
+        })->get();
 
         return view('_admins.vacancy-setup', compact('vacancies'));
     }
@@ -208,13 +206,18 @@ class AgencyController extends Controller
 
     public function editVacancies($id)
     {
-        $findVacancy = Vacancies::where('isSISKA', false)->where('id', $id)->firstOrFail();
+        $findVacancy = Vacancies::whereHas('getAgency', function ($q) {
+            $q->where('isSISKA', false);
+        })->where('id', $id)->firstOrFail();
+
         return $findVacancy;
     }
 
     public function updateVacancies(Request $request)
     {
-        $vacancy = Vacancies::where('isSISKA', false)->where('id', $request->id)->firstOrFail();
+        $vacancy = Vacancies::whereHas('getAgency', function ($q) {
+            $q->where('isSISKA', false);
+        })->where('id', $request->id)->firstOrFail();
 
         $this->client->put($this->uri . '/api/partners/vacancies/update', [
             'form_params' => [
@@ -250,7 +253,10 @@ class AgencyController extends Controller
 
     public function deleteVacancies($id)
     {
-        $vacancy = Vacancies::where('isSISKA', false)->where('id', decrypt($id))->firstOrFail();
+        $vacancy = Vacancies::whereHas('getAgency', function ($q) {
+            $q->where('isSISKA', false);
+        })->where('id', decrypt($id))->firstOrFail();
+
         $vacancy->delete();
 
         $this->client->delete($this->uri . '/api/partners/vacancies/delete', [
