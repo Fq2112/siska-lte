@@ -21,6 +21,18 @@
         }, 500);
     });
 
+    $("#toggleCurrPass").on("ifToggled", function () {
+        $("#check_password").togglePassword();
+    });
+
+    $("#togglePass").on("ifToggled", function () {
+        $('#password').togglePassword();
+    });
+
+    $("#togglePassConfirm").on("ifToggled", function () {
+        $('#password-confirm').togglePassword();
+    });
+
     $("#show_contact_settings").click(function () {
         $("#contact_settings").toggle(300);
         $("#stats_contact").toggle(300);

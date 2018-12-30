@@ -168,6 +168,11 @@
             font-size: 14px;
             color: #5a738e;
         }
+
+        #myPassword + .glyphicon, #myNew_password + .glyphicon, #myConfirm + .glyphicon {
+            cursor: pointer;
+            pointer-events: all;
+        }
     </style>
 </head>
 
@@ -177,7 +182,7 @@
     $notifications = 0;
 
     if(Auth::guard('admin')->check()){
-        $logo = 'Admins';
+        $logo = 'Admin';
         if($auth->ava == "" || $auth->ava == "avatar.png"){
             $ava = asset('images/avatar.png');
             $bg = 'bg-red';
@@ -196,7 +201,7 @@
 
     } else {
        if(Auth::check()){
-            $logo = 'Seekers';
+            $logo = 'Seeker';
 
             if($auth->ava == "" || $auth->ava == "seeker.png"){
                 $ava = asset('images/seeker.png');
@@ -456,7 +461,8 @@
                                     <input id="myPassword" type="password" class="form-control" minlength="6"
                                            name="myPassword"
                                            placeholder="Current Password" required>
-                                    <span class="fa fa-lock form-control-feedback right" aria-hidden="true"></span>
+                                    <span class="glyphicon glyphicon-eye-open form-control-feedback right"
+                                          aria-hidden="true"></span>
                                 </div>
                             </div>
                             <div class="row form-group">
@@ -464,7 +470,8 @@
                                     <label for="myNew_password">New Password <span class="required">*</span></label>
                                     <input id="myNew_password" type="password" class="form-control" minlength="6"
                                            name="myNew_password" placeholder="New Password" required>
-                                    <span class="fa fa-lock form-control-feedback right" aria-hidden="true"></span>
+                                    <span class="glyphicon glyphicon-eye-open form-control-feedback right"
+                                          aria-hidden="true"></span>
                                 </div>
                             </div>
                             <div class="row form-group">
@@ -472,7 +479,7 @@
                                     <label for="myConfirm">Password Confirmation <span class="required">*</span></label>
                                     <input id="myConfirm" type="password" class="form-control" minlength="6"
                                            name="myPassword_confirmation" placeholder="Retype password" required>
-                                    <span class="fa fa-sign-in-alt form-control-feedback right"
+                                    <span class="glyphicon glyphicon-eye-open form-control-feedback right"
                                           aria-hidden="true"></span>
                                 </div>
                             </div>
@@ -492,6 +499,7 @@
 <script src="{{asset('js/jquery.min.js')}}"></script>
 <script src="{{asset('js/jquery.maskMoney.js')}}"></script>
 <script src="{{asset('js/simple.gpa.format.js')}}"></script>
+<script src="{{asset('js/hideShowPassword.min.js')}}"></script>
 <!-- Bootstrap -->
 <script src="{{asset('js/bootstrap.min.js')}}"></script>
 <!-- FastClick -->
@@ -635,6 +643,21 @@
 
     $(".btn_settings").on("click", function () {
         $("#settingsModal").modal("show");
+    });
+
+    $('#myPassword + .glyphicon').on('click', function () {
+        $(this).toggleClass('glyphicon-eye-open glyphicon-eye-close');
+        $('#myPassword').togglePassword();
+    });
+
+    $('#myNew_password + .glyphicon').on('click', function () {
+        $(this).toggleClass('glyphicon-eye-open glyphicon-eye-close');
+        $('#myNew_password').togglePassword();
+    });
+
+    $('#myConfirm + .glyphicon').on('click', function () {
+        $(this).toggleClass('glyphicon-eye-open glyphicon-eye-close');
+        $('#myConfirm').togglePassword();
     });
 
     function checkRupiahValue() {

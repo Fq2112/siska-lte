@@ -26,7 +26,7 @@
         text: 'Welcome {{Auth::guard('admin')->check() ? Auth::guard('admin')->user()->name : Auth::user()->name}}! ' +
             'You\'re now signed in.',
         type: 'success',
-        timer: '3500'
+        timer: '4500'
     });
     @elseif(session('expire'))
     swal({
@@ -128,7 +128,7 @@
         title: 'Oops..!',
         text: '{{ $error }}',
         type: 'error',
-        timer: '3500'
+        timer: '4500'
     });
     @endforeach
     @endif

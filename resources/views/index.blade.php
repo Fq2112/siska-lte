@@ -73,11 +73,14 @@
             <form class="form-horizontal" method="post" accept-charset="UTF-8" action="{{route('login')}}"
                   id="form-login">
                 {{ csrf_field() }}
-                <div class="row form-group">
+                <div class="row form-group has-feedback">
                     <input type="email" placeholder="Email" name="email" value="{{ old('email') }}" required>
+                    <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
                 </div>
-                <div class="row form-group">
-                    <input type="password" placeholder="Password" name="password" minlength="6" required>
+                <div class="row form-group has-feedback">
+                    <input id="log_password" type="password" placeholder="Password" name="password" minlength="6"
+                           required>
+                    <span class="glyphicon glyphicon-eye-open form-control-feedback"></span>
                 </div>
                 <div class="row form-group">
                     <div class="col-lg-4">
@@ -99,7 +102,7 @@
             </form>
         </div>
 
-        <div class="signup">
+        <div class="signup" style="display: none;">
             <div class="title">
                 <span>Sign Up</span>
                 <p>Create a new account. You can sign up with your github, facebook, twitter, google+ account or
@@ -146,19 +149,23 @@
             <form class="form-horizontal" method="post" accept-charset="UTF-8" action="{{ route('register') }}"
                   id="form-register">
                 {{ csrf_field() }}
-                <div class="row form-group">
+                <div class="row form-group has-feedback">
                     <input id="reg_name" type="text" placeholder="Full name" name="name" required>
+                    <span class="glyphicon glyphicon-user form-control-feedback"></span>
                 </div>
-                <div class="row form-group">
+                <div class="row form-group has-feedback">
                     <input id="reg_email" type="email" placeholder="Email" name="email" required>
+                    <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
                 </div>
-                <div class="row form-group">
+                <div class="row form-group has-feedback">
                     <input id="reg_password" type="password" placeholder="Password" name="password"
                            minlength="6" required>
+                    <span class="glyphicon glyphicon-eye-open form-control-feedback"></span>
                 </div>
-                <div class="row form-group">
+                <div class="row form-group has-feedback">
                     <input id="reg_password_confirm" type="password" placeholder="Retype Password"
                            name="password_confirmation" minlength="6" required>
+                    <span class="glyphicon glyphicon-eye-open form-control-feedback"></span>
                 </div>
                 <div class="row">
                     <div class="col-lg-6" id="recaptcha-register"></div>
@@ -171,7 +178,7 @@
             </form>
         </div>
 
-        <div class="recover-password">
+        <div class="recover-password" style="display: none;">
             <div class="title">
                 <span>Recover Password</span>
                 <p>Enter in the email associated with your account</p>
@@ -191,7 +198,7 @@
                     <i class="fa fa-long-arrow-left" aria-hidden="true"></i> Cancel and go back to Login page </a>
             </form>
 
-            <div class="notification">
+            <div class="notification" style="display: none;">
                 <p>Good job. An email containing information on how to reset your password was sent to
                     <span class="reset-mail"></span>. Please follow the instruction in that email to
                     reset your password. Thanks!</p>
@@ -203,14 +210,12 @@
 </body>
 <!-- jQuery -->
 <script src="{{asset('js/jquery.min.js')}}"></script>
+<script src="{{asset('js/hideShowPassword.min.js')}}"></script>
 <!-- Bootstrap -->
 <script src="{{asset('js/bootstrap.min.js')}}"></script>
 <!-- Particle-js -->
 <script src="{{asset('js/particles.min.js')}}"></script>
 <script>
-    $('.signup').hide();
-    $('.recover-password').hide();
-
     $('.btn-reset').on("click", function () {
         $('.login').hide();
         $('.recover-password').fadeIn(300);
@@ -228,7 +233,6 @@
         $('.login').fadeIn(300);
     });
 
-    $('.notification').hide();
     $('.btn-password').on("click", function () {
         if ($('#resetPassword').val() == 0) {
             // $('#resetPassword').after('<span class="error">Email not valid.</span>')
@@ -308,6 +312,21 @@
         } else {
             $("#reg_errorAlert").html('');
         }
+    });
+
+    $('#log_password + .glyphicon').on('click', function () {
+        $(this).toggleClass('glyphicon-eye-open glyphicon-eye-close');
+        $('#log_password').togglePassword();
+    });
+
+    $('#reg_password + .glyphicon').on('click', function () {
+        $(this).toggleClass('glyphicon-eye-open glyphicon-eye-close');
+        $('#reg_password').togglePassword();
+    });
+
+    $('#reg_password_confirm + .glyphicon').on('click', function () {
+        $(this).toggleClass('glyphicon-eye-open glyphicon-eye-close');
+        $('#reg_password_confirm').togglePassword();
     });
 
     (function () {

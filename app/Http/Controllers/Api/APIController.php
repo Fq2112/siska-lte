@@ -45,50 +45,76 @@ class APIController extends Controller
 
     public function createSeekers(Request $request)
     {
-        $seeker = $request->seeker;
-        User::firstOrCreate([
-            'name' => $seeker['name'],
-            'email' => $seeker['email'],
-            'password' => $seeker['password'],
-        ]);
+        $data = $request->seeker;
+        $checkSeeker = User::where('email', $data['email'])->first();
+        if (!$checkSeeker) {
+            User::firstOrCreate([
+                'ava' => 'seeker.png',
+                'name' => $data['name'],
+                'email' => $data['email'],
+                'password' => $data['password'],
+            ]);
+        }
+    }
 
-        return response()->json([
-            'status' => "200 OK",
-            'success' => true,
-            'message' => $seeker['name'] . ' is successfully created!'
-        ], 200);
+    public function seekersSocialite($provider, Request $request)
+    {
+        $data = $request->seeker;
+        $checkSeeker = User::where('email', $data['email'])->first();
+        if (!$checkSeeker) {
+            $user = User::firstOrCreate([
+                'ava' => 'seeker.png',
+                'name' => $data['name'],
+                'email' => $data['email'],
+                'password' => $data['password'],
+            ]);
+
+            $user->socialProviders()->create([
+                'provider_id' => $data['provider_id'],
+                'provider' => $provider
+            ]);
+        }
     }
 
     public function updateSeekers(Request $request)
     {
-        $seeker = $request->seeker;
-        $user = User::where('email', $seeker['email'])->first();
+        $data = $request->seeker;
+        $user = User::where('email', $data['email'])->first();
         if ($user != null) {
-            $user->update([
-                'password' => $seeker['new_password']
-            ]);
-        }
+            if ($request->check_form == 'password') {
+                $user->update(['password' => $data['password']]);
 
-        return response()->json([
-            'status' => "200 OK",
-            'success' => true,
-            'message' => $seeker['name'] . ' is successfully updated!'
-        ], 200);
+            } elseif ($request->check_form == 'contact') {
+                $user->update([
+                    'phone' => $data['input']['phone'],
+                    'address' => $data['input']['address'],
+                    'zip_code' => $data['input']['zip_code'],
+                ]);
+
+            } elseif ($request->check_form == 'personal') {
+                $user->update([
+                    'name' => $data['input']['name'],
+                    'birthday' => $data['input']['birthday'],
+                    'gender' => $data['input']['gender'],
+                    'relationship' => $data['input']['relationship'],
+                    'nationality' => $data['input']['nationality'],
+                    'website' => $data['input']['website'],
+                    'lowest_salary' => str_replace(',', '', $data['input']['lowest']),
+                    'highest_salary' => str_replace(',', '', $data['input']['highest']),
+                ]);
+
+            } elseif ($request->check_form == 'summary') {
+                $user->update(['summary' => $data['summary']]);
+            }
+        }
     }
 
     public function deleteSeekers(Request $request)
     {
-        $seeker = $request->seeker;
-        $user = User::where('email', $seeker['email'])->first();
+        $user = User::where('email', $request->email)->first();
         if ($user != null) {
             $user->forceDelete();
         }
-
-        return response()->json([
-            'status' => "200 OK",
-            'success' => true,
-            'message' => $seeker['name'] . ' is successfully deleted!'
-        ], 200);
     }
 
     public function getSearchResult(Request $request)

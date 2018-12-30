@@ -1,5 +1,13 @@
 @extends('layouts.mst')
 @section('title', ''.$user->name.'\'s Account Settings: Change Password &ndash; '.env("APP_NAME").' | SISKA &mdash; Sistem Informasi Karier')
+@push('styles')
+    <style>
+        #check_password + .glyphicon, #password + .glyphicon, #password-confirm + .glyphicon {
+            cursor: pointer;
+            pointer-events: all;
+        }
+    </style>
+@endpush
 @section('content')
     <div class="right_col" role="main">
         <div class="row">
@@ -33,12 +41,12 @@
                                                             <label for="email">Primary E-mail (verified)</label>
                                                             <div class="input-group">
                                                                 <span class="input-group-addon">
-                                                                    <i class="glyphicon glyphicon-envelope"></i>
+                                                                    <i class="glyphicon glyphicon-check"></i>
                                                                 </span>
                                                                 <input id="email" type="email" class="form-control"
                                                                        value="{{ $user->email }}" disabled>
                                                                 <span class="input-group-addon">
-                                                                    <i class="glyphicon glyphicon-check"></i>
+                                                                    <i class="glyphicon glyphicon-envelope"></i>
                                                                 </span>
                                                             </div>
                                                         </div>
@@ -52,13 +60,17 @@
                                                             <div class="input-group password_settings"
                                                                  style="display: none">
                                                                 <span class="input-group-addon">
-                                                                    <i class="glyphicon glyphicon-lock"></i>
+                                                                    <input id="toggleCurrPass" type="checkbox"
+                                                                           class="flat">
                                                                 </span>
                                                                 <input placeholder="Current password"
                                                                        id="check_password"
                                                                        type="password" class="form-control"
                                                                        name="password"
                                                                        minlength="6" required autofocus>
+                                                                <span class="input-group-addon">
+                                                                    <i class="glyphicon glyphicon-lock"></i>
+                                                                </span>
                                                             </div>
                                                             <span class="help-block password_settings"
                                                                   style="text-transform: none;display: none">
@@ -71,11 +83,14 @@
                                                         <div class="col-lg-6">
                                                             <div class="input-group">
                                                                 <span class="input-group-addon">
-                                                                    <i class="glyphicon glyphicon-lock"></i>
+                                                                    <input id="togglePass" type="checkbox" class="flat">
                                                                 </span>
                                                                 <input placeholder="New password" id="password"
                                                                        type="password" class="form-control"
                                                                        name="new_password" minlength="6" required>
+                                                                <span class="input-group-addon">
+                                                                    <i class="glyphicon glyphicon-lock"></i>
+                                                                </span>
                                                             </div>
                                                             @if($errors->has('new_password'))
                                                                 <span class="help-block">
@@ -86,13 +101,17 @@
                                                         <div class="col-lg-6">
                                                             <div class="input-group">
                                                                 <span class="input-group-addon">
-                                                                    <i class="glyphicon glyphicon-lock"></i>
+                                                                    <input id="togglePassConfirm" type="checkbox"
+                                                                           class="flat">
                                                                 </span>
                                                                 <input placeholder="Retype password"
                                                                        id="password-confirm" type="password"
                                                                        class="form-control" name="password_confirmation"
                                                                        minlength="6" required
                                                                        onkeyup="return checkPassword()">
+                                                                <span class="input-group-addon">
+                                                                    <i class="glyphicon glyphicon-lock"></i>
+                                                                </span>
                                                             </div>
                                                             <span class="help-block">
                                                                 <strong class="aj_new_pass"

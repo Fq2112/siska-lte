@@ -13,17 +13,26 @@
 
 $router->group(['prefix' => 'api', 'namespace' => 'Api'], function ($router) {
 
-    $router->group(['prefix' => 'SISKA/seekers'], function ($router) {
-        $router->post('create', 'APIController@createSeekers');
-        $router->put('update', 'APIController@updateSeekers');
-        $router->delete('delete', 'APIController@deleteSeekers');
-    });
+    $router->get('vacancies/search', [
+        'uses' => 'APIController@getSearchResult',
+        'as' => 'get.search.vacancy'
+    ]);
 
-    $router->group(['prefix' => 'vacancies'], function ($router) {
-        $router->post('create', 'APIController@createVacancies');
-        $router->put('update', 'APIController@updateVacancies');
-        $router->delete('delete', 'APIController@deleteVacancies');
-        $router->get('search', 'APIController@getSearchResult');
+    $router->group(['prefix' => 'SISKA', 'middleware' => 'partner'], function ($router) {
+
+        $router->group(['prefix' => 'seekers'], function ($router) {
+            $router->post('create', 'APIController@createSeekers');
+            $router->post('{provider}', 'APIController@seekersSocialite');
+            $router->put('update', 'APIController@updateSeekers');
+            $router->delete('delete', 'APIController@deleteSeekers');
+        });
+
+        $router->group(['prefix' => 'vacancies'], function ($router) {
+            $router->post('create', 'APIController@createVacancies');
+            $router->put('update', 'APIController@updateVacancies');
+            $router->delete('delete', 'APIController@deleteVacancies');
+        });
+
     });
 
     /**

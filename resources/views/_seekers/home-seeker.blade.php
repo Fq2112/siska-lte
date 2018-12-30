@@ -158,7 +158,7 @@
             clearTimeout(this.delay);
             this.delay = setTimeout(function () {
                 $.ajax({
-                    url: "{{url('/api/vacancies/search')}}",
+                    url: "{{route('get.search.vacancy')}}",
                     type: "GET",
                     data: $("#form-search").serialize(),
                     beforeSend: function () {

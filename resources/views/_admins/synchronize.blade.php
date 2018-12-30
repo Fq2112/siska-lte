@@ -184,7 +184,7 @@
                                                 <span style="margin-left: 4em">$router->delete('delete', 'APIController@deleteSeekers');</span><br>
                                                 <span style="margin-left: 2em">});</span><br><br>
 
-                                                <span style="margin-left: 2em">$router->group(['prefix' => 'vacancies'], function ($router) {</span><br>
+                                                <span style="margin-left: 2em">$router->group(['prefix' => 'SISKA/vacancies'], function ($router) {</span><br>
                                                 <span style="margin-left: 4em">$router->post('create', 'APIController@createVacancies');</span><br>
                                                 <span style="margin-left: 4em">$router->put('update', 'APIController@updateVacancies');</span><br>
                                                 <span style="margin-left: 4em">$router->delete('delete', 'APIController@deleteVacancies');</span><br><br>

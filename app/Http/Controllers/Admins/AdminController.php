@@ -143,9 +143,6 @@ class AdminController extends Controller
                 }
             }
 
-            $totalSeeker = User::count() + count($response['seekers']);
-            $statusSeeker = $totalSeeker > 1 ? $totalSeeker . ' seekers' : 'a seeker';
-
             foreach ($response['vacancies'] as $row) {
                 $checkAgency = Agencies::where('email', $row['agency']['email'])->first();
                 if (!$checkAgency) {
@@ -193,6 +190,7 @@ class AdminController extends Controller
 
             $totalVac = count($vacancies) + count($response['vacancies']);
             $statusVac = $totalVac > 1 ? $totalVac . ' vacancies' : 'a vacancy';
+            $statusSeeker = User::count() > 1 ? User::count() . ' seekers' : 'a seeker';
 
             return 'Successfully synchronized ' . $statusSeeker . ' and ' . $statusVac . '!';
         }
