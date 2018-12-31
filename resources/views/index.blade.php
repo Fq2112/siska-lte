@@ -216,6 +216,8 @@
 <!-- Particle-js -->
 <script src="{{asset('js/particles.min.js')}}"></script>
 <script>
+    $('[data-toggle="tooltip"]').tooltip();
+
     $('.btn-reset').on("click", function () {
         $('.login').hide();
         $('.recover-password').fadeIn(300);

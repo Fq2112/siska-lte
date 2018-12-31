@@ -13,13 +13,7 @@
 
 $router->group(['prefix' => 'api', 'namespace' => 'Api'], function ($router) {
 
-    $router->get('vacancies/search', [
-        'uses' => 'APIController@getSearchResult',
-        'as' => 'get.search.vacancy'
-    ]);
-
     $router->group(['prefix' => 'SISKA', 'middleware' => 'partner'], function ($router) {
-
         $router->group(['prefix' => 'seekers'], function ($router) {
             $router->post('create', 'APIController@createSeekers');
             $router->post('{provider}', 'APIController@seekersSocialite');
@@ -32,8 +26,16 @@ $router->group(['prefix' => 'api', 'namespace' => 'Api'], function ($router) {
             $router->put('update', 'APIController@updateVacancies');
             $router->delete('delete', 'APIController@deleteVacancies');
         });
-
     });
+
+    /**
+     * Route untuk query search vacancy
+     * di halaman search vacancy
+     */
+    $router->get('vacancies/search', [
+        'uses' => 'APIController@getSearchResult',
+        'as' => 'get.search.vacancy'
+    ]);
 
     /**
      * Mohon tidak melakukan perubahan apapun pada

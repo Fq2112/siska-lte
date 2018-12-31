@@ -20,6 +20,7 @@ use App\Models\Training;
 use App\Models\User;
 use App\Models\Provinces;
 use Carbon\Carbon;
+use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -130,14 +131,18 @@ class AccountController extends Controller
 
         if ($check == 'contact') {
             $this->updateContact($user, $input);
+            $data = array('email' => $user->email, 'input' => $input);
+            $this->updatePartners($data, 'contact');
 
         } elseif ($check == 'personal') {
             $this->updatePersonal($user, $input);
+            $data = array('email' => $user->email, 'input' => $input);
+            $this->updatePartners($data, 'personal');
 
         } elseif ($check == 'summary') {
-            $user->update([
-                'summary' => $input['summary']
-            ]);
+            $user->update(['summary' => $input['summary']]);
+            $data = array('email' => $user->email, 'summary' => $user->summary);
+            $this->updatePartners($data, 'summary');
 
         } elseif ($check == 'video_summary') {
             $this->updateVideoSummary($user, $request);
@@ -183,6 +188,8 @@ class AccountController extends Controller
                     return 1;
                 } else {
                     $user->update(['password' => bcrypt($input['new_password'])]);
+                    $data = array('email' => $user->email, 'password' => $user->password);
+                    $this->updatePartners($data, 'password');
                     return 2;
                 }
             }
@@ -201,6 +208,25 @@ class AccountController extends Controller
                 }
             }
         }
+    }
+
+    private function updatePartners($data, $check)
+    {
+        $client = new Client([
+            'base_uri' => 'http://localhost:8000',
+            'defaults' => [
+                'exceptions' => false
+            ]
+        ]);
+
+        $client->put('http://localhost:8000/api/partners/seekers/update', [
+            'form_params' => [
+                'key' => env('SISKA_API_KEY'),
+                'secret' => env('SISKA_API_SECRET'),
+                'check_form' => $check,
+                'seeker' => $data,
+            ]
+        ]);
     }
 
     public function createAttachments(Request $request)

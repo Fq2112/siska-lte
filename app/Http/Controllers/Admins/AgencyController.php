@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admins;
 
+use App\Http\Controllers\Api\APIController as Credential;
 use App\Models\Vacancies;
 use App\Models\Agencies;
 use App\Http\Controllers\Controller;
@@ -111,14 +112,17 @@ class AgencyController extends Controller
             $name = $agency->ava;
         }
 
-        $this->client->put($this->uri . '/api/partners/agencies/update', [
-            'form_params' => [
-                'key' => $this->key,
-                'secret' => $this->secret,
-                'agency' => $agency->toArray(),
-                'data' => $request->toArray(),
-            ]
-        ]);
+        $response = app(Credential::class)->getCredentials();
+        if ($response['isSync'] == true) {
+            $this->client->put($this->uri . '/api/partners/vacancies/agency/update', [
+                'form_params' => [
+                    'key' => $this->key,
+                    'secret' => $this->secret,
+                    'agency' => $agency->toArray(),
+                    'data' => $request->toArray(),
+                ]
+            ]);
+        }
 
         $agency->update([
             'ava' => $name,
@@ -150,13 +154,16 @@ class AgencyController extends Controller
 
         $agency->delete();
 
-        $this->client->delete($this->uri . '/api/partners/agencies/delete', [
-            'form_params' => [
-                'key' => $this->key,
-                'secret' => $this->secret,
-                'agency' => $agency->toArray(),
-            ]
-        ]);
+        $response = app(Credential::class)->getCredentials();
+        if ($response['isSync'] == true) {
+            $this->client->delete($this->uri . '/api/partners/vacancies/agency/delete', [
+                'form_params' => [
+                    'key' => $this->key,
+                    'secret' => $this->secret,
+                    'agency' => $agency->toArray(),
+                ]
+            ]);
+        }
 
         return back()->with('success', '' . $agency->company . ' is successfully deleted!');
     }
@@ -192,14 +199,17 @@ class AgencyController extends Controller
             'interview_date' => $request->interview_date,
         ]);
 
-        $this->client->post($this->uri . '/api/partners/vacancies/create', [
-            'form_params' => [
-                'key' => $this->key,
-                'secret' => $this->secret,
-                'vacancy' => $vacancy->toArray(),
-                'agency' => $vacancy->getAgency->toArray(),
-            ]
-        ]);
+        $response = app(Credential::class)->getCredentials();
+        if ($response['isSync'] == true) {
+            $this->client->post($this->uri . '/api/partners/vacancies/create', [
+                'form_params' => [
+                    'key' => $this->key,
+                    'secret' => $this->secret,
+                    'vacancy' => $vacancy->toArray(),
+                    'agency' => $vacancy->getAgency->toArray(),
+                ]
+            ]);
+        }
 
         return back()->with('success', '' . $vacancy->judul . ' is successfully created!');
     }
@@ -219,15 +229,18 @@ class AgencyController extends Controller
             $q->where('isSISKA', false);
         })->where('id', $request->id)->firstOrFail();
 
-        $this->client->put($this->uri . '/api/partners/vacancies/update', [
-            'form_params' => [
-                'key' => $this->key,
-                'secret' => $this->secret,
-                'agency' => $vacancy->getAgency->toArray(),
-                'vacancy' => $vacancy->toArray(),
-                'data' => $request->toArray(),
-            ]
-        ]);
+        $response = app(Credential::class)->getCredentials();
+        if ($response['isSync'] == true) {
+            $this->client->put($this->uri . '/api/partners/vacancies/update', [
+                'form_params' => [
+                    'key' => $this->key,
+                    'secret' => $this->secret,
+                    'agency' => $vacancy->getAgency->toArray(),
+                    'vacancy' => $vacancy->toArray(),
+                    'data' => $request->toArray(),
+                ]
+            ]);
+        }
 
         $vacancy->update([
             'judul' => $request->judul,
@@ -256,19 +269,31 @@ class AgencyController extends Controller
         $vacancy = Vacancies::whereHas('getAgency', function ($q) {
             $q->where('isSISKA', false);
         })->where('id', decrypt($id))->firstOrFail();
-
         $vacancy->delete();
 
-        $this->client->delete($this->uri . '/api/partners/vacancies/delete', [
-            'form_params' => [
-                'key' => $this->key,
-                'secret' => $this->secret,
-                'agency' => $vacancy->getAgency->toArray(),
-                'vacancy' => $vacancy->toArray(),
-            ]
-        ]);
+        $response = app(Credential::class)->getCredentials();
+        if ($response['isSync'] == true) {
+            if ($vacancy->getAgency->getVacancy->count() > 0) {
+                $this->client->delete($this->uri . '/api/partners/vacancies/delete', [
+                    'form_params' => [
+                        'key' => $this->key,
+                        'secret' => $this->secret,
+                        'agency' => $vacancy->getAgency->toArray(),
+                        'vacancy' => $vacancy->toArray(),
+                    ]
+                ]);
+
+            } else {
+                $this->client->delete($this->uri . '/api/partners/vacancies/agency/delete', [
+                    'form_params' => [
+                        'key' => $this->key,
+                        'secret' => $this->secret,
+                        'agency' => $vacancy->getAgency->toArray(),
+                    ]
+                ]);
+            }
+        }
 
         return back()->with('success', '' . $vacancy->judul . ' is successfully deleted!');
     }
-
 }

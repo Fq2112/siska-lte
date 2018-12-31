@@ -139,23 +139,28 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="#sync-seeker">
+                                    <a href="#sync-seeker-1">
                                         <span class="step_no">2</span>
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="#sync-vacancy-1">
+                                    <a href="#sync-seeker-2">
                                         <span class="step_no">3</span>
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="#sync-vacancy-2">
+                                    <a href="#sync-vacancy-1">
                                         <span class="step_no">4</span>
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="#finish">
+                                    <a href="#sync-vacancy-2">
                                         <span class="step_no">5</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#finish">
+                                        <span class="step_no">6</span>
                                     </a>
                                 </li>
                             </ul>
@@ -176,30 +181,29 @@
                                     <li>Tambahkan code berikut :
                                         <blockquote>
                                             <code>
-                                                $router->group(['prefix' => 'api', 'namespace' => 'Api'], function
-                                                ($router) {<br><br>
-                                                <span style="margin-left: 2em">$router->group(['prefix' => 'SISKA/seekers'], function ($router){</span><br>
+                                                $router->group(['prefix'=>'SISKA', 'middleware'=>'partner'],
+                                                function($router){<br>
+                                                <span style="margin-left: 2em">$router->group(['prefix' => 'seekers'], function ($router) {</span><br>
                                                 <span style="margin-left: 4em">$router->post('create', 'APIController@createSeekers');</span><br>
+                                                <span style="margin-left: 4em">$router->post('{provider}', 'APIController@seekersSocialite');</span><br>
                                                 <span style="margin-left: 4em">$router->put('update', 'APIController@updateSeekers');</span><br>
                                                 <span style="margin-left: 4em">$router->delete('delete', 'APIController@deleteSeekers');</span><br>
                                                 <span style="margin-left: 2em">});</span><br><br>
 
-                                                <span style="margin-left: 2em">$router->group(['prefix' => 'SISKA/vacancies'], function ($router) {</span><br>
+                                                <span style="margin-left: 2em">$router->group(['prefix' => 'vacancies'], function ($router) {</span><br>
                                                 <span style="margin-left: 4em">$router->post('create', 'APIController@createVacancies');</span><br>
                                                 <span style="margin-left: 4em">$router->put('update', 'APIController@updateVacancies');</span><br>
-                                                <span style="margin-left: 4em">$router->delete('delete', 'APIController@deleteVacancies');</span><br><br>
-                                                <span style="margin-left: 4em"><em>// here is your search vacancy route&hellip;</em></span><br>
-                                                <span style="margin-left: 2em">});</span><br><br>
-
-                                                <span style="margin-left: 2em"><em>// here is your other api routes&hellip;</em></span><br>
+                                                <span style="margin-left: 4em">$router->delete('delete', 'APIController@deleteVacancies');</span><br>
+                                                <span style="margin-left: 2em">});</span><br>
                                                 });
-                                            </code>
+                                            </code><br><br>
+                                            <em>// here is your other routes&hellip;</em>
                                         </blockquote>
                                     </li>
                                 </ol>
                             </div>
-                            <div id="sync-seeker">
-                                <h2 class="StepTitle">Step 2 Sync&ndash;Seeker</h2>
+                            <div id="sync-seeker-1">
+                                <h2 class="StepTitle">Step 2 Sync&ndash;Seeker <sub>(Part 1)</sub></h2>
                                 <ol start="3" style="font-size: 15px;">
                                     <li>Buka file <code>app/Http/Controllers/Api/APIController.php</code>.</li>
                                     <li>Tambahkan code berikut :
@@ -208,52 +212,76 @@
                                             <code>
                                                 public function createSeekers(Request $request)<br>
                                                 {<br>
-                                                <span style="margin-left: 2em">$seeker = $request->seeker;</span><br>
-                                                <span style="margin-left: 2em">User::firstOrCreate([</span><br>
-                                                <span style="margin-left: 4em">'name' => $seeker['name'],</span><br>
-                                                <span style="margin-left: 4em">'email' => $seeker['email'],</span><br>
-                                                <span style="margin-left: 4em">'password' => $seeker['password'],</span><br>
-                                                <span style="margin-left: 2em">]);</span><br><br>
+                                                <span style="margin-left: 2em">$data = $request->seeker;</span><br>
+                                                <span style="margin-left: 2em">$checkSeeker = User::where('email', $data['email'])->first();</span><br>
+                                                <span style="margin-left: 2em">if (!$checkSeeker) {</span><br>
+                                                <span style="margin-left: 4em">User::firstOrCreate([</span><br>
+                                                <span style="margin-left: 6em">'ava' => 'seeker.png',</span><br>
+                                                <span style="margin-left: 6em">'name' => $data['name'],</span><br>
+                                                <span style="margin-left: 6em">'email' => $data['email'],</span><br>
+                                                <span style="margin-left: 6em">'password' => $data['password'],</span><br>
+                                                <span style="margin-left: 4em">]);</span><br>
+                                                <span style="margin-left: 2em">}</span><br>
+                                                }<br><br>
 
-                                                <span style="margin-left: 2em">return response()->json([</span><br>
-                                                <span style="margin-left: 4em">'status' => "200 OK",</span><br>
-                                                <span style="margin-left: 4em">'success' => true,</span><br>
-                                                <span style="margin-left: 4em">'message' => $seeker['name'] . ' is successfully created!'</span><br>
-                                                <span style="margin-left: 2em">], 200);</span><br>
+                                                public function seekersSocialite($provider, Request $request)<br>
+                                                {<br>
+                                                <span style="margin-left: 2em">$data = $request->seeker;</span><br>
+                                                <span style="margin-left: 2em">$checkSeeker = User::where('email', $data['email'])->first();</span><br>
+                                                <span style="margin-left: 2em">if (!$checkSeeker) {</span><br>
+                                                <span style="margin-left: 4em">$user = User::firstOrCreate([</span><br>
+                                                <span style="margin-left: 6em">'ava' => 'seeker.png',</span><br>
+                                                <span style="margin-left: 6em">'name' => $data['name'],</span><br>
+                                                <span style="margin-left: 6em">'email' => $data['email'],</span><br>
+                                                <span style="margin-left: 6em">'password' => $data['password'],</span><br>
+                                                <span style="margin-left: 4em">]);</span><br><br>
+
+                                                <span style="margin-left: 4em">$user->socialProviders()->create([</span><br>
+                                                <span style="margin-left: 6em">'provider_id' => $data['provider_id'],</span><br>
+                                                <span style="margin-left: 6em">'provider' => $provider</span><br>
+                                                <span style="margin-left: 4em">]);</span><br>
+                                                <span style="margin-left: 2em">}</span><br>
                                                 }<br><br>
 
                                                 public function updateSeekers(Request $request)<br>
                                                 {<br>
-                                                <span style="margin-left: 2em">$seeker = $request->seeker;</span><br>
+                                                <span style="margin-left: 2em">$data = $request->seeker;</span><br>
+                                                <span style="margin-left: 2em">$user = User::where('email', $data['email'])->first();</span><br>
+                                                <span style="margin-left: 2em">if ($user != null) {</span><br>
+                                                <span style="margin-left: 4em">if ($request->check_form == 'password') {</span><br>
+                                                <span style="margin-left: 6em">$user->update(['password' => $data['password']]);</span><br><br>
 
-                                                <span style="margin-left: 2em">$user = User::where('email', $seeker['email'])->first();</span><br>
-                                                <span style="margin-left: 2em">if($user != null){</span><br>
-                                                <span style="margin-left: 4em">$user->update([</span><br>
-                                                <span style="margin-left: 6em">'password' => $seeker['new_password']</span><br>
-                                                <span style="margin-left: 4em">]);</span><br>
-                                                <span style="margin-left: 2em">}</span><br><br>
+                                                <span style="margin-left: 4em">} elseif ($request->check_form == 'contact') {</span><br>
+                                                <span style="margin-left: 6em">$user->update([</span><br>
+                                                <span style="margin-left: 8em">'phone' => $data['input']['phone'],</span><br>
+                                                <span style="margin-left: 8em">'address' => $data['input']['address'],</span><br>
+                                                <span style="margin-left: 8em">'zip_code' => $data['input']['zip_code'],</span><br>
+                                                <span style="margin-left: 6em">]);</span><br><br>
 
-                                                <span style="margin-left: 2em">return response()->json([</span><br>
-                                                <span style="margin-left: 4em">'status' => "200 OK",</span><br>
-                                                <span style="margin-left: 4em">'success' => true,</span><br>
-                                                <span style="margin-left: 4em">'message' => $seeker['name'] . ' is successfully updated!'</span><br>
-                                                <span style="margin-left: 2em">], 200);</span><br>
+                                                <span style="margin-left: 4em">} elseif ($request->check_form == 'personal') {</span><br>
+                                                <span style="margin-left: 6em">$user->update([</span><br>
+                                                <span style="margin-left: 8em">'name' => $data['input']['name'],</span><br>
+                                                <span style="margin-left: 8em">'birthday' => $data['input']['birthday'],</span><br>
+                                                <span style="margin-left: 8em">'gender' => $data['input']['gender'],</span><br>
+                                                <span style="margin-left: 8em">'relationship' => $data['input']['relationship'],</span><br>
+                                                <span style="margin-left: 8em">'nationality' => $data['input']['nationality'],</span><br>
+                                                <span style="margin-left: 8em">'website' => $data['input']['website'],</span><br>
+                                                <span style="margin-left: 8em">'lowest_salary' => str_replace(',', '', $data['input']['lowest']),</span><br>
+                                                <span style="margin-left: 8em">'highest_salary' => str_replace(',', '', $data['input']['highest']),</span><br>
+                                                <span style="margin-left: 6em">]);</span><br><br>
+
+                                                <span style="margin-left: 4em">} elseif ($request->check_form == 'summary') {</span><br>
+                                                <span style="margin-left: 6em">$user->update(['summary' => $data['summary']]);</span><br>
+                                                <span style="margin-left: 4em">}</span><br>
+                                                <span style="margin-left: 2em">}</span><br>
                                                 }<br><br>
 
                                                 public function deleteSeekers(Request $request)<br>
                                                 {<br>
-                                                <span style="margin-left: 2em">$seeker = $request->seeker;</span><br>
-
-                                                <span style="margin-left: 2em">$user = User::where('email', $seeker['email'])->first();</span><br>
-                                                <span style="margin-left: 2em">if($user != null){</span><br>
+                                                <span style="margin-left: 2em">$user = User::where('email', $request->email)->first();</span><br>
+                                                <span style="margin-left: 2em">if ($user != null) {</span><br>
                                                 <span style="margin-left: 4em">$user->forceDelete();</span><br>
-                                                <span style="margin-left: 2em">}</span><br><br>
-
-                                                <span style="margin-left: 2em">return response()->json([</span><br>
-                                                <span style="margin-left: 4em">'status' => "200 OK",</span><br>
-                                                <span style="margin-left: 4em">'success' => true,</span><br>
-                                                <span style="margin-left: 4em">'message' => $seeker['name'] . ' is successfully deleted!'</span><br>
-                                                <span style="margin-left: 2em">], 200);</span><br>
+                                                <span style="margin-left: 2em">}</span><br>
                                                 }
                                             </code><br><br>
                                             <em>// here is your other functions&hellip;</em>
@@ -263,6 +291,41 @@
                                         <blockquote>
                                             <code>use App\Models\User;</code>
                                         </blockquote>
+                                    </li>
+                                </ol>
+                            </div>
+                            <div id="sync-seeker-2">
+                                <h2 class="StepTitle">Step 3 Sync&ndash;Seeker <sub>(Part 2)</sub></h2>
+                                <ol start="6" style="font-size: 15px;">
+                                    <li>Buka file <code>app/Http/Controllers/Seekers/AccountController.php</code>.</li>
+                                    <li>Tambahkan fungsi berikut :
+                                        <blockquote>
+                                            <em>// here is your other functions&hellip;</em><br><br>
+                                            <code>
+                                                private function updatePartners($data, $check)<br>
+                                                {<br>
+                                                <span style="margin-left: 2em">$client = new Client([</span><br>
+                                                <span style="margin-left: 4em">'base_uri' => 'http://localhost:8000',</span><br>
+                                                <span style="margin-left: 4em">'defaults' => [</span><br>
+                                                <span style="margin-left: 6em">'exceptions' => false</span><br>
+                                                <span style="margin-left: 4em">]</span><br>
+                                                <span style="margin-left: 2em">]);</span><br><br>
+
+                                                <span style="margin-left: 2em">$client->put('http://localhost:8000/api/partners/seekers/update', [</span><br>
+                                                <span style="margin-left: 4em">''form_params' => [</span><br>
+                                                <span style="margin-left: 6em">'key' => env('SISKA_API_KEY'),</span><br>
+                                                <span style="margin-left: 6em">'secret' => env('SISKA_API_SECRET'),</span><br>
+                                                <span style="margin-left: 6em">'check_form' => $check,</span><br>
+                                                <span style="margin-left: 6em">'seeker' => $data,</span><br>
+                                                <span style="margin-left: 4em">']</span><br>
+                                                <span style="margin-left: 2em">]);</span><br>
+                                                }
+                                            </code><br><br>
+                                            <em>// here is your other functions&hellip;</em>
+                                        </blockquote>
+                                    </li>
+                                    <li>Jangan lupa untuk <em>import library</em> guzzle Anda :
+                                        <blockquote><code>use GuzzleHttp\Client;</code></blockquote>
                                     </li>
                                 </ol>
                             </div>
@@ -276,52 +339,76 @@
                                             <code>
                                                 public function createSeekers(Request $request)<br>
                                                 {<br>
-                                                <span style="margin-left: 2em">$seeker = $request->seeker;</span><br>
-                                                <span style="margin-left: 2em">User::firstOrCreate([</span><br>
-                                                <span style="margin-left: 4em">'name' => $seeker['name'],</span><br>
-                                                <span style="margin-left: 4em">'email' => $seeker['email'],</span><br>
-                                                <span style="margin-left: 4em">'password' => $seeker['password'],</span><br>
-                                                <span style="margin-left: 2em">]);</span><br><br>
+                                                <span style="margin-left: 2em">$data = $request->seeker;</span><br>
+                                                <span style="margin-left: 2em">$checkSeeker = User::where('email', $data['email'])->first();</span><br>
+                                                <span style="margin-left: 2em">if (!$checkSeeker) {</span><br>
+                                                <span style="margin-left: 4em">User::firstOrCreate([</span><br>
+                                                <span style="margin-left: 6em">'ava' => 'seeker.png',</span><br>
+                                                <span style="margin-left: 6em">'name' => $data['name'],</span><br>
+                                                <span style="margin-left: 6em">'email' => $data['email'],</span><br>
+                                                <span style="margin-left: 6em">'password' => $data['password'],</span><br>
+                                                <span style="margin-left: 4em">]);</span><br>
+                                                <span style="margin-left: 2em">}</span><br>
+                                                }<br><br>
 
-                                                <span style="margin-left: 2em">return response()->json([</span><br>
-                                                <span style="margin-left: 4em">'status' => "200 OK",</span><br>
-                                                <span style="margin-left: 4em">'success' => true,</span><br>
-                                                <span style="margin-left: 4em">'message' => $seeker['name'] . ' is successfully created!'</span><br>
-                                                <span style="margin-left: 2em">], 200);</span><br>
+                                                public function seekersSocialite($provider, Request $request)<br>
+                                                {<br>
+                                                <span style="margin-left: 2em">$data = $request->seeker;</span><br>
+                                                <span style="margin-left: 2em">$checkSeeker = User::where('email', $data['email'])->first();</span><br>
+                                                <span style="margin-left: 2em">if (!$checkSeeker) {</span><br>
+                                                <span style="margin-left: 4em">$user = User::firstOrCreate([</span><br>
+                                                <span style="margin-left: 6em">'ava' => 'seeker.png',</span><br>
+                                                <span style="margin-left: 6em">'name' => $data['name'],</span><br>
+                                                <span style="margin-left: 6em">'email' => $data['email'],</span><br>
+                                                <span style="margin-left: 6em">'password' => $data['password'],</span><br>
+                                                <span style="margin-left: 4em">]);</span><br><br>
+
+                                                <span style="margin-left: 4em">$user->socialProviders()->create([</span><br>
+                                                <span style="margin-left: 6em">'provider_id' => $data['provider_id'],</span><br>
+                                                <span style="margin-left: 6em">'provider' => $provider</span><br>
+                                                <span style="margin-left: 4em">]);</span><br>
+                                                <span style="margin-left: 2em">}</span><br>
                                                 }<br><br>
 
                                                 public function updateSeekers(Request $request)<br>
                                                 {<br>
-                                                <span style="margin-left: 2em">$seeker = $request->seeker;</span><br>
+                                                <span style="margin-left: 2em">$data = $request->seeker;</span><br>
+                                                <span style="margin-left: 2em">$user = User::where('email', $data['email'])->first();</span><br>
+                                                <span style="margin-left: 2em">if ($user != null) {</span><br>
+                                                <span style="margin-left: 4em">if ($request->check_form == 'password') {</span><br>
+                                                <span style="margin-left: 6em">$user->update(['password' => $data['password']]);</span><br><br>
 
-                                                <span style="margin-left: 2em">$user = User::where('email', $seeker['email'])->first();</span><br>
-                                                <span style="margin-left: 2em">if($user != null){</span><br>
-                                                <span style="margin-left: 4em">$user->update([</span><br>
-                                                <span style="margin-left: 6em">'password' => $seeker['new_password']</span><br>
-                                                <span style="margin-left: 4em">]);</span><br>
-                                                <span style="margin-left: 2em">}</span><br><br>
+                                                <span style="margin-left: 4em">} elseif ($request->check_form == 'contact') {</span><br>
+                                                <span style="margin-left: 6em">$user->update([</span><br>
+                                                <span style="margin-left: 8em">'phone' => $data['input']['phone'],</span><br>
+                                                <span style="margin-left: 8em">'address' => $data['input']['address'],</span><br>
+                                                <span style="margin-left: 8em">'zip_code' => $data['input']['zip_code'],</span><br>
+                                                <span style="margin-left: 6em">]);</span><br><br>
 
-                                                <span style="margin-left: 2em">return response()->json([</span><br>
-                                                <span style="margin-left: 4em">'status' => "200 OK",</span><br>
-                                                <span style="margin-left: 4em">'success' => true,</span><br>
-                                                <span style="margin-left: 4em">'message' => $seeker['name'] . ' is successfully updated!'</span><br>
-                                                <span style="margin-left: 2em">], 200);</span><br>
+                                                <span style="margin-left: 4em">} elseif ($request->check_form == 'personal') {</span><br>
+                                                <span style="margin-left: 6em">$user->update([</span><br>
+                                                <span style="margin-left: 8em">'name' => $data['input']['name'],</span><br>
+                                                <span style="margin-left: 8em">'birthday' => $data['input']['birthday'],</span><br>
+                                                <span style="margin-left: 8em">'gender' => $data['input']['gender'],</span><br>
+                                                <span style="margin-left: 8em">'relationship' => $data['input']['relationship'],</span><br>
+                                                <span style="margin-left: 8em">'nationality' => $data['input']['nationality'],</span><br>
+                                                <span style="margin-left: 8em">'website' => $data['input']['website'],</span><br>
+                                                <span style="margin-left: 8em">'lowest_salary' => str_replace(',', '', $data['input']['lowest']),</span><br>
+                                                <span style="margin-left: 8em">'highest_salary' => str_replace(',', '', $data['input']['highest']),</span><br>
+                                                <span style="margin-left: 6em">]);</span><br><br>
+
+                                                <span style="margin-left: 4em">} elseif ($request->check_form == 'summary') {</span><br>
+                                                <span style="margin-left: 6em">$user->update(['summary' => $data['summary']]);</span><br>
+                                                <span style="margin-left: 4em">}</span><br>
+                                                <span style="margin-left: 2em">}</span><br>
                                                 }<br><br>
 
                                                 public function deleteSeekers(Request $request)<br>
                                                 {<br>
-                                                <span style="margin-left: 2em">$seeker = $request->seeker;</span><br>
-
-                                                <span style="margin-left: 2em">$user = User::where('email', $seeker['email'])->first();</span><br>
-                                                <span style="margin-left: 2em">if($user != null){</span><br>
+                                                <span style="margin-left: 2em">$user = User::where('email', $request->email)->first();</span><br>
+                                                <span style="margin-left: 2em">if ($user != null) {</span><br>
                                                 <span style="margin-left: 4em">$user->forceDelete();</span><br>
-                                                <span style="margin-left: 2em">}</span><br><br>
-
-                                                <span style="margin-left: 2em">return response()->json([</span><br>
-                                                <span style="margin-left: 4em">'status' => "200 OK",</span><br>
-                                                <span style="margin-left: 4em">'success' => true,</span><br>
-                                                <span style="margin-left: 4em">'message' => $seeker['name'] . ' is successfully deleted!'</span><br>
-                                                <span style="margin-left: 2em">], 200);</span><br>
+                                                <span style="margin-left: 2em">}</span><br>
                                                 }
                                             </code><br><br>
                                             <em>// here is your other functions&hellip;</em>
@@ -355,9 +442,13 @@
                                             <em>// here is your other functions&hellip;</em>
                                         </blockquote>
                                     </li>
-                                    <li>Jangan lupa untuk <em>import library</em> guzzle Anda :
+                                    <li>Jangan lupa untuk <em>import library</em> guzzle Anda dan tambahkan code berikut
+                                        :
                                         <blockquote>
-                                            <code>use GuzzleHttp\Client;</code>
+                                            <code>
+                                                use GuzzleHttp\Client;<br>
+                                                use App\Http\Controllers\Api\APIController as Credential;
+                                            </code>
                                         </blockquote>
                                     </li>
                                     <li>Tambahkan code berikut :
@@ -366,70 +457,96 @@
                                                 public function updateAgencies(Request $request)<br>
                                                 {<br>
                                                 <span style="margin-left: 2em"><em>// other codes&hellip;</em></span><br><br>
-                                                <span style="margin-left: 2em">$this->client->put($this->uri . '/api/partners/agencies/update', [</span><br>
-                                                <span style="margin-left: 4em">'form_params' => [</span><br>
-                                                <span style="margin-left: 6em">'key' => $this->key,</span><br>
-                                                <span style="margin-left: 6em">'secret' => $this->secret,</span><br>
-                                                <span style="margin-left: 6em">'agency' => $agency->toArray(),</span><br>
-                                                <span style="margin-left: 6em">'data' => $request->toArray(),</span><br>
-                                                <span style="margin-left: 4em">]</span><br>
-                                                <span style="margin-left: 2em">]);</span><br><br>
+                                                <span style="margin-left: 2em">$response = app(Credential::class)->getCredentials();</span><br>
+                                                <span style="margin-left: 2em">if ($response['isSync'] == true) {</span><br>
+                                                <span style="margin-left: 4em">$this->client->put($this->uri . '/api/partners/vacancies/agency/update', [</span><br>
+                                                <span style="margin-left: 6em">'form_params' => [</span><br>
+                                                <span style="margin-left: 8em">'key' => $this->key,</span><br>
+                                                <span style="margin-left: 8em">'secret' => $this->secret,</span><br>
+                                                <span style="margin-left: 8em">'agency' => $agency->toArray(),</span><br>
+                                                <span style="margin-left: 8em">'data' => $request->toArray(),</span><br>
+                                                <span style="margin-left: 6em">]</span><br>
+                                                <span style="margin-left: 4em">]);</span><br>
+                                                <span style="margin-left: 2em">}</span><br><br>
                                                 <span style="margin-left: 2em"><em>// here is your agency update query code&hellip;</em></span><br>
                                                 }<br><br>
 
                                                 public function deleteAgencies($id)<br>
                                                 {<br>
                                                 <span style="margin-left: 2em"><em>// here is your agency delete query code&hellip;</em></span><br><br>
-                                                <span style="margin-left: 2em">$this->client->delete($this->uri . '/api/partners/agencies/delete', [</span><br>
-                                                <span style="margin-left: 4em">'form_params' => [</span><br>
-                                                <span style="margin-left: 6em">'key' => $this->key,</span><br>
-                                                <span style="margin-left: 6em">'secret' => $this->secret,</span><br>
-                                                <span style="margin-left: 6em">'agency' => $agency->toArray(),</span><br>
-                                                <span style="margin-left: 4em">]</span><br>
-                                                <span style="margin-left: 2em">]);</span><br><br>
+                                                <span style="margin-left: 2em">$response = app(Credential::class)->getCredentials();</span><br>
+                                                <span style="margin-left: 2em">if ($response['isSync'] == true) {</span><br>
+                                                <span style="margin-left: 4em">$this->client->delete($this->uri.'/api/partners/vacancies/agency/delete',[</span><br>
+                                                <span style="margin-left: 6em">'form_params' => [</span><br>
+                                                <span style="margin-left: 8em">'key' => $this->key,</span><br>
+                                                <span style="margin-left: 8em">'secret' => $this->secret,</span><br>
+                                                <span style="margin-left: 8em">'agency' => $agency->toArray(),</span><br>
+                                                <span style="margin-left: 6em">]</span><br>
+                                                <span style="margin-left: 4em">]);</span><br>
+                                                <span style="margin-left: 2em">}</span><br><br>
                                                 <span style="margin-left: 2em"><em>// other codes&hellip;</em></span><br>
                                                 }<br><br>
 
                                                 public function createVacancies(Request $request)<br>
                                                 {<br>
                                                 <span style="margin-left: 2em"><em>// here is your vacancy insert/create query code&hellip;</em></span><br><br>
-                                                <span style="margin-left: 2em">$this->client->post($this->uri . '/api/partners/vacancies/create', [</span><br>
-                                                <span style="margin-left: 4em">'form_params' => [</span><br>
-                                                <span style="margin-left: 6em">'key' => $this->key,</span><br>
-                                                <span style="margin-left: 6em">'secret' => $this->secret,</span><br>
-                                                <span style="margin-left: 6em">'vacancy' => $vacancy->toArray(),</span><br>
-                                                <span style="margin-left: 6em">'agency' => $vacancy->getAgency->toArray(),</span><br>
-                                                <span style="margin-left: 4em">]</span><br>
-                                                <span style="margin-left: 2em">]);</span><br><br>
+                                                <span style="margin-left: 2em">$response = app(Credential::class)->getCredentials();</span><br>
+                                                <span style="margin-left: 2em">if ($response['isSync'] == true) {</span><br>
+                                                <span style="margin-left: 4em">$this->client->post($this->uri . '/api/partners/vacancies/create', [</span><br>
+                                                <span style="margin-left: 6em">'form_params' => [</span><br>
+                                                <span style="margin-left: 8em">'key' => $this->key,</span><br>
+                                                <span style="margin-left: 8em">'secret' => $this->secret,</span><br>
+                                                <span style="margin-left: 8em">'vacancy' => $vacancy->toArray(),</span><br>
+                                                <span style="margin-left: 8em">'agency' => $vacancy->getAgency->toArray(),</span><br>
+                                                <span style="margin-left: 6em">]</span><br>
+                                                <span style="margin-left: 4em">]);</span><br>
+                                                <span style="margin-left: 2em">}</span><br><br>
                                                 <span style="margin-left: 2em"><em>// other codes&hellip;</em></span><br>
                                                 }<br><br>
 
                                                 public function updateVacancies(Request $request)<br>
                                                 {<br>
                                                 <span style="margin-left: 2em"><em>// other codes&hellip;</em></span><br><br>
-                                                <span style="margin-left: 2em">$this->client->put($this->uri . '/api/partners/vacancies/update', [</span><br>
-                                                <span style="margin-left: 4em">'form_params' => [</span><br>
-                                                <span style="margin-left: 6em">'key' => $this->key,</span><br>
-                                                <span style="margin-left: 6em">'secret' => $this->secret,</span><br>
-                                                <span style="margin-left: 6em">'agency' => $vacancy->getAgency->toArray(),</span><br>
-                                                <span style="margin-left: 6em">'vacancy' => $vacancy->toArray(),</span><br>
-                                                <span style="margin-left: 6em">'data' => $request->toArray(),</span><br>
-                                                <span style="margin-left: 4em">]</span><br>
-                                                <span style="margin-left: 2em">]);</span><br><br>
+                                                <span style="margin-left: 2em">$response = app(Credential::class)->getCredentials();</span><br>
+                                                <span style="margin-left: 2em">if ($response['isSync'] == true) {</span><br>
+                                                <span style="margin-left: 4em">$this->client->put($this->uri . '/api/partners/vacancies/update', [</span><br>
+                                                <span style="margin-left: 6em">'form_params' => [</span><br>
+                                                <span style="margin-left: 8em">'key' => $this->key,</span><br>
+                                                <span style="margin-left: 8em">'secret' => $this->secret,</span><br>
+                                                <span style="margin-left: 8em">'vacancy' => $vacancy->toArray(),</span><br>
+                                                <span style="margin-left: 8em">'agency' => $vacancy->getAgency->toArray(),</span><br>
+                                                <span style="margin-left: 8em">'data' => $request->toArray(),</span><br>
+                                                <span style="margin-left: 6em">]</span><br>
+                                                <span style="margin-left: 4em">]);</span><br>
+                                                <span style="margin-left: 2em">}</span><br><br>
                                                 <span style="margin-left: 2em"><em>// here is your vacancy update query code&hellip;</em></span><br>
                                                 }<br><br>
 
                                                 public function deleteVacancies($id)<br>
                                                 {<br>
                                                 <span style="margin-left: 2em"><em>// here is your vacancy delete query code&hellip;</em></span><br><br>
-                                                <span style="margin-left: 2em">$this->client->delete($this->uri . '/api/partners/vacancies/delete', [</span><br>
-                                                <span style="margin-left: 4em">'form_params' => [</span><br>
-                                                <span style="margin-left: 6em">'key' => $this->key,</span><br>
-                                                <span style="margin-left: 6em">'secret' => $this->secret,</span><br>
-                                                <span style="margin-left: 6em">'agency' => $vacancy->getAgency->toArray(),</span><br>
-                                                <span style="margin-left: 6em">'vacancy' => $vacancy->toArray(),</span><br>
-                                                <span style="margin-left: 4em">]</span><br>
-                                                <span style="margin-left: 2em">]);</span><br><br>
+                                                <span style="margin-left: 2em">$response = app(Credential::class)->getCredentials();</span><br>
+                                                <span style="margin-left: 2em">if ($response['isSync'] == true) {</span><br>
+                                                <span style="margin-left: 4em">if($vacancy->getAgency->getVacancy->count() > 0){</span><br>
+                                                <span style="margin-left: 5em">$this->client->delete($this->uri . '/api/partners/vacancies/delete', [</span><br>
+                                                <span style="margin-left: 7em">'form_params' => [</span><br>
+                                                <span style="margin-left: 9em">'key' => $this->key,</span><br>
+                                                <span style="margin-left: 9em">'secret' => $this->secret,</span><br>
+                                                <span style="margin-left: 9em">'agency' => $vacancy->getAgency->toArray(),</span><br>
+                                                <span style="margin-left: 9em">'vacancy' => $vacancy->toArray(),</span><br>
+                                                <span style="margin-left: 7em">]</span><br>
+                                                <span style="margin-left: 5em">]);</span><br><br>
+
+                                                <span style="margin-left: 4em">} else{</span><br>
+                                                <span style="margin-left: 5em">$this->client->delete($this->uri.'/api/partners/vacancies/agency/delete',[</span><br>
+                                                <span style="margin-left: 7em">'form_params' => [</span><br>
+                                                <span style="margin-left: 9em">'key' => $this->key,</span><br>
+                                                <span style="margin-left: 9em">'secret' => $this->secret,</span><br>
+                                                <span style="margin-left: 9em">'agency' => $vacancy->getAgency->toArray(),</span><br>
+                                                <span style="margin-left: 7em">]</span><br>
+                                                <span style="margin-left: 5em">]);</span><br><br>
+                                                <span style="margin-left: 4em">}</span><br>
+                                                <span style="margin-left: 2em">}</span><br><br>
                                                 <span style="margin-left: 2em"><em>// other codes&hellip;</em></span><br>
                                                 }
                                             </code>
@@ -600,7 +717,8 @@
             swal({
                 title: 'Apakah Anda sudah yakin?',
                 text: "Jika synchronize setup belum diselesaikan dengan baik dan benar maka setiap kali ada " +
-                    "penambahan maupun perubahan terhadap data lowongan maka Anda perlu melakukan sinkronisasi ulang!",
+                    "penambahan atau perubahan terkait data agensi beserta lowongannya maupun data job seeker " +
+                    "maka data tersebut hanya akan tersimpan di dalam database Anda sendiri!",
                 type: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'Ya, saya yakin!',
