@@ -128,8 +128,7 @@ class VacancyController extends Controller
         $checkEdu = Education::where('user_id', $user->id)->where('degree_id', '>=', $vacancy->degree_id)
             ->wherenotnull('end_period')->count();
 
-        if ($edu == 0 || $exp == 0 || $user->phone == "" || $user->address == "" || $user->birthday == "" ||
-            $user->gender == "") {
+        if ($edu == 0 || $exp == 0 || $user->phone == "" || $user->address == "" || $user->birthday == "" || $user->gender == "") {
             return 0;
         } else {
             if ($user->total_exp < $reqExp) {
@@ -137,9 +136,12 @@ class VacancyController extends Controller
             } elseif ($checkEdu < 1) {
                 return 2;
             } else {
-                return 3;
+                if ($vacancy->getAgency->isSISKA == false) {
+                    return 3;
+                } else {
+                    return 4;
+                }
             }
         }
-
     }
 }

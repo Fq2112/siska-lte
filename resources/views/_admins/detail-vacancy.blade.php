@@ -62,7 +62,7 @@
                                 <h3>{{$vacancy->judul}}</h3>
                                 <ul class="list-unstyled user_data">
 
-                                    <li data-toggle="tooltip" data-placement="left" title="Agency Address">
+                                    <li data-toggle="tooltip" data-placement="left" title="Location">
                                         <i class="fa fa-map-marked user-profile-icon"></i> {{$city}}</li>
                                     <li data-toggle="tooltip" data-placement="left" title="Job Function">
                                         <i class="fa fa-warehouse user-profile-icon"></i> {{$jobfunc->name}}</li>
@@ -482,6 +482,7 @@
                 $.get("{{route('get.vacancy.requirement',['id' => $vacancy->id])}}", function (data) {
                     if (data == 0) {
                         $("#resumeModal").modal('show');
+
                     } else if (data == 1) {
                         swal({
                             title: 'Work Experience Unqualified',
@@ -490,6 +491,7 @@
                             type: 'warning',
                             timer: '7000'
                         });
+
                     } else if (data == 2) {
                         swal({
                             title: 'Education Degree Unqualified',
@@ -497,12 +499,32 @@
                             type: 'warning',
                             timer: '7000'
                         });
+
                     } else if (data == 3) {
                         $("#applyModal").modal('hide');
                         $("#apply").toggleClass('ld ld-heartbeat');
                         $btnApply.toggleClass('btn-danger btn-dark').attr('disabled', true)
                             .html('<i class="fa fa-paper-plane"></i>&ensp;<strong>APPLIED</strong>');
                         $('#form-apply')[0].submit();
+
+                    } else if (data == 4) {
+                        swal({
+                            title: 'ATTENTION!',
+                            text: "This vacancy is belong to SISKA! If you still wanna apply this, please go to the SISKA main site.",
+                            type: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#00ADB5',
+                            confirmButtonText: 'Yes, redirect me to SISKA main site.',
+                            showLoaderOnConfirm: true,
+
+                            preConfirm: function () {
+                                return new Promise(function (resolve) {
+                                    window.location.href = 'http://localhost:8000/search?q={{$vacancy->judul}}&loc={{$city}}';
+                                });
+                            },
+                            allowOutsideClick: false
+                        });
+                        return false;
                     }
                 });
             });
