@@ -241,25 +241,33 @@ class AgencyController extends Controller
                 ]
             ]);
         }
-
-        $vacancy->update([
-            'judul' => $request->judul,
-            'city_id' => $request->city_id,
-            'syarat' => $request->syarat,
-            'tanggungjawab' => $request->tanggungjawab,
-            'pengalaman' => $request->pengalaman,
-            'jobtype_id' => $request->jobtype_id,
-            'joblevel_id' => $request->joblevel_id,
-            'industry_id' => $request->industry_id,
-            'salary_id' => $request->salary_id,
-            'degree_id' => $request->degree_id,
-            'major_id' => $request->major_id,
-            'jobfunction_id' => $request->jobfunction_id,
-            'isPost' => $request->isPost,
-            'recruitmentDate_start' => $request->isPost == 1 ? $request->recruitmentDate_start : null,
-            'recruitmentDate_end' => $request->isPost == 1 ? $request->recruitmentDate_end : null,
-            'interview_date' => $request->isPost == 1 ? $request->interview_date : null,
-        ]);
+        if ($request->isPost == 1) {
+            $vacancy->update([
+                'judul' => $request->judul,
+                'city_id' => $request->city_id,
+                'syarat' => $request->syarat,
+                'tanggungjawab' => $request->tanggungjawab,
+                'pengalaman' => $request->pengalaman,
+                'jobtype_id' => $request->jobtype_id,
+                'joblevel_id' => $request->joblevel_id,
+                'industry_id' => $request->industry_id,
+                'salary_id' => $request->salary_id,
+                'degree_id' => $request->degree_id,
+                'major_id' => $request->major_id,
+                'jobfunction_id' => $request->jobfunction_id,
+                'isPost' => $request->isPost,
+                'recruitmentDate_start' => $request->recruitmentDate_start,
+                'recruitmentDate_end' => $request->recruitmentDate_end,
+                'interview_date' => $request->interview_date,
+            ]);
+        } else {
+            $vacancy->update([
+                'isPost' => $request->isPost,
+                'recruitmentDate_start' => null,
+                'recruitmentDate_end' => null,
+                'interview_date' => null,
+            ]);
+        }
 
         return back()->with('success', '' . $vacancy->judul . ' is successfully updated!');
     }

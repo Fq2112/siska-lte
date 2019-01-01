@@ -302,6 +302,34 @@
                                         <blockquote>
                                             <em>// here is your other functions&hellip;</em><br><br>
                                             <code>
+                                                public function updateAccount(Request $request)<br>
+                                                {<br>
+                                                <span style="margin-left: 2em"><em>// here is your seeker update password query code&hellip;</em></span><br><br>
+                                                <span style="margin-left: 2em">$data = array('email' => $user->email, 'password' => $user->password);</span><br>
+                                                <span style="margin-left: 2em">$this->updatePartners($data, 'password');</span><br><br>
+                                                <span style="margin-left: 2em"><em>// other codes&hellip;</em></span><br>
+                                                }<br><br>
+
+                                                public function updateProfile(Request $request)<br>
+                                                {<br>
+                                                <span style="margin-left: 2em">if ($check == 'contact') {</span><br>
+                                                <span style="margin-left: 4em"><em>// here is your seeker update contact query code&hellip;</em></span><br>
+                                                <span style="margin-left: 4em">$data = array('email' => $user->email, 'input' => $input);</span><br>
+                                                <span style="margin-left: 4em">$this->updatePartners($data, 'contact');</span><br><br>
+
+                                                <span style="margin-left: 2em">} elseif ($check == 'personal') {</span><br>
+                                                <span style="margin-left: 4em"><em>// here is your seeker update personal query code&hellip;</em></span><br>
+                                                <span style="margin-left: 4em">$data = array('email' => $user->email, 'input' => $input);</span><br>
+                                                <span style="margin-left: 4em">$this->updatePartners($data, 'personal');</span><br><br>
+
+                                                <span style="margin-left: 2em">} elseif ($check == 'summary') {</span><br>
+                                                <span style="margin-left: 4em"><em>// here is your seeker update summary query code&hellip;</em></span><br>
+                                                <span style="margin-left: 4em">$data = array('email' => $user->email, 'summary' => $user->summary);</span><br>
+                                                <span style="margin-left: 4em">$this->updatePartners($data, 'summary');</span><br>
+                                                <span style="margin-left: 2em">}</span><br><br>
+                                                <span style="margin-left: 2em"><em>// other codes&hellip;</em></span><br>
+                                                }<br><br>
+
                                                 private function updatePartners($data, $check)<br>
                                                 {<br>
                                                 <span style="margin-left: 2em">$client = new Client([</span><br>
@@ -331,7 +359,7 @@
                             </div>
                             <div id="sync-vacancy-1">
                                 <h2 class="StepTitle">Step 3 Sync&ndash;Vacancy <sub>(Part 1)</sub></h2>
-                                <ol start="6" style="font-size: 15px;">
+                                <ol start="9" style="font-size: 15px;">
                                     <li>Masih di dalam file <code>app/Http/Controllers/Api/APIController.php</code>,
                                         tambahkan code berikut :
                                         <blockquote>
@@ -418,7 +446,7 @@
                             </div>
                             <div id="sync-vacancy-2">
                                 <h2 class="StepTitle">Step 4 Sync&ndash;Vacancy <sub>(Part 2)</sub></h2>
-                                <ol start="7" style="font-size: 15px;">
+                                <ol start="10" style="font-size: 15px;">
                                     <li>Buka file <code>app/Http/Controllers/Admins/AgencyController.php</code>.</li>
                                     <li>Tambahkan construct code berikut :
                                         <blockquote>
@@ -556,7 +584,7 @@
                             </div>
                             <div id="finish">
                                 <h2 class="StepTitle">Step 5 Finish</h2>
-                                <ol start="11" style="text-align: justify;font-size: 15px;">
+                                <ol start="14" style="text-align: justify;font-size: 15px;">
                                     <li>Untuk mengakhiri <em>synchronize setup</em>, tekan tombol
                                         "<strong>Finish</strong>" berikut. Dengan menekan tombol tersebut maka data
                                         agensi dan lowongannya serta data job seeker dari <strong>SISKA</strong>

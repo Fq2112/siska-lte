@@ -47,120 +47,128 @@
                     </div>
                     <div class="x_content">
                         <div class="col-md-3 col-sm-3 col-xs-12 profile_left">
-                            <div class="profile_img">
-                                <div id="crop-avatar">
-                                    <a href="{{route('agency.profile',['id' => $agency->id])}}" target="_blank">
-                                        <img class="img-responsive avatar-view" src="{{$agency->ava == "" ||
+                            <div class="row">
+                                <div class="profile_img">
+                                    <div id="crop-avatar">
+                                        <a href="{{route('agency.profile',['id' => $agency->id])}}" target="_blank">
+                                            <img class="img-responsive avatar-view" src="{{$agency->ava == "" ||
                                         $agency->ava == "agency.png" ? asset('images/agency.png') :
                                         asset('storage/admins/agencies/ava/'.$agency->ava)}}">
-                                    </a>
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
-                            <h3>{{$vacancy->judul}}</h3>
+                            <div class="row">
+                                <h3>{{$vacancy->judul}}</h3>
+                                <ul class="list-unstyled user_data">
 
-                            <ul class="list-unstyled user_data">
-                                <li data-toggle="tooltip" data-placement="left" title="Agency Address">
-                                    <i class="fa fa-map-marked user-profile-icon"></i> {{$city}}</li>
-                                <li data-toggle="tooltip" data-placement="left" title="Job Function">
-                                    <i class="fa fa-warehouse user-profile-icon"></i> {{$jobfunc->name}}</li>
-                                <li data-toggle="tooltip" data-placement="left" title="Industry">
-                                    <i class="fa fa-industry user-profile-icon"></i> {{$industry->name}}</li>
-                                <li data-toggle="tooltip" data-placement="left" title="Job Level">
-                                    <i class="fa fa-level-up-alt user-profile-icon"></i> {{$joblevel->name}}</li>
-                                <li data-toggle="tooltip" data-placement="left" title="Job Type">
-                                    <i class="fa fa-user-clock user-profile-icon"></i> {{$jobtype->name}}</li>
-                                <li data-toggle="tooltip" data-placement="left" title="Salary">
-                                    <i class="fa fa-money-bill-wave user-profile-icon"></i> {{$salary->name}}</li>
-                                <li data-toggle="tooltip" data-placement="left" title="Education Degree">
-                                    <i class="fa fa-graduation-cap user-profile-icon"></i> {{$degree->name}}</li>
-                                <li data-toggle="tooltip" data-placement="left" title="Education Major">
-                                    <i class="fa fa-user-graduate user-profile-icon"></i> {{$major->name}}</li>
-                                <li data-toggle="tooltip" data-placement="left" title="Work Experience">
-                                    <i class="fa fa-briefcase user-profile-icon"></i> At least {{$vacancy->pengalaman >1
+                                    <li data-toggle="tooltip" data-placement="left" title="Agency Address">
+                                        <i class="fa fa-map-marked user-profile-icon"></i> {{$city}}</li>
+                                    <li data-toggle="tooltip" data-placement="left" title="Job Function">
+                                        <i class="fa fa-warehouse user-profile-icon"></i> {{$jobfunc->name}}</li>
+                                    <li data-toggle="tooltip" data-placement="left" title="Industry">
+                                        <i class="fa fa-industry user-profile-icon"></i> {{$industry->name}}</li>
+                                    <li data-toggle="tooltip" data-placement="left" title="Job Level">
+                                        <i class="fa fa-level-up-alt user-profile-icon"></i> {{$joblevel->name}}</li>
+                                    <li data-toggle="tooltip" data-placement="left" title="Job Type">
+                                        <i class="fa fa-user-clock user-profile-icon"></i> {{$jobtype->name}}</li>
+                                    <li data-toggle="tooltip" data-placement="left" title="Salary">
+                                        <i class="fa fa-money-bill-wave user-profile-icon"></i> {{$salary->name}}</li>
+                                    <li data-toggle="tooltip" data-placement="left" title="Education Degree">
+                                        <i class="fa fa-graduation-cap user-profile-icon"></i> {{$degree->name}}</li>
+                                    <li data-toggle="tooltip" data-placement="left" title="Education Major">
+                                        <i class="fa fa-user-graduate user-profile-icon"></i> {{$major->name}}</li>
+                                    <li data-toggle="tooltip" data-placement="left" title="Work Experience">
+                                        <i class="fa fa-briefcase user-profile-icon"></i> At least {{$vacancy->pengalaman >1
                                     ? $vacancy->pengalaman.' years' : $vacancy->pengalaman.' year'}}</li>
-                                <li data-toggle="tooltip" data-placement="left" title="Total Applicant">
-                                    <i class="fa fa-paper-plane user-profile-icon"></i> {{$applicants}} applicants
-                                </li>
-                            </ul>
-
-                            <ul class="nav navbar-nav list-unstyled">
-                                @php
-                                    $content = '';
-                                    $style = 'none';
-                                    if($vacancy->isPost == false){
-                                        $content = 'This vacancy is INACTIVE.';
-                                        $style = 'inline-block';
-                                    } else{
-                                        if(now() < $vacancy->recruitmentDate_start || is_null($vacancy
-                                        ->recruitmentDate_start)){
-                                            $content = 'The recruitment date of this vacancy hasn\'t started yet.';
+                                    <li data-toggle="tooltip" data-placement="left" title="Total Applicant">
+                                        <i class="fa fa-paper-plane user-profile-icon"></i> {{$applicants}} applicants
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="row">
+                                <ul class="nav navbar-nav list-unstyled">
+                                    @php
+                                        $content = '';
+                                        $style = 'none';
+                                        if($vacancy->isPost == false){
+                                            $content = 'This vacancy is INACTIVE.';
                                             $style = 'inline-block';
-                                        } elseif(now() > $vacancy->recruitmentDate_end || is_null($vacancy
-                                        ->recruitmentDate_end)){
-                                            $content = 'The recruitment date of this vacancy has been ended.';
-                                            $style = 'inline-block';
+                                        } else{
+                                            if(now() < $vacancy->recruitmentDate_start || is_null($vacancy
+                                            ->recruitmentDate_start)){
+                                                $content = 'The recruitment date of this vacancy hasn\'t started yet.';
+                                                $style = 'inline-block';
+                                            } elseif(now() > $vacancy->recruitmentDate_end || is_null($vacancy
+                                            ->recruitmentDate_end)){
+                                                $content = 'The recruitment date of this vacancy has been ended.';
+                                                $style = 'inline-block';
+                                            }
                                         }
-                                    }
-                                @endphp
-                                <li class="{{$vacancy->isPost == false || now() < $vacancy->recruitmentDate_start ||
+                                    @endphp
+                                    <li class="{{$vacancy->isPost == false || now() < $vacancy->recruitmentDate_start ||
                                             now() > $vacancy->recruitmentDate_end ||
                                             is_null($vacancy->recruitmentDate_start) ||
                                             is_null($vacancy->recruitmentDate_end) || Auth::guard('admin')->check() ?
                                             '' : 'ld ld-heartbeat'}}" id="apply" data-placement="top"
-                                    data-toggle="tooltip">
-                                    <button type="button" class="btn btn-danger btn-block" style="padding: 5px 25px;"
-                                            {{$vacancy->isPost == false || now() < $vacancy->recruitmentDate_start ||
-                                            now() > $vacancy->recruitmentDate_end ||
-                                            is_null($vacancy->recruitmentDate_start) ||
-                                            is_null($vacancy->recruitmentDate_end) ||
-                                            Auth::guard('admin')->check() ? 'disabled' : ''}}>
-                                        <i class="fa fa-paper-plane"></i>&ensp;<strong>APPLY</strong>
-                                    </button>
-                                </li>
-                                <li>
-                                    <form method="post" action="{{route('bookmark.vacancy')}}" id="form-bookmark">
-                                        {{csrf_field()}}
-                                        <div class="anim-icon anim-icon-md bookmark ld ld-breath"
-                                             style="margin-right: 6px">
-                                            <input type="hidden" name="vacancy_id" value="{{$vacancy->id}}">
-                                            <input type="checkbox" id="bookmark" {{$vacancy->isPost == false ?
+                                        data-toggle="tooltip">
+                                        <button type="button" class="btn btn-danger btn-block"
+                                                style="padding: 5px 25px;"
+                                                {{$vacancy->isPost == false || now() < $vacancy->recruitmentDate_start ||
+                                                now() > $vacancy->recruitmentDate_end ||
+                                                is_null($vacancy->recruitmentDate_start) ||
+                                                is_null($vacancy->recruitmentDate_end) ||
+                                                Auth::guard('admin')->check() ? 'disabled' : ''}}>
+                                            <i class="fa fa-paper-plane"></i>&ensp;<strong>APPLY</strong>
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <form method="post" action="{{route('bookmark.vacancy')}}" id="form-bookmark">
+                                            {{csrf_field()}}
+                                            <div class="anim-icon anim-icon-md bookmark ld ld-breath"
+                                                 style="margin: 0 10px">
+                                                <input type="hidden" name="vacancy_id" value="{{$vacancy->id}}">
+                                                <input type="checkbox" id="bookmark" {{$vacancy->isPost == false ?
                                             'disabled' : ''}}>
-                                            <label for="bookmark" style="cursor: {{$vacancy->isPost == false ?
+                                                <label for="bookmark" style="cursor: {{$vacancy->isPost == false ?
                                             'not-allowed' : 'pointer'}}" data-toggle="tooltip" id="bm"
-                                                   title="{{$vacancy->isPost == true ? 'Bookmark this vacancy' : ''}}">
-                                            </label>
-                                        </div>
-                                        <div class="anim-icon anim-icon-md info" style="display: {{$style}};">
-                                            <input type="checkbox" id="info">
-                                            <label for="info" style="cursor: help;" data-toggle="popover"
-                                                   data-placement="top"
-                                                   title="FYI" data-content="{{$content}}"></label>
-                                        </div>
-                                    </form>
-                                </li>
-                            </ul>
-
-                            <h4>Schedule</h4>
-                            <table>
-                                <tr data-placement="left" data-toggle="tooltip" title="Recruitment Date">
-                                    <td><i class="fa fa-users"></i></td>
-                                    <td>&nbsp;</td>
-                                    <td>
+                                                       title="{{$vacancy->isPost == true ? 'Bookmark this vacancy' : ''}}">
+                                                </label>
+                                            </div>
+                                            <div class="anim-icon anim-icon-md info"
+                                                 style="display: {{$style}};margin: 0;">
+                                                <input type="checkbox" id="info">
+                                                <label for="info" style="cursor: help;" data-toggle="popover"
+                                                       data-placement="top"
+                                                       title="FYI" data-content="{{$content}}"></label>
+                                            </div>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="row">
+                                <h4>Schedule</h4>
+                                <table>
+                                    <tr data-placement="left" data-toggle="tooltip" title="Recruitment Date">
+                                        <td><i class="fa fa-users"></i></td>
+                                        <td>&nbsp;</td>
+                                        <td>
                                         <span>{{$vacancy->recruitmentDate_start && $vacancy->recruitmentDate_end != "" ?
                                         \Carbon\Carbon::parse($vacancy->recruitmentDate_start)
                                         ->formatLocalized('%d %b %Y'). " - ".\Carbon\Carbon::parse
                                         ($vacancy->recruitmentDate_end)->formatLocalized('%d %b %Y') : '-'}}</span>
-                                    </td>
-                                </tr>
-                                <tr data-placement="left" data-toggle="tooltip" title="Job Interview Date">
-                                    <td><i class="fa fa-comments"></i></td>
-                                    <td>&nbsp;</td>
-                                    <td>
+                                        </td>
+                                    </tr>
+                                    <tr data-placement="left" data-toggle="tooltip" title="Job Interview Date">
+                                        <td><i class="fa fa-comments"></i></td>
+                                        <td>&nbsp;</td>
+                                        <td>
                                         <span>{{$vacancy->interview_date != "" ? \Carbon\Carbon::parse
                                         ($vacancy->interview_date)->format('l, j F Y') : '-'}}</span>
-                                    </td>
-                                </tr>
-                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
                         </div>
                         <div class="col-md-9 col-sm-9 col-xs-12">
                             <div class="profile_title">
