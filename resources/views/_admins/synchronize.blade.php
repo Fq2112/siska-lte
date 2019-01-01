@@ -302,14 +302,6 @@
                                         <blockquote>
                                             <em>// here is your other functions&hellip;</em><br><br>
                                             <code>
-                                                public function updateAccount(Request $request)<br>
-                                                {<br>
-                                                <span style="margin-left: 2em"><em>// here is your seeker update password query code&hellip;</em></span><br><br>
-                                                <span style="margin-left: 2em">$data = array('email' => $user->email, 'password' => $user->password);</span><br>
-                                                <span style="margin-left: 2em">$this->updatePartners($data, 'password');</span><br><br>
-                                                <span style="margin-left: 2em"><em>// other codes&hellip;</em></span><br>
-                                                }<br><br>
-
                                                 public function updateProfile(Request $request)<br>
                                                 {<br>
                                                 <span style="margin-left: 2em">if ($check == 'contact') {</span><br>
@@ -327,6 +319,14 @@
                                                 <span style="margin-left: 4em">$data = array('email' => $user->email, 'summary' => $user->summary);</span><br>
                                                 <span style="margin-left: 4em">$this->updatePartners($data, 'summary');</span><br>
                                                 <span style="margin-left: 2em">}</span><br><br>
+                                                <span style="margin-left: 2em"><em>// other codes&hellip;</em></span><br>
+                                                }<br><br>
+
+                                                public function updateAccount(Request $request)<br>
+                                                {<br>
+                                                <span style="margin-left: 2em"><em>// here is your seeker update password query code&hellip;</em></span><br><br>
+                                                <span style="margin-left: 2em">$data = array('email' => $user->email, 'password' => $user->password);</span><br>
+                                                <span style="margin-left: 2em">$this->updatePartners($data, 'password');</span><br><br>
                                                 <span style="margin-left: 2em"><em>// other codes&hellip;</em></span><br>
                                                 }<br><br>
 
@@ -365,77 +365,134 @@
                                         <blockquote>
                                             <em>// here is your sync seekers functions&hellip;</em><br><br>
                                             <code>
-                                                public function createSeekers(Request $request)<br>
+                                                public function createVacancies(Request $request)<br>
                                                 {<br>
-                                                <span style="margin-left: 2em">$data = $request->seeker;</span><br>
-                                                <span style="margin-left: 2em">$checkSeeker = User::where('email', $data['email'])->first();</span><br>
-                                                <span style="margin-left: 2em">if (!$checkSeeker) {</span><br>
-                                                <span style="margin-left: 4em">User::firstOrCreate([</span><br>
-                                                <span style="margin-left: 6em">'ava' => 'seeker.png',</span><br>
-                                                <span style="margin-left: 6em">'name' => $data['name'],</span><br>
-                                                <span style="margin-left: 6em">'email' => $data['email'],</span><br>
-                                                <span style="margin-left: 6em">'password' => $data['password'],</span><br>
+                                                <span style="margin-left: 2em">$vacancies = $request->vacancies;</span><br>
+                                                <span style="margin-left: 2em">foreach ($vacancies as $data) {</span><br>
+                                                <span style="margin-left: 4em">$checkAgency = Agencies::where('email', $data['agency']['email'])->first();</span><br>
+                                                <span style="margin-left: 4em">if (!$checkAgency) {</span><br>
+                                                <span style="margin-left: 6em">$agency = Agencies::firstOrCreate([</span><br>
+                                                <span style="margin-left: 8em">'ava' => 'agency.png',</span><br>
+                                                <span style="margin-left: 8em">'email' => $data['agency']['email'],</span><br>
+                                                <span style="margin-left: 8em">'company' => $data['agency']['company'],</span><br>
+                                                <span style="margin-left: 8em">'kantor_pusat' => $data['agency']['kantor_pusat'],</span><br>
+                                                <span style="margin-left: 8em">'industry_id' => $data['agency']['industry_id'],</span><br>
+                                                <span style="margin-left: 8em">'tentang' => $data['agency']['tentang'],</span><br>
+                                                <span style="margin-left: 8em">'alasan' => $data['agency']['alasan'],</span><br>
+                                                <span style="margin-left: 8em">'link' => $data['agency']['link'],</span><br>
+                                                <span style="margin-left: 8em">'alamat' => $data['agency']['alamat'],</span><br>
+                                                <span style="margin-left: 8em">'phone' => $data['agency']['phone'],</span><br>
+                                                <span style="margin-left: 8em">'hari_kerja' => $data['agency']['hari_kerja'],</span><br>
+                                                <span style="margin-left: 8em">'jam_kerja' => $data['agency']['jam_kerja'],</span><br>
+                                                <span style="margin-left: 8em">'lat' => $data['agency']['lat'],</span><br>
+                                                <span style="margin-left: 8em">'long' => $data['agency']['long'],</span><br>
+                                                <span style="margin-left: 8em">'isSISKA' => $data['agency']['isSISKA']</span><br>
+                                                <span style="margin-left: 6em">]);</span><br>
+                                                <span style="margin-left: 4em">} else {</span><br>
+                                                <span style="margin-left: 6em">$agency = $checkAgency;</span><br>
+                                                <span style="margin-left: 4em">}</span><br><br>
+
+                                                <span style="margin-left: 4em">Vacancies::create([</span><br>
+                                                <span style="margin-left: 6em">'judul' => $data['judul'],</span><br>
+                                                <span style="margin-left: 6em">'city_id' => $data['cities_id'],</span><br>
+                                                <span style="margin-left: 6em">'syarat' => $data['syarat'],</span><br>
+                                                <span style="margin-left: 6em">'tanggungjawab' => $data['tanggungjawab'],</span><br>
+                                                <span style="margin-left: 6em">'pengalaman' => $data['pengalaman'],</span><br>
+                                                <span style="margin-left: 6em">'jobtype_id' => $data['jobtype_id'],</span><br>
+                                                <span style="margin-left: 6em">'joblevel_id' => $data['joblevel_id'],</span><br>
+                                                <span style="margin-left: 6em">'industry_id' => $data['industry_id'],</span><br>
+                                                <span style="margin-left: 6em">'salary_id' => $data['salary_id'],</span><br>
+                                                <span style="margin-left: 6em">'agency_id' => $agency->id,</span><br>
+                                                <span style="margin-left: 6em">'degree_id' => $data['tingkatpend_id'],</span><br>
+                                                <span style="margin-left: 6em">'major_id' => $data['jurusanpend_id'],</span><br>
+                                                <span style="margin-left: 6em">'jobfunction_id' => $data['fungsikerja_id'],</span><br>
+                                                <span style="margin-left: 6em">'isPost' => true,</span><br>
                                                 <span style="margin-left: 4em">]);</span><br>
                                                 <span style="margin-left: 2em">}</span><br>
                                                 }<br><br>
 
-                                                public function seekersSocialite($provider, Request $request)<br>
+                                                public function updateVacancies(Request $request)<br>
                                                 {<br>
-                                                <span style="margin-left: 2em">$data = $request->seeker;</span><br>
-                                                <span style="margin-left: 2em">$checkSeeker = User::where('email', $data['email'])->first();</span><br>
-                                                <span style="margin-left: 2em">if (!$checkSeeker) {</span><br>
-                                                <span style="margin-left: 4em">$user = User::firstOrCreate([</span><br>
-                                                <span style="margin-left: 6em">'ava' => 'seeker.png',</span><br>
-                                                <span style="margin-left: 6em">'name' => $data['name'],</span><br>
-                                                <span style="margin-left: 6em">'email' => $data['email'],</span><br>
-                                                <span style="margin-left: 6em">'password' => $data['password'],</span><br>
-                                                <span style="margin-left: 4em">]);</span><br><br>
+                                                <span style="margin-left: 2em">$data = $request->agencies;</span><br>
+                                                <span style="margin-left: 2em">$agency = Agencies::where('email', $data['email'])->first();</span><br>
+                                                <span style="margin-left: 2em">if ($agency != null) {</span><br>
+                                                <span style="margin-left: 4em">if ($request->check_form == 'personal_data') {</span><br>
+                                                <span style="margin-left: 5em">$agency->update([</span><br>
+                                                <span style="margin-left: 7em">'company' => $data['input']['name'],</span><br>
+                                                <span style="margin-left: 7em">'kantor_pusat' => $data['input']['kantor_pusat'],</span><br>
+                                                <span style="margin-left: 7em">'industry_id' => $data['input']['industri_id'],</span><br>
+                                                <span style="margin-left: 7em">'link' => $data['input']['link'],</span><br>
+                                                <span style="margin-left: 7em">'phone' => $data['input']['phone'],</span><br>
+                                                <span style="margin-left: 7em">'hari_kerja' => $data['input']['start_day'] . ' - ' . $data['input']['end_day'],</span><br>
+                                                <span style="margin-left: 7em">'jam_kerja' => $data['input']['start_time'] . ' - ' . $data['input']['end_time'],</span><br>
+                                                <span style="margin-left: 5em">]);</span><br><br>
 
-                                                <span style="margin-left: 4em">$user->socialProviders()->create([</span><br>
-                                                <span style="margin-left: 6em">'provider_id' => $data['provider_id'],</span><br>
-                                                <span style="margin-left: 6em">'provider' => $provider</span><br>
-                                                <span style="margin-left: 4em">]);</span><br>
-                                                <span style="margin-left: 2em">}</span><br>
-                                                }<br><br>
+                                                <span style="margin-left: 4em">} elseif ($request->check_form == 'address') {</span><br>
+                                                <span style="margin-left: 5em">$agency->update([</span><br>
+                                                <span style="margin-left: 7em">'alamat' => $data['input']['alamat'],</span><br>
+                                                <span style="margin-left: 7em">'lat' => $data['input']['lat'],</span><br>
+                                                <span style="margin-left: 7em">'long' => $data['input']['long'],</span><br>
+                                                <span style="margin-left: 5em">]);</span><br><br>
 
-                                                public function updateSeekers(Request $request)<br>
-                                                {<br>
-                                                <span style="margin-left: 2em">$data = $request->seeker;</span><br>
-                                                <span style="margin-left: 2em">$user = User::where('email', $data['email'])->first();</span><br>
-                                                <span style="margin-left: 2em">if ($user != null) {</span><br>
-                                                <span style="margin-left: 4em">if ($request->check_form == 'password') {</span><br>
-                                                <span style="margin-left: 6em">$user->update(['password' => $data['password']]);</span><br><br>
+                                                <span style="margin-left: 4em">} elseif ($request->check_form == 'about') {</span><br>
+                                                <span style="margin-left: 5em">$agency->update([</span><br>
+                                                <span style="margin-left: 7em">'tentang' => $data['input']['tentang'],</span><br>
+                                                <span style="margin-left: 7em">'alasan' => $data['input']['alasan'],</span><br>
+                                                <span style="margin-left: 5em">]);</span><br><br>
 
-                                                <span style="margin-left: 4em">} elseif ($request->check_form == 'contact') {</span><br>
-                                                <span style="margin-left: 6em">$user->update([</span><br>
-                                                <span style="margin-left: 8em">'phone' => $data['input']['phone'],</span><br>
-                                                <span style="margin-left: 8em">'address' => $data['input']['address'],</span><br>
-                                                <span style="margin-left: 8em">'zip_code' => $data['input']['zip_code'],</span><br>
-                                                <span style="margin-left: 6em">]);</span><br><br>
+                                                <span style="margin-left: 4em">} elseif ($request->check_form == 'vacancy') {</span><br>
+                                                <span style="margin-left: 5em">$vacancy = Vacancies::where('agency_id', $agency->id)</span><br>
+                                                <span style="margin-left: 7em">->where('judul', $data['judul'])->first();</span><br>
+                                                <span style="margin-left: 5em">if ($vacancy != null) {</span><br>
+                                                <span style="margin-left: 7em">$vacancy->update([</span><br>
+                                                <span style="margin-left: 9em">'judul' => $data['input']['judul'],</span><br>
+                                                <span style="margin-left: 9em">'city_id' => $data['input']['cities_id'],</span><br>
+                                                <span style="margin-left: 9em">'syarat' => $data['input']['syarat'],</span><br>
+                                                <span style="margin-left: 9em">'tanggungjawab' => $data['input']['tanggungjawab'],</span><br>
+                                                <span style="margin-left: 9em">'pengalaman' => $data['input']['pengalaman'],</span><br>
+                                                <span style="margin-left: 9em">'jobtype_id' => $data['input']['jobtype_id'],</span><br>
+                                                <span style="margin-left: 9em">'joblevel_id' => $data['input']['joblevel_id'],</span><br>
+                                                <span style="margin-left: 9em">'industry_id' => $data['input']['industri_id'],</span><br>
+                                                <span style="margin-left: 9em">'salary_id' => $data['input']['salary_id'],</span><br>
+                                                <span style="margin-left: 9em">'degree_id' => $data['input']['tingkatpend_id'],</span><br>
+                                                <span style="margin-left: 9em">'major_id' => $data['input']['jurusanpend_id'],</span><br>
+                                                <span style="margin-left: 9em">'jobfunction_id' => $data['input']['fungsikerja_id'],</span><br>
+                                                <span style="margin-left: 7em">]);</span><br>
+                                                <span style="margin-left: 5em">}</span><br>
 
-                                                <span style="margin-left: 4em">} elseif ($request->check_form == 'personal') {</span><br>
-                                                <span style="margin-left: 6em">$user->update([</span><br>
-                                                <span style="margin-left: 8em">'name' => $data['input']['name'],</span><br>
-                                                <span style="margin-left: 8em">'birthday' => $data['input']['birthday'],</span><br>
-                                                <span style="margin-left: 8em">'gender' => $data['input']['gender'],</span><br>
-                                                <span style="margin-left: 8em">'relationship' => $data['input']['relationship'],</span><br>
-                                                <span style="margin-left: 8em">'nationality' => $data['input']['nationality'],</span><br>
-                                                <span style="margin-left: 8em">'website' => $data['input']['website'],</span><br>
-                                                <span style="margin-left: 8em">'lowest_salary' => str_replace(',', '', $data['input']['lowest']),</span><br>
-                                                <span style="margin-left: 8em">'highest_salary' => str_replace(',', '', $data['input']['highest']),</span><br>
-                                                <span style="margin-left: 6em">]);</span><br><br>
-
-                                                <span style="margin-left: 4em">} elseif ($request->check_form == 'summary') {</span><br>
-                                                <span style="margin-left: 6em">$user->update(['summary' => $data['summary']]);</span><br>
+                                                <span style="margin-left: 4em">} elseif ($request->check_form == 'schedule') {</span><br>
+                                                <span style="margin-left: 5em">$vacancy = Vacancies::where('agency_id', $agency->id)</span><br>
+                                                <span style="margin-left: 7em">->where('judul', $data['judul'])->first();</span><br>
+                                                <span style="margin-left: 5em">if ($vacancy != null) {</span><br>
+                                                <span style="margin-left: 7em">$vacancy->update([</span><br>
+                                                <span style="margin-left: 9em">'recruitmentDate_start' => $data['input']['recruitmentDate_start'],</span><br>
+                                                <span style="margin-left: 9em">'recruitmentDate_end' => $data['input']['recruitmentDate_end'],</span><br>
+                                                <span style="margin-left: 9em">'interview_date' => $data['input']['interview_date'],</span><br>
+                                                <span style="margin-left: 7em">]);</span><br>
+                                                <span style="margin-left: 5em">}</span><br>
                                                 <span style="margin-left: 4em">}</span><br>
                                                 <span style="margin-left: 2em">}</span><br>
                                                 }<br><br>
 
-                                                public function deleteSeekers(Request $request)<br>
+                                                public function deleteVacancies(Request $request)<br>
                                                 {<br>
-                                                <span style="margin-left: 2em">$user = User::where('email', $request->email)->first();</span><br>
-                                                <span style="margin-left: 2em">if ($user != null) {</span><br>
-                                                <span style="margin-left: 4em">$user->forceDelete();</span><br>
+                                                <span style="margin-left: 2em">$data = $request->agencies;</span><br>
+                                                <span style="margin-left: 2em">$agency = Agencies::where('email', $data['email'])->first();</span><br>
+                                                <span style="margin-left: 2em">if ($agency != null) {</span><br>
+                                                <span style="margin-left: 4em">if ($request->check_form == 'agency') {</span><br>
+                                                <span style="margin-left: 5em">$agency->delete();</span><br><br>
+
+                                                <span style="margin-left: 4em">} elseif ($request->check_form == 'vacancy') {</span><br>
+                                                <span style="margin-left: 5em">$vacancy = Vacancies::where('agency_id', $agency->id)</span><br>
+                                                <span style="margin-left: 7em">->where('judul', $data['judul'])->first();</span><br>
+                                                <span style="margin-left: 5em">if ($vacancy != null) {</span><br>
+                                                <span style="margin-left: 7em">if ($vacancy->getAgency->getVacancy->count() > 0) {</span><br>
+                                                <span style="margin-left: 9em">$vacancy->delete();</span><br>
+                                                <span style="margin-left: 7em">} else {</span><br>
+                                                <span style="margin-left: 9em">$agency->delete();</span><br>
+                                                <span style="margin-left: 7em">}</span><br>
+                                                <span style="margin-left: 5em">}</span><br>
+                                                <span style="margin-left: 4em">}</span><br>
                                                 <span style="margin-left: 2em">}</span><br>
                                                 }
                                             </code><br><br>
@@ -541,8 +598,8 @@
                                                 <span style="margin-left: 6em">'form_params' => [</span><br>
                                                 <span style="margin-left: 8em">'key' => $this->key,</span><br>
                                                 <span style="margin-left: 8em">'secret' => $this->secret,</span><br>
-                                                <span style="margin-left: 8em">'vacancy' => $vacancy->toArray(),</span><br>
                                                 <span style="margin-left: 8em">'agency' => $vacancy->getAgency->toArray(),</span><br>
+                                                <span style="margin-left: 8em">'vacancy' => $vacancy->toArray(),</span><br>
                                                 <span style="margin-left: 8em">'data' => $request->toArray(),</span><br>
                                                 <span style="margin-left: 6em">]</span><br>
                                                 <span style="margin-left: 4em">]);</span><br>
