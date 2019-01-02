@@ -465,9 +465,12 @@
                                                 <span style="margin-left: 7em">->where('judul', $data['judul'])->first();</span><br>
                                                 <span style="margin-left: 5em">if ($vacancy != null) {</span><br>
                                                 <span style="margin-left: 7em">$vacancy->update([</span><br>
-                                                <span style="margin-left: 9em">'recruitmentDate_start' => $data['input']['recruitmentDate_start'],</span><br>
-                                                <span style="margin-left: 9em">'recruitmentDate_end' => $data['input']['recruitmentDate_end'],</span><br>
-                                                <span style="margin-left: 9em">'interview_date' => $data['input']['interview_date'],</span><br>
+                                                <span style="margin-left: 9em">'recruitmentDate_start' => $data['input']['isPost'] == 1 ?</span><br>
+                                                <span style="margin-left: 11em">$data['input']['recruitmentDate_start'] : null,</span><br>
+                                                <span style="margin-left: 9em">'recruitmentDate_end' => $data['input']['isPost'] == 1 ?</span><br>
+                                                <span style="margin-left: 11em">$data['input']['recruitmentDate_end'] : null,</span><br>
+                                                <span style="margin-left: 9em">'interview_date' => $data['input']['isPost'] == 1 ?</span><br>
+                                                <span style="margin-left: 11em">$data['input']['interview_date'] : null,</span><br>
                                                 <span style="margin-left: 7em">]);</span><br>
                                                 <span style="margin-left: 5em">}</span><br>
                                                 <span style="margin-left: 4em">}</span><br>

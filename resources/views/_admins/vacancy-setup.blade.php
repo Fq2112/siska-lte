@@ -235,7 +235,7 @@
                                         <span class="input-group-addon"><i class="fa fa-user-tie"></i></span>
                                         <select id="agency_id" class="form-control selectpicker" name="agency_id"
                                                 data-live-search="true" title="-- Select Agency --" required>
-                                            @foreach(\App\Models\Agencies::all() as $agency)
+                                            @foreach(\App\Models\Agencies::where('isSISKA', false)->get() as $agency)
                                                 <option value="{{$agency->id}}">{{$agency->company}}</option>
                                             @endforeach
                                         </select>
@@ -384,7 +384,7 @@
                                     <textarea id="tanggungjawab" class="use-tinymce" name="tanggungjawab"></textarea>
                                 </div>
                             </div>
-                            <div class="row form-group">
+                            <div class="row form-group" id="recDate_errorDiv">
                                 <div class="col-lg-12">
                                     <label>Recruitment Date <span class="required">*</span></label>
                                     <div class="input-group">
@@ -398,9 +398,10 @@
                                                id="recruitmentDate_end" required>
                                         <span class="input-group-addon"><i class="fa fa-users"></i></span>
                                     </div>
+                                    <span class="help-block"><small class="recDate_errorTxt"></small></span>
                                 </div>
                             </div>
-                            <div class="row form-group">
+                            <div class="row form-group" id="intDate_errorDiv">
                                 <div class="col-lg-12">
                                     <label>Interview Date <span class="required">*</span></label>
                                     <div class="input-group">
@@ -409,6 +410,7 @@
                                                maxlength="10" placeholder="yyyy-mm-dd" name="interview_date"
                                                id="interview_date" required>
                                     </div>
+                                    <span class="help-block"><small class="intDate_errorTxt"></small></span>
                                 </div>
                             </div>
                             <div class="row form-group">
@@ -426,10 +428,12 @@
 @endsection
 @push("scripts")
     <script>
-        $(".btn_vacancy").on("click", function () {
-            var $start = $("#recruitmentDate_start"), $end = $("#recruitmentDate_end"),
-                $interview = $("#interview_date");
+        var $start = $("#recruitmentDate_start"), $end = $("#recruitmentDate_end"), $interview = $("#interview_date"),
+            startVal, endVal, intVal;
 
+        $(".btn_vacancy").on("click", function () {
+            $("#recDate_errorDiv, #intDate_errorDiv").removeClass('has-error');
+            $(".recDate_errorTxt, .intDate_errorTxt").text('');
             $("#content1").toggle(300);
             $("#content2").toggle(300);
             $(".btn_vacancy i").toggleClass('fa-plus fa-th-list');
@@ -459,23 +463,29 @@
             $start.val('');
             $end.val('');
             $interview.val('');
+            startVal = '';
+            endVal = '';
+            intVal = '';
 
             $start.datepicker({
-                format: "yyyy-mm-dd", autoclose: true, todayHighlight: true, todayBtn: true, startDate: new Date()
-            }).on('changeDate', function (selected) {
-                var minDate = new Date(selected.date.valueOf());
-                $end.datepicker({
-                    format: "yyyy-mm-dd", autoclose: true, todayHighlight: true, todayBtn: true, startDate: minDate,
-                }).on('changeDate', function (selected) {
-                    var minDate = new Date(selected.date.valueOf());
-                    $interview.datepicker({
-                        format: "yyyy-mm-dd",
-                        autoclose: true,
-                        todayHighlight: true,
-                        todayBtn: true,
-                        startDate: minDate
-                    });
-                });
+                format: "yyyy-mm-dd", autoclose: true, todayHighlight: true, todayBtn: true, startDate: new Date(),
+            }).on('changeDate', function () {
+                startVal = new Date($(this).datepicker('getUTCDate'));
+                recDate_check(startVal, endVal);
+            });
+
+            $end.datepicker({
+                format: "yyyy-mm-dd", autoclose: true, todayHighlight: true, todayBtn: true, startDate: new Date(),
+            }).on('changeDate', function () {
+                endVal = new Date($(this).datepicker('getUTCDate'));
+                recDate_check(startVal, endVal);
+            });
+
+            $interview.datepicker({
+                format: "yyyy-mm-dd", autoclose: true, todayHighlight: true, todayBtn: true, startDate: new Date(),
+            }).on('changeDate', function () {
+                intVal = new Date($(this).datepicker('getUTCDate'));
+                intDate_check(endVal, intVal);
             });
 
             $("#method").val('');
@@ -484,6 +494,8 @@
         });
 
         function editVacancy(id) {
+            $("#recDate_errorDiv, #intDate_errorDiv").removeClass('has-error');
+            $(".recDate_errorTxt, .intDate_errorTxt").text('');
             $("#content1").toggle(300);
             $("#content2").toggle(300);
             $(".btn_agency i").toggleClass('fa-plus fa-th-list');
@@ -497,9 +509,6 @@
             });
 
             $.get("{{route('edit.vacancies',['id' => ''])}}/" + id, function (data) {
-                var $start = $("#recruitmentDate_start"), $end = $("#recruitmentDate_end"),
-                    $interview = $("#interview_date");
-
                 $('#agency_id').val(data.agency_id).attr('disabled', 'disabled').selectpicker("refresh");
                 $('#judul').val(data.judul);
                 $('#pengalaman').val(data.pengalaman);
@@ -517,19 +526,31 @@
                 $start.val(data.recruitmentDate_start);
                 $end.val(data.recruitmentDate_end);
                 $interview.val(data.interview_date);
+                startVal = new Date(data.recruitmentDate_start);
+                endVal = new Date(data.recruitmentDate_end);
+                intVal = new Date(data.interview_date);
+
                 $start.datepicker({
-                    format: "yyyy-mm-dd", autoclose: true, todayHighlight: true, todayBtn: true, startDate: new Date(),
+                    format: "yyyy-mm-dd", autoclose: true, todayHighlight: true, todayBtn: true,
+                }).on('changeDate', function () {
+                    startVal = new Date($(this).datepicker('getUTCDate'));
+                    recDate_check(startVal, endVal);
                 });
+
                 $end.datepicker({
-                    format: "yyyy-mm-dd",
-                    autoclose: true,
-                    todayHighlight: true,
-                    todayBtn: true,
-                    startDate: $start.val(),
+                    format: "yyyy-mm-dd", autoclose: true, todayHighlight: true, todayBtn: true,
+                }).on('changeDate', function () {
+                    endVal = new Date($(this).datepicker('getUTCDate'));
+                    recDate_check(startVal, endVal);
                 });
+
                 $interview.datepicker({
-                    format: "yyyy-mm-dd", autoclose: true, todayHighlight: true, todayBtn: true, startDate: $end.val()
+                    format: "yyyy-mm-dd", autoclose: true, todayHighlight: true, todayBtn: true,
+                }).on('changeDate', function () {
+                    intVal = new Date($(this).datepicker('getUTCDate'));
+                    intDate_check(endVal, intVal);
                 });
+
             });
 
             $("#method").val('PUT');
@@ -557,6 +578,26 @@
             return false;
         }
 
+        function recDate_check(startDate, endDate) {
+            if (startVal && endVal && (startDate > endDate)) {
+                $("#recDate_errorDiv").addClass('has-error');
+                $(".recDate_errorTxt").text('Recruitment end date value should be greater than recruitment start date value!');
+            } else {
+                $("#recDate_errorDiv").removeClass('has-error');
+                $(".recDate_errorTxt").text('');
+            }
+        }
+
+        function intDate_check(endDate, intDate) {
+            if (endVal && intVal && (endDate > intDate)) {
+                $("#intDate_errorDiv").addClass('has-error');
+                $(".intDate_errorTxt").text('Interview date value should be greater than recruitment end date value!');
+            } else {
+                $("#intDate_errorDiv").removeClass('has-error');
+                $(".intDate_errorTxt").text('');
+            }
+        }
+
         $("#form-vacancy").on("submit", function (e) {
             e.preventDefault();
             if (tinyMCE.get('syarat').getContent() == "") {
@@ -576,7 +617,11 @@
                 });
 
             } else {
-                $('#form-vacancy')[0].submit();
+                if ($("#recDate_errorDiv").hasClass('has-error') || $("#intDate_errorDiv").hasClass('has-error')) {
+                    swal('Error!', 'There\'s still some error found on vacancy schedule setup!', 'error');
+                } else {
+                    $('#form-vacancy')[0].submit();
+                }
             }
         })
     </script>

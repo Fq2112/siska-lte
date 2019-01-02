@@ -90,7 +90,7 @@ class VacancyController extends Controller
 
         $acc = Applications::where('vacancy_id', $vacancy->id)->where('user_id', $user->id);
 
-        if (count($acc->get()) == 0) {
+        if (!$acc->count()) {
             Applications::create([
                 'user_id' => $user->id,
                 'vacancy_id' => $vacancy->id,

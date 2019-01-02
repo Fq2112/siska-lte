@@ -215,9 +215,9 @@ class APIController extends Controller
                 $vacancy = Vacancies::where('agency_id', $agency->id)->where('judul', $data['judul'])->first();
                 if ($vacancy != null) {
                     $vacancy->update([
-                        'recruitmentDate_start' => $data['input']['recruitmentDate_start'],
-                        'recruitmentDate_end' => $data['input']['recruitmentDate_end'],
-                        'interview_date' => $data['input']['interview_date'],
+                        'recruitmentDate_start' => $data['input']['isPost'] == 1 ? $data['input']['recruitmentDate_start'] : null,
+                        'recruitmentDate_end' => $data['input']['isPost'] == 1 ? $data['input']['recruitmentDate_end'] : null,
+                        'interview_date' => $data['input']['isPost'] == 1 ? $data['input']['interview_date'] : null,
                     ]);
                 }
             }

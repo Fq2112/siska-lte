@@ -88,37 +88,11 @@
                             </div>
                             <div class="row">
                                 <ul class="nav navbar-nav list-unstyled">
-                                    @php
-                                        $content = '';
-                                        $style = 'none';
-                                        if($vacancy->isPost == false){
-                                            $content = 'This vacancy is INACTIVE.';
-                                            $style = 'inline-block';
-                                        } else{
-                                            if(now() < $vacancy->recruitmentDate_start || is_null($vacancy
-                                            ->recruitmentDate_start)){
-                                                $content = 'The recruitment date of this vacancy hasn\'t started yet.';
-                                                $style = 'inline-block';
-                                            } elseif(now() > $vacancy->recruitmentDate_end || is_null($vacancy
-                                            ->recruitmentDate_end)){
-                                                $content = 'The recruitment date of this vacancy has been ended.';
-                                                $style = 'inline-block';
-                                            }
-                                        }
-                                    @endphp
-                                    <li class="{{$vacancy->isPost == false || now() < $vacancy->recruitmentDate_start ||
-                                            now() > $vacancy->recruitmentDate_end ||
-                                            is_null($vacancy->recruitmentDate_start) ||
-                                            is_null($vacancy->recruitmentDate_end) || Auth::guard('admin')->check() ?
-                                            '' : 'ld ld-heartbeat'}}" id="apply" data-placement="top"
-                                        data-toggle="tooltip">
+                                    <li class="{{Auth::guard('admin')->check() ? '' : 'ld ld-heartbeat'}}"
+                                        id="apply" data-placement="top" data-toggle="tooltip">
                                         <button type="button" class="btn btn-danger btn-block"
                                                 style="padding: 5px 25px;"
-                                                {{$vacancy->isPost == false || now() < $vacancy->recruitmentDate_start ||
-                                                now() > $vacancy->recruitmentDate_end ||
-                                                is_null($vacancy->recruitmentDate_start) ||
-                                                is_null($vacancy->recruitmentDate_end) ||
-                                                Auth::guard('admin')->check() ? 'disabled' : ''}}>
+                                                {{Auth::guard('admin')->check() ? 'disabled' : ''}}>
                                             <i class="fa fa-paper-plane"></i>&ensp;<strong>APPLY</strong>
                                         </button>
                                     </li>
@@ -135,12 +109,10 @@
                                                        title="{{$vacancy->isPost == true ? 'Bookmark this vacancy' : ''}}">
                                                 </label>
                                             </div>
-                                            <div class="anim-icon anim-icon-md info"
-                                                 style="display: {{$style}};margin: 0;">
+                                            <div class="anim-icon anim-icon-md info" style="margin: 0;">
                                                 <input type="checkbox" id="info">
                                                 <label for="info" style="cursor: help;" data-toggle="popover"
-                                                       data-placement="top"
-                                                       title="FYI" data-content="{{$content}}"></label>
+                                                       data-placement="top" title="FYI"></label>
                                             </div>
                                         </form>
                                     </li>
@@ -445,7 +417,37 @@
         google.maps.event.addDomListener(window, 'load', init);
 
         // apply validation
-        var $btnApply = $("#apply button"), $btnBookmark = $("#bm");
+        var $btnApply = $("#apply button"), $btnBookmark = $("#bm"),
+            startDate = '{{$vacancy->recruitmentDate_start}}', endDate = '{{$vacancy->recruitmentDate_end}}',
+            $content = '', $style = 'none', $class = '', $attr = false,
+            now = new Date(), day = ("0" + now.getDate()).slice(-2), month = ("0" + (now.getMonth() + 1)).slice(-2),
+            today = now.getFullYear() + "-" + (month) + "-" + (day);
+
+        @if($vacancy->isPost == false)
+            $content = 'This vacancy is INACTIVE.';
+        $style = 'inline-block';
+        $class = '';
+        @else
+        if (today < startDate || startDate == "") {
+            $content = 'The recruitment date of this vacancy hasn\'t started yet.';
+            $style = 'inline-block';
+            $class = '';
+            $attr = true;
+        } else if (today > endDate || endDate == "") {
+            $content = 'The recruitment date of this vacancy has been ended.';
+            $style = 'inline-block';
+            $class = '';
+            $attr = true;
+        } else {
+            $content = '';
+            $class = 'ld ld-heartbeat';
+            $attr = false;
+        }
+        @endif
+        $(".info").css('display', $style);
+        $(".info label").data('content', $content);
+        $("#apply").addClass($class);
+        $btnApply.attr('disabled', $attr);
         @auth
         @php $acc = App\Models\Applications::where('user_id',Auth::user()->id)->where('vacancy_id',$vacancy->id);@endphp
         @if(count($acc->get()))
