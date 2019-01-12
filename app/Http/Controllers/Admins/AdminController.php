@@ -94,25 +94,34 @@ class AdminController extends Controller
     public function submitSynchronize(Request $request)
     {
         $client = new Client([
-            'base_uri' => 'http://localhost:8000',
+            'base_uri' => env('SISKA_URI'),
             'defaults' => [
                 'exceptions' => false
             ]
         ]);
 
-        $vacancies = Vacancies::where('isPost', true)->orderBy('agency_id')->get()->toArray();
+        $x = 0;
+        $seekers = User::where('status', true)->get();
+        $arr = $seekers->toArray();
+        foreach ($seekers as $seeker) {
+            $acc = array('email' => $seeker->email, 'password' => $seeker->password);
+            $arr[$x] = array_replace($acc, $arr[$x]);
+            $x = $x + 1;
+        }
 
         $i = 0;
+        $vacancies = Vacancies::where('isPost', true)->orderBy('agency_id')->get()->toArray();
         foreach ($vacancies as $vacancy) {
             $agency = array('agency_id' => Agencies::find($vacancy['agency_id'])->toArray());
             $vacancies[$i] = array_replace($vacancies[$i], $agency);
             $i = $i + 1;
         }
 
-        $response = $client->post('http://localhost:8000/api/partners/sync', [
+        $response = $client->post(env('SISKA_URI') . '/api/partners/sync', [
             'form_params' => [
                 'key' => $request->key,
                 'secret' => $request->secret,
+                'seekers' => $arr,
                 'vacancies' => $vacancies,
             ]
         ])->getBody()->getContents();
@@ -120,29 +129,6 @@ class AdminController extends Controller
         $response = json_decode($response, true);
 
         if ($response['success'] == true) {
-            foreach ($response['seekers'] as $row) {
-                $checkSeeker = User::where('email', $row['user']['email'])->first();
-                if (!$checkSeeker) {
-                    User::firstOrCreate([
-                        'ava' => 'seeker.png',
-                        'name' => $row['user']['name'],
-                        'email' => $row['user']['email'],
-                        'password' => $row['user']['password'],
-                        'phone' => $row['phone'],
-                        'address' => $row['address'],
-                        'zip_code' => $row['zip_code'],
-                        'birthday' => $row['birthday'],
-                        'gender' => $row['gender'],
-                        'relationship' => $row['relationship'],
-                        'nationality' => $row['nationality'],
-                        'website' => $row['website'],
-                        'lowest_salary' => $row['lowest_salary'],
-                        'highest_salary' => $row['highest_salary'],
-                        'summary' => $row['summary'],
-                    ]);
-                }
-            }
-
             foreach ($response['vacancies'] as $row) {
                 $checkAgency = Agencies::where('email', $row['agency']['email'])->first();
                 if (!$checkAgency) {
@@ -190,7 +176,7 @@ class AdminController extends Controller
 
             $totalVac = count($vacancies) + count($response['vacancies']);
             $statusVac = $totalVac > 1 ? $totalVac . ' vacancies' : 'a vacancy';
-            $statusSeeker = User::count() > 1 ? User::count() . ' seekers' : 'a seeker';
+            $statusSeeker = count($arr) > 1 ? count($arr) . ' seekers' : 'a seeker';
 
             return 'Successfully synchronized ' . $statusSeeker . ' and ' . $statusVac . '!';
         }

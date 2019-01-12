@@ -26,7 +26,7 @@ class APIController extends Controller
     {
         $this->key = env('SISKA_API_KEY');
         $this->secret = env('SISKA_API_SECRET');
-        $this->uri = 'http://localhost:8000';
+        $this->uri = env('SISKA_URI');
 
         $this->client = new Client([
             'base_uri' => $this->uri,
@@ -41,39 +41,6 @@ class APIController extends Controller
         $response = $this->client->get($this->uri . '/api/partners?key=' . $this->key . '&secret=' . $this->secret);
 
         return json_decode($response->getBody(), true);
-    }
-
-    public function createSeekers(Request $request)
-    {
-        $data = $request->seeker;
-        $checkSeeker = User::where('email', $data['email'])->first();
-        if (!$checkSeeker) {
-            User::firstOrCreate([
-                'ava' => 'seeker.png',
-                'name' => $data['name'],
-                'email' => $data['email'],
-                'password' => $data['password'],
-            ]);
-        }
-    }
-
-    public function seekersSocialite($provider, Request $request)
-    {
-        $data = $request->seeker;
-        $checkSeeker = User::where('email', $data['email'])->first();
-        if (!$checkSeeker) {
-            $user = User::firstOrCreate([
-                'ava' => 'seeker.png',
-                'name' => $data['name'],
-                'email' => $data['email'],
-                'password' => $data['password'],
-            ]);
-
-            $user->socialProviders()->create([
-                'provider_id' => $data['provider_id'],
-                'provider' => $provider
-            ]);
-        }
     }
 
     public function updateSeekers(Request $request)

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Seekers;
 
+use App\Http\Controllers\Api\APIController as Credential;
 use App\Models\Attachments;
 use App\Models\Education;
 use App\Models\Experience;
@@ -212,21 +213,24 @@ class AccountController extends Controller
 
     private function updatePartners($data, $check)
     {
-        $client = new Client([
-            'base_uri' => 'http://localhost:8000',
-            'defaults' => [
-                'exceptions' => false
-            ]
-        ]);
+        $response = app(Credential::class)->getCredentials();
+        if ($response['isSync'] == true) {
+            $client = new Client([
+                'base_uri' => env('SISKA_URI'),
+                'defaults' => [
+                    'exceptions' => false
+                ]
+            ]);
 
-        $client->put('http://localhost:8000/api/partners/seekers/update', [
-            'form_params' => [
-                'key' => env('SISKA_API_KEY'),
-                'secret' => env('SISKA_API_SECRET'),
-                'check_form' => $check,
-                'seeker' => $data,
-            ]
-        ]);
+            $client->put(env('SISKA_URI') . '/api/partners/seekers/update', [
+                'form_params' => [
+                    'key' => env('SISKA_API_KEY'),
+                    'secret' => env('SISKA_API_SECRET'),
+                    'check_form' => $check,
+                    'seeker' => $data,
+                ]
+            ]);
+        }
     }
 
     public function createAttachments(Request $request)

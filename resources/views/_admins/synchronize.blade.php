@@ -46,12 +46,13 @@
                             <div id="partnership">
                                 <h2 class="StepTitle">Step 1 Partnership</h2>
                                 <ol style="text-align: justify;font-size: 15px;">
-                                    <li>Buka situs utama <a href="http://localhost:8000#partner" target="_blank">
+                                    <li>Buka situs utama <a href="{{env('SISKA_URI')}}#partner" target="_blank">
                                             <strong>SISKA</strong></a>, lalu klik tombol "<strong>Bermitra Sekarang!
                                         </strong>" untuk melakukan <em>partnership request</em>.
                                     </li>
                                     <li>Isi form <strong>SISKA Partnership</strong> dengan data yang valid mulai dari
-                                        nama instansi, email, serta nomor telp/hp Anda yang masih aktif.
+                                        nama instansi, email dan nomor telp/hp Anda yang masih aktif,
+                                        serta URI (domain) SiskaLTE Anda.
                                     </li>
                                     <li>Tunggu hingga pihak SISKA mengirimkan pesan yang berisi kredensial untuk
                                         <strong>SiskaLTE</strong> instansi Anda melalui email yang telah Anda
@@ -66,7 +67,8 @@
                                     <li>Masukkan kredensial Anda pada bagian :
                                         <blockquote>
                                             <code>SISKA_API_KEY=<em>YOUR_API_KEY</em><br>
-                                                SISKA_API_SECRET=<em>YOUR_API_SECRET</em></code>
+                                                SISKA_API_SECRET=<em>YOUR_API_SECRET</em>
+                                            </code>
                                         </blockquote>
                                     </li>
                                     <li>Jalankan ulang atau <em>refresh</em> server Anda:
@@ -87,7 +89,7 @@
                                                 {<br>
                                                 <span style="margin-left: 2em">$this->key = env('SISKA_API_KEY');</span><br>
                                                 <span style="margin-left: 2em">$this->secret = env('SISKA_API_SECRET');</span><br>
-                                                <span style="margin-left: 2em">$this->uri = 'http://localhost:8000';</span>
+                                                <span style="margin-left: 2em">$this->uri = env('SISKA_URI');</span>
                                                 <br><br>
                                                 <span style="margin-left: 2em">$this->client = new Client([</span><br>
                                                 <span style="margin-left: 4em">'base_uri' => $this->uri,</span><br>
@@ -169,23 +171,19 @@
                                 <h2 class="StepTitle">Step 1 Route</h2>
                                 <p style="text-align: justify;font-size: 15px;">Selain sinkronisasi data lowongan, Anda
                                     juga perlu melakukan
-                                    <em>synchronize setup</em> untuk data job seeker. Dengan begitu, ketika seeker
-                                    membuat akun melalui situs utama SISKA maka datanya juga akan disimpan ke dalam
-                                    database Anda maupun database SiskaLTE lainnya yang telah bermitra serta
-                                    melakukan sinkronisasi dengan SISKA dan apabila seeker tersebut membuat akun
-                                    melalui SiskaLTE instansi Anda maka datanya hanya akan tersimpan di dalam
-                                    database Anda sendiri.
+                                    <em>synchronize setup</em> untuk data job seeker. Dengan begitu, setelah seeker
+                                    membuat akun melalui SiskaLTE instansi Anda maka datanya juga akan disimpan
+                                    ke dalam database SISKA dan apabila seeker tersebut membuat akun
+                                    melalui SISKA maka datanya hanya akan tersimpan di dalam database SISKA.
                                 </p>
                                 <ol style="font-size: 15px;">
                                     <li>Buka file <code>routes/api.php</code>.</li>
-                                    <li>Tambahkan code berikut :
+                                    <li>Tambahkan code berikut:
                                         <blockquote>
                                             <code>
                                                 $router->group(['prefix'=>'SISKA', 'middleware'=>'partner'],
                                                 function($router){<br>
                                                 <span style="margin-left: 2em">$router->group(['prefix' => 'seekers'], function ($router) {</span><br>
-                                                <span style="margin-left: 4em">$router->post('create', 'APIController@createSeekers');</span><br>
-                                                <span style="margin-left: 4em">$router->post('{provider}', 'APIController@seekersSocialite');</span><br>
                                                 <span style="margin-left: 4em">$router->put('update', 'APIController@updateSeekers');</span><br>
                                                 <span style="margin-left: 4em">$router->delete('delete', 'APIController@deleteSeekers');</span><br>
                                                 <span style="margin-left: 2em">});</span><br><br>
@@ -203,46 +201,13 @@
                                 </ol>
                             </div>
                             <div id="sync-seeker-1">
-                                <h2 class="StepTitle">Step 2 Sync&ndash;Seeker <sub>(Part 1)</sub></h2>
+                                <h2 class="StepTitle">Step 2 Sync&ndash;Seeker <sub>(Response)</sub></h2>
                                 <ol start="3" style="font-size: 15px;">
                                     <li>Buka file <code>app/Http/Controllers/Api/APIController.php</code>.</li>
-                                    <li>Tambahkan code berikut :
+                                    <li>Tambahkan code berikut:
                                         <blockquote>
                                             <em>// here is your credentials functions&hellip;</em><br><br>
                                             <code>
-                                                public function createSeekers(Request $request)<br>
-                                                {<br>
-                                                <span style="margin-left: 2em">$data = $request->seeker;</span><br>
-                                                <span style="margin-left: 2em">$checkSeeker = User::where('email', $data['email'])->first();</span><br>
-                                                <span style="margin-left: 2em">if (!$checkSeeker) {</span><br>
-                                                <span style="margin-left: 4em">User::firstOrCreate([</span><br>
-                                                <span style="margin-left: 6em">'ava' => 'seeker.png',</span><br>
-                                                <span style="margin-left: 6em">'name' => $data['name'],</span><br>
-                                                <span style="margin-left: 6em">'email' => $data['email'],</span><br>
-                                                <span style="margin-left: 6em">'password' => $data['password'],</span><br>
-                                                <span style="margin-left: 4em">]);</span><br>
-                                                <span style="margin-left: 2em">}</span><br>
-                                                }<br><br>
-
-                                                public function seekersSocialite($provider, Request $request)<br>
-                                                {<br>
-                                                <span style="margin-left: 2em">$data = $request->seeker;</span><br>
-                                                <span style="margin-left: 2em">$checkSeeker = User::where('email', $data['email'])->first();</span><br>
-                                                <span style="margin-left: 2em">if (!$checkSeeker) {</span><br>
-                                                <span style="margin-left: 4em">$user = User::firstOrCreate([</span><br>
-                                                <span style="margin-left: 6em">'ava' => 'seeker.png',</span><br>
-                                                <span style="margin-left: 6em">'name' => $data['name'],</span><br>
-                                                <span style="margin-left: 6em">'email' => $data['email'],</span><br>
-                                                <span style="margin-left: 6em">'password' => $data['password'],</span><br>
-                                                <span style="margin-left: 4em">]);</span><br><br>
-
-                                                <span style="margin-left: 4em">$user->socialProviders()->create([</span><br>
-                                                <span style="margin-left: 6em">'provider_id' => $data['provider_id'],</span><br>
-                                                <span style="margin-left: 6em">'provider' => $provider</span><br>
-                                                <span style="margin-left: 4em">]);</span><br>
-                                                <span style="margin-left: 2em">}</span><br>
-                                                }<br><br>
-
                                                 public function updateSeekers(Request $request)<br>
                                                 {<br>
                                                 <span style="margin-left: 2em">$data = $request->seeker;</span><br>
@@ -295,10 +260,72 @@
                                 </ol>
                             </div>
                             <div id="sync-seeker-2">
-                                <h2 class="StepTitle">Step 3 Sync&ndash;Seeker <sub>(Part 2)</sub></h2>
+                                <h2 class="StepTitle">Step 3 Sync&ndash;Seeker <sub>(Request)</sub></h2>
                                 <ol start="6" style="font-size: 15px;">
-                                    <li>Buka file <code>app/Http/Controllers/Seekers/AccountController.php</code>.</li>
-                                    <li>Tambahkan fungsi berikut :
+                                    <li>Buka file <code>app/Http/Controllers/Auth/ActivationController.php</code> dan
+                                        tambahkan <em>POST&ndash;Request</em> seperti code berikut:
+                                        <blockquote>
+                                            <code>
+                                                public function activate(Request $request)<br>
+                                                {<br>
+                                                <span style="margin-left: 2em"><em>// here is your activation code&hellip;</em></span><br><br>
+                                                <span style="margin-left: 2em">$response = app(Credential::class)->getCredentials();</span><br>
+                                                <span style="margin-left: 2em">if ($response['isSync'] == true) {</span><br>
+                                                <span style="margin-left: 4em">$data = array('name' => $user->name, 'email' => $user->email,</span><br>
+                                                <span style="margin-left: 6em">'password' => $user->password);</span><br>
+                                                <span style="margin-left: 4em">$client = new Client([</span><br>
+                                                <span style="margin-left: 6em">'base_uri' => env('SISKA_URI'),</span><br>
+                                                <span style="margin-left: 6em">'defaults' => [</span><br>
+                                                <span style="margin-left: 8em">'exceptions' => false</span><br>
+                                                <span style="margin-left: 6em">]</span><br>
+                                                <span style="margin-left: 4em">]);</span><br><br>
+
+                                                <span style="margin-left: 4em">$client->post(env('SISKA_URI') . '/api/partners/seekers/create', [</span><br>
+                                                <span style="margin-left: 6em">'form_params' => [</span><br>
+                                                <span style="margin-left: 8em">'key' => env('SISKA_API_KEY'),</span><br>
+                                                <span style="margin-left: 8em">'secret' => env('SISKA_API_SECRET'),</span><br>
+                                                <span style="margin-left: 8em">'seeker' => $data,</span><br>
+                                                <span style="margin-left: 6em">]</span><br>
+                                                <span style="margin-left: 4em">]);</span><br>
+                                                <span style="margin-left: 2em">}</span><br><br>
+                                                <span style="margin-left: 2em"><em>// other codes&hellip;</em></span><br>
+                                                }
+                                            </code>
+                                        </blockquote>
+                                    </li>
+                                    <li>Buka file <code>app/Http/Controllers/Auth/SocialAuthController.php</code> dan
+                                        tambahkan <em>POST&ndash;Request</em> seperti code berikut:
+                                        <blockquote>
+                                            <code>
+                                                public function handleProviderCallback($provider)<br>
+                                                {<br>
+                                                <span style="margin-left: 2em"><em>// here is your socialite code&hellip;</em></span><br><br>
+                                                <span style="margin-left: 2em">$response = app(Credential::class)->getCredentials();</span><br>
+                                                <span style="margin-left: 2em">if ($response['isSync'] == true) {</span><br>
+                                                <span style="margin-left: 4em">$data = array('name' => $user->name, 'email' => $user->email,</span><br>
+                                                <span style="margin-left: 6em">'password' => $user->password, 'provider_id' => $userSocial->getId());</span><br>
+                                                <span style="margin-left: 4em">$client = new Client([</span><br>
+                                                <span style="margin-left: 6em">'base_uri' => env('SISKA_URI'),</span><br>
+                                                <span style="margin-left: 6em">'defaults' => [</span><br>
+                                                <span style="margin-left: 8em">'exceptions' => false</span><br>
+                                                <span style="margin-left: 6em">]</span><br>
+                                                <span style="margin-left: 4em">]);</span><br><br>
+
+                                                <span style="margin-left: 4em">$client->post(env('SISKA_URI') . '/api/partners/seekers/' . $provider, [</span><br>
+                                                <span style="margin-left: 6em">'form_params' => [</span><br>
+                                                <span style="margin-left: 8em">'key' => env('SISKA_API_KEY'),</span><br>
+                                                <span style="margin-left: 8em">'secret' => env('SISKA_API_SECRET'),</span><br>
+                                                <span style="margin-left: 8em">'seeker' => $data,</span><br>
+                                                <span style="margin-left: 6em">]</span><br>
+                                                <span style="margin-left: 4em">]);</span><br>
+                                                <span style="margin-left: 2em">}</span><br><br>
+                                                <span style="margin-left: 2em"><em>// other codes&hellip;</em></span><br>
+                                                }
+                                            </code>
+                                        </blockquote>
+                                    </li>
+                                    <li>Buka file <code>app/Http/Controllers/Seekers/AccountController.php</code> dan
+                                        tambahkan <em>PUT&ndash;Request</em> seperti code berikut:
                                         <blockquote>
                                             <em>// here is your other functions&hellip;</em><br><br>
                                             <code>
@@ -332,36 +359,77 @@
 
                                                 private function updatePartners($data, $check)<br>
                                                 {<br>
-                                                <span style="margin-left: 2em">$client = new Client([</span><br>
-                                                <span style="margin-left: 4em">'base_uri' => 'http://localhost:8000',</span><br>
-                                                <span style="margin-left: 4em">'defaults' => [</span><br>
-                                                <span style="margin-left: 6em">'exceptions' => false</span><br>
-                                                <span style="margin-left: 4em">]</span><br>
-                                                <span style="margin-left: 2em">]);</span><br><br>
+                                                <span style="margin-left: 2em">$response = app(Credential::class)->getCredentials();</span><br>
+                                                <span style="margin-left: 2em">if ($response['isSync'] == true) {</span><br>
+                                                <span style="margin-left: 4em">$client = new Client([</span><br>
+                                                <span style="margin-left: 6em">'base_uri' => env('SISKA_URI'),</span><br>
+                                                <span style="margin-left: 6em">'defaults' => [</span><br>
+                                                <span style="margin-left: 8em">'exceptions' => false</span><br>
+                                                <span style="margin-left: 6em">]</span><br>
+                                                <span style="margin-left: 4em">]);</span><br><br>
 
-                                                <span style="margin-left: 2em">$client->put('http://localhost:8000/api/partners/seekers/update', [</span><br>
-                                                <span style="margin-left: 4em">''form_params' => [</span><br>
-                                                <span style="margin-left: 6em">'key' => env('SISKA_API_KEY'),</span><br>
-                                                <span style="margin-left: 6em">'secret' => env('SISKA_API_SECRET'),</span><br>
-                                                <span style="margin-left: 6em">'check_form' => $check,</span><br>
-                                                <span style="margin-left: 6em">'seeker' => $data,</span><br>
-                                                <span style="margin-left: 4em">']</span><br>
-                                                <span style="margin-left: 2em">]);</span><br>
+                                                <span style="margin-left: 4em">$client->put(env('SISKA_URI') . '/api/partners/seekers/update', [</span><br>
+                                                <span style="margin-left: 6em">'form_params' => [</span><br>
+                                                <span style="margin-left: 8em">'key' => env('SISKA_API_KEY'),</span><br>
+                                                <span style="margin-left: 8em">'secret' => env('SISKA_API_SECRET'),</span><br>
+                                                <span style="margin-left: 8em">'check_form' => $check,</span><br>
+                                                <span style="margin-left: 8em">'seeker' => $data,</span><br>
+                                                <span style="margin-left: 6em">]</span><br>
+                                                <span style="margin-left: 4em">]);</span><br>
+                                                <span style="margin-left: 2em">}</span><br>
                                                 }
                                             </code><br><br>
                                             <em>// here is your other functions&hellip;</em>
                                         </blockquote>
                                     </li>
-                                    <li>Jangan lupa untuk <em>import library</em> guzzle Anda :
-                                        <blockquote><code>use GuzzleHttp\Client;</code></blockquote>
+                                    <li>Buka file
+                                        <code>app/Http/Controllers/Admins/DataMaster/AccountsController.php</code> dan
+                                        tambahkan <em>DELETE&ndash;Request</em> seperti code berikut:
+                                        <blockquote>
+                                            <em>// here is your other functions&hellip;</em><br><br>
+                                            <code>
+                                                public function deleteUsers($id)<br>
+                                                {<br>
+                                                <span style="margin-left: 2em"><em>// here is your delete query code&hellip;</em></span><br><br>
+                                                <span style="margin-left: 2em">$response = app(Credential::class)->getCredentials();</span><br>
+                                                <span style="margin-left: 2em">if ($response['isSync'] == true) {</span><br>
+                                                <span style="margin-left: 4em">$client = new Client([</span><br>
+                                                <span style="margin-left: 6em">'base_uri' => env('SISKA_URI'),</span><br>
+                                                <span style="margin-left: 6em">'defaults' => [</span><br>
+                                                <span style="margin-left: 8em">'exceptions' => false</span><br>
+                                                <span style="margin-left: 6em">]</span><br>
+                                                <span style="margin-left: 4em">]);</span><br><br>
+
+                                                <span style="margin-left: 4em">$client->delete(env('SISKA_URI') . '/api/partners/seekers/delete', [</span><br>
+                                                <span style="margin-left: 6em">'form_params' => [</span><br>
+                                                <span style="margin-left: 8em">'key' => env('SISKA_API_KEY'),</span><br>
+                                                <span style="margin-left: 8em">'secret' => env('SISKA_API_SECRET'),</span><br>
+                                                <span style="margin-left: 8em">'email' => $user->email,</span><br>
+                                                <span style="margin-left: 6em">]</span><br>
+                                                <span style="margin-left: 4em">]);</span><br>
+                                                <span style="margin-left: 2em">}</span><br><br>
+                                                <span style="margin-left: 2em"><em>// other codes&hellip;</em></span><br>
+                                                }
+                                            </code><br><br>
+                                            <em>// here is your other functions&hellip;</em>
+                                        </blockquote>
+                                    </li>
+                                    <li>Jangan lupa untuk <em>import library</em> guzzle Anda dan tambahkan code berikut
+                                        :
+                                        <blockquote>
+                                            <code>
+                                                use GuzzleHttp\Client;<br>
+                                                use App\Http\Controllers\Api\APIController as Credential;
+                                            </code>
+                                        </blockquote>
                                     </li>
                                 </ol>
                             </div>
                             <div id="sync-vacancy-1">
-                                <h2 class="StepTitle">Step 3 Sync&ndash;Vacancy <sub>(Part 1)</sub></h2>
-                                <ol start="9" style="font-size: 15px;">
+                                <h2 class="StepTitle">Step 3 Sync&ndash;Vacancy <sub>(Response)</sub></h2>
+                                <ol start="11" style="font-size: 15px;">
                                     <li>Masih di dalam file <code>app/Http/Controllers/Api/APIController.php</code>,
-                                        tambahkan code berikut :
+                                        tambahkan code berikut:
                                         <blockquote>
                                             <em>// here is your sync seekers functions&hellip;</em><br><br>
                                             <code>
@@ -369,7 +437,8 @@
                                                 {<br>
                                                 <span style="margin-left: 2em">$vacancies = $request->vacancies;</span><br>
                                                 <span style="margin-left: 2em">foreach ($vacancies as $data) {</span><br>
-                                                <span style="margin-left: 4em">$checkAgency = Agencies::where('email', $data['agency']['email'])->first();</span><br>
+                                                <span style="margin-left: 4em">$checkAgency = Agencies::where('email', $data['agency']['email'])</span><br>
+                                                <span style="margin-left: 6em">->first();</span><br>
                                                 <span style="margin-left: 4em">if (!$checkAgency) {</span><br>
                                                 <span style="margin-left: 6em">$agency = Agencies::firstOrCreate([</span><br>
                                                 <span style="margin-left: 8em">'ava' => 'agency.png',</span><br>
@@ -423,8 +492,10 @@
                                                 <span style="margin-left: 7em">'industry_id' => $data['input']['industri_id'],</span><br>
                                                 <span style="margin-left: 7em">'link' => $data['input']['link'],</span><br>
                                                 <span style="margin-left: 7em">'phone' => $data['input']['phone'],</span><br>
-                                                <span style="margin-left: 7em">'hari_kerja' => $data['input']['start_day'] . ' - ' . $data['input']['end_day'],</span><br>
-                                                <span style="margin-left: 7em">'jam_kerja' => $data['input']['start_time'] . ' - ' . $data['input']['end_time'],</span><br>
+                                                <span style="margin-left: 7em">'hari_kerja' => $data['input']['start_day'] . ' - ' . </span><br>
+                                                <span style="margin-left: 9em">$data['input']['end_day'],</span><br>
+                                                <span style="margin-left: 7em">'jam_kerja' => $data['input']['start_time'] . ' - ' . </span><br>
+                                                <span style="margin-left: 9em">$data['input']['end_time'],</span><br>
                                                 <span style="margin-left: 5em">]);</span><br><br>
 
                                                 <span style="margin-left: 4em">} elseif ($request->check_form == 'address') {</span><br>
@@ -505,10 +576,10 @@
                                 </ol>
                             </div>
                             <div id="sync-vacancy-2">
-                                <h2 class="StepTitle">Step 4 Sync&ndash;Vacancy <sub>(Part 2)</sub></h2>
-                                <ol start="10" style="font-size: 15px;">
+                                <h2 class="StepTitle">Step 4 Sync&ndash;Vacancy <sub>(Request)</sub></h2>
+                                <ol start="12" style="font-size: 15px;">
                                     <li>Buka file <code>app/Http/Controllers/Admins/AgencyController.php</code>.</li>
-                                    <li>Tambahkan construct code berikut :
+                                    <li>Tambahkan construct code berikut:
                                         <blockquote>
                                             <code>
                                                 protected $key, $secret, $client, $uri;<br><br>
@@ -517,7 +588,7 @@
                                                 {<br>
                                                 <span style="margin-left: 2em">$this->key = env('SISKA_API_KEY');</span><br>
                                                 <span style="margin-left: 2em">$this->secret = env('SISKA_API_SECRET');</span><br>
-                                                <span style="margin-left: 2em">$this->uri = 'http://localhost:8000';</span>
+                                                <span style="margin-left: 2em">$this->uri = env('SISKA_URI');</span>
                                                 <br><br>
                                                 <span style="margin-left: 2em">$this->client = new Client([</span><br>
                                                 <span style="margin-left: 4em">'base_uri' => $this->uri,</span><br>
@@ -539,7 +610,7 @@
                                             </code>
                                         </blockquote>
                                     </li>
-                                    <li>Tambahkan code berikut :
+                                    <li>Tambahkan code berikut:
                                         <blockquote>
                                             <code>
                                                 public function updateAgencies(Request $request)<br>
@@ -644,15 +715,15 @@
                             </div>
                             <div id="finish">
                                 <h2 class="StepTitle">Step 5 Finish</h2>
-                                <ol start="14" style="text-align: justify;font-size: 15px;">
+                                <ol start="16" style="text-align: justify;font-size: 15px;">
                                     <li>Untuk mengakhiri <em>synchronize setup</em>, tekan tombol
                                         "<strong>Finish</strong>" berikut. Dengan menekan tombol tersebut maka data
-                                        agensi dan lowongannya serta data job seeker dari <strong>SISKA</strong>
-                                        akan disimpan kedalam database SiskaLTE instansi Anda.
+                                        <strong>SISKA</strong>, yaitu agensi beserta lowongannya akan disalin ke dalam
+                                        database SiskaLTE instansi Anda.
                                     </li>
-                                    <li>Begitu pula dengan seluruh data lowongan beserta agensi Anda akan dimigrasikan
+                                    <li>Begitu pula dengan seluruh data lowongan beserta agensi Anda juga akan disalin
                                         ke dalam database<strong>SISKA</strong> yang tentunya akan melalui proses
-                                        filter terlebih dahulu, manakah yang akan ditampilkan pada situs utama
+                                        validasi terlebih dahulu, manakah yang akan ditampilkan pada situs utama
                                         <strong>SISKA</strong>.
                                     </li>
                                     <li>Atas perhatian dan kerjasamanya, kami ucapkan terimakasih banyak

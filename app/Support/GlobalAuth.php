@@ -11,6 +11,7 @@ namespace App\Support;
 use App\Models\Admin;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Input;
 
 class GlobalAuth
 {
@@ -23,7 +24,14 @@ class GlobalAuth
     public function login($credentials)
     {
         if ($this->isUser($credentials['email'])) {
-            $guard = 'web';
+            $user = User::where('email', $credentials['email'])->first();
+            if ($user->status == false) {
+                return back()->withInput(Input::all())->with([
+                    'inactive' => 'Your account has not been activated! Please activate first.'
+                ]);
+            } else {
+                $guard = 'web';
+            }
         } else if ($this->isAdmin($credentials['email'])) {
             $guard = 'admin';
         } else {

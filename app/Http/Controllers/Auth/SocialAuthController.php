@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Http\Controllers\Api\APIController as Credential;
 use App\Models\User;
 use App\Http\Controllers\Controller;
+use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Support\Facades\Storage;
@@ -42,23 +44,45 @@ class SocialAuthController extends Controller
                     'email' => $userSocial->getEmail(),
                     'name' => $userSocial->getName(),
                     'password' => bcrypt(str_random(15)),
+                    'status' => true,
                 ]);
 
                 $user->socialProviders()->create([
                     'provider_id' => $userSocial->getId(),
                     'provider' => $provider
                 ]);
-                Auth::loginUsingId($user->id);
 
             } else {
-                if ($checkUser->ava == "seeker.png" || $checkUser->ava == "") {
-                    Storage::disk('local')
-                        ->put('public/users/ava/' . $userSocial->getId() . ".jpg", file_get_contents($userSocial->getAvatar()));
-
-                    $checkUser->update(['ava' => $userSocial->getId() . ".jpg"]);
-                }
-                Auth::loginUsingId($checkUser->id);
+                $user = $checkUser;
             }
+
+            if ($user->ava == "seeker.png" || $user->ava == "") {
+                Storage::disk('local')
+                    ->put('public/users/ava/' . $userSocial->getId() . ".jpg", file_get_contents($userSocial->getAvatar()));
+
+                $user->update(['ava' => $userSocial->getId() . ".jpg"]);
+            }
+
+            $response = app(Credential::class)->getCredentials();
+            if ($response['isSync'] == true) {
+                $data = array('name' => $user->name, 'email' => $user->email, 'password' => $user->password,
+                    'provider_id' => $userSocial->getId());
+                $client = new Client([
+                    'base_uri' => env('SISKA_URI'),
+                    'defaults' => [
+                        'exceptions' => false
+                    ]
+                ]);
+                $client->post(env('SISKA_URI') . '/api/partners/seekers/' . $provider, [
+                    'form_params' => [
+                        'key' => env('SISKA_API_KEY'),
+                        'secret' => env('SISKA_API_SECRET'),
+                        'seeker' => $data,
+                    ]
+                ]);
+            }
+
+            Auth::loginUsingId($user->id);
 
             return redirect()->route('home-seeker')->with('signed', 'You`re now signed in as a Job Seeker.');
 

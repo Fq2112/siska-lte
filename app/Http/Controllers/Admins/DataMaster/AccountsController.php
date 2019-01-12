@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Admins\DataMaster;
 
+use App\Http\Controllers\Api\APIController as Credential;
 use App\Models\User;
 use App\Models\Admin;
+use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -117,6 +119,24 @@ class AccountsController extends Controller
             Storage::delete('public/users/ava/' . $user->ava);
         }
         $user->forceDelete();
+
+        $response = app(Credential::class)->getCredentials();
+        if ($response['isSync'] == true) {
+            $client = new Client([
+                'base_uri' => env('SISKA_URI'),
+                'defaults' => [
+                    'exceptions' => false
+                ]
+            ]);
+
+            $client->delete(env('SISKA_URI') . '/api/partners/seekers/delete', [
+                'form_params' => [
+                    'key' => env('SISKA_API_KEY'),
+                    'secret' => env('SISKA_API_SECRET'),
+                    'email' => $user->email,
+                ]
+            ]);
+        }
 
         return back()->with('success', '' . $user->name . ' is successfully deleted!');
     }

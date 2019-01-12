@@ -97,6 +97,7 @@ class UserSeeder extends Seeder
                 'name' => $faker->firstName . ' ' . $faker->lastName,
                 'email' => $faker->unique()->safeEmail,
                 'password' => bcrypt('secret'),
+                'status' => true,
                 'remember_token' => str_random(60),
                 'phone' => $faker->phoneNumber,
                 'address' => $faker->address,

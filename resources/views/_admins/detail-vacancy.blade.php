@@ -521,7 +521,7 @@
 
                             preConfirm: function () {
                                 return new Promise(function (resolve) {
-                                    window.location.href = 'http://localhost:8000/search?q={{$vacancy->judul}}&loc={{$city}}';
+                                    window.location.href = '{{env('SISKA_URI')}}/search?q={{$vacancy->judul}}&loc={{$city}}';
                                 });
                             },
                             allowOutsideClick: false

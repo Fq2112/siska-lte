@@ -18,7 +18,7 @@ class AgencyController extends Controller
     {
         $this->key = env('SISKA_API_KEY');
         $this->secret = env('SISKA_API_SECRET');
-        $this->uri = 'http://localhost:8000';
+        $this->uri = env('SISKA_URI');
 
         $this->client = new Client([
             'base_uri' => $this->uri,
