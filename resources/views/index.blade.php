@@ -216,7 +216,7 @@
                 </div>
             @endif
             <form class="form-horizontal" method="post" accept-charset="UTF-8" action="{{session('reset') ?
-            route('password.request') : route('password.email') }}">
+            route('password.request',['token' => session('reset')['token']]) : route('password.email') }}">
                 {{ csrf_field() }}
                 <div class="row form-group has-feedback">
                     <input type="email" placeholder="Email" id="resetPassword" name="email" value="{{ old('email') }}"
