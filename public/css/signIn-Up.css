@@ -28,7 +28,7 @@ body {
     text-align: center;
 }
 
-.login, .signup {
+.login, .signup, .recover-password {
     position: relative;
     background: rgba(255, 255, 255, .5);
 }
@@ -257,6 +257,11 @@ body {
     background: #393D46;
     color: #fff;
     transition: all .2s ease;
+}
+
+.btn-password {
+    margin: 0;
+    text-transform: uppercase;
 }
 
 .btn-reset, .btn-member, .btn-fade {

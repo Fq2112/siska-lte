@@ -31,8 +31,7 @@
         <div class="login">
             <div class="title">
                 <span>Sign In</span>
-                <p>Welcome back, please login to your account. You can sign in with your github, facebook, twitter,
-                    google+ account or with your SISKA account.</p>
+                <p>Welcome back, please login to your account.<br>You can sign in with :</p>
             </div>
 
             <div class="social">
@@ -94,9 +93,9 @@
                 </div>
                 @if(session('error'))
                     <strong>{{ $errors->first('password') }}</strong>
-                    <a href="javascript:void(0)" class="btn-reset btn-fade">Recover your password
-                        <i class="fa fa-long-arrow-right" aria-hidden="true"></i></a>
                 @endif
+                <a href="javascript:void(0)" class="btn-reset btn-fade">Forgot password?
+                    <i class="fa fa-long-arrow-right" aria-hidden="true"></i></a>
                 <a href="javascript:void(0)" class="btn-member btn-fade">Looking to create an account?
                     <i class="fa fa-long-arrow-right" aria-hidden="true"></i></a>
             </form>
@@ -105,8 +104,7 @@
         <div class="signup" style="display: none;">
             <div class="title">
                 <span>Sign Up</span>
-                <p>Create a new account. You can sign up with your github, facebook, twitter, google+ account or
-                    with your SISKA account.</p>
+                <p>Create a new account. You can sign up with :</p>
             </div>
 
             <div class="social">
@@ -180,30 +178,73 @@
 
         <div class="recover-password" style="display: none;">
             <div class="title">
-                <span>Recover Password</span>
-                <p>Enter in the email associated with your account</p>
+                <span>Reset Password</span>
+                <p>
+                    {{session('reset') ? 'Please, enter your new password ' :
+                    'To recover your password, please enter an email that associated with your account '}}
+                    or you can sign in with :
+                </p>
             </div>
 
-            <form class="form-horizontal" method="post" accept-charset="UTF-8" action="{{ route('password.email') }}">
+            <div class="social">
+                <a class="circle github" href="{{route('redirect', ['provider' => 'github'])}}"
+                   data-toggle="tooltip" data-title="Github" data-placement="left">
+                    <i class="fab fa-github fa-fw"></i>
+                </a>
+                <a id="facebook_login" class="circle facebook"
+                   href="{{route('redirect', ['provider' => 'facebook'])}}"
+                   data-toggle="tooltip" data-title="Facebook" data-placement="top">
+                    <i class="fab fa-facebook-f fa-fw"></i>
+                </a>
+                <a class="circle twitter" href="{{route('redirect', ['provider' => 'twitter'])}}"
+                   data-toggle="tooltip" data-title="Twitter" data-placement="bottom">
+                    <i class="fab fa-twitter fa-fw"></i>
+                </a>
+                <a id="google_login" class="circle google"
+                   href="{{route('redirect', ['provider' => 'google'])}}"
+                   data-toggle="tooltip" data-title="Google+" data-placement="right">
+                    <i class="fab fa-google-plus-g fa-fw"></i>
+                </a>
+            </div>
+
+            <div class="or"><span>OR</span></div>
+
+            @if(session('status'))
+                <div class="alert alert-success alert-dismissible">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                    <h4><i class="icon fa fa-check"></i> Alert!</h4>{{session('status')}}
+                </div>
+            @endif
+            <form class="form-horizontal" method="post" accept-charset="UTF-8" action="{{session('reset') ?
+            route('password.request') : route('password.email') }}">
                 {{ csrf_field() }}
-                <div class="row form-group">
+                <div class="row form-group has-feedback">
                     <input type="email" placeholder="Email" id="resetPassword" name="email" value="{{ old('email') }}"
                            required>
+                    <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
                     <span class="error"></span>
                 </div>
+                @if(session('reset'))
+                    <div class="row form-group has-feedback">
+                        <input id="forg_password" type="password" placeholder="New Password" name="password"
+                               minlength="6" required>
+                        <span class="glyphicon glyphicon-eye-open form-control-feedback"></span>
+                    </div>
+                    <div class="row form-group has-feedback">
+                        <input id="forg_password_confirm" type="password" placeholder="Retype password"
+                               name="password_confirmation" minlength="6" required>
+                        <span class="glyphicon glyphicon-eye-open form-control-feedback"></span>
+                    </div>
+                @endif
                 <div class="row">
-                    <button type="submit" class="btn-signup btn-password">Send Password Reset Link</button>
+                    <button type="submit" class="btn-signup btn-password">{{session('reset') ? 'Reset Password' :
+                    'Send Password Reset Link'}}</button>
                 </div>
-                <a href="javascript:void(0)" class="btn-login btn-fade">
-                    <i class="fa fa-long-arrow-left" aria-hidden="true"></i> Cancel and go back to Login page </a>
+                @if(!session('reset'))
+                    <a href="javascript:void(0)" class="btn-member btn-fade">
+                        <i class="fa fa-long-arrow-left" aria-hidden="true"></i> Looking to create an account?</a>
+                @endif
             </form>
-
-            <div class="notification" style="display: none;">
-                <p>Good job. An email containing information on how to reset your password was sent to
-                    <span class="reset-mail"></span>. Please follow the instruction in that email to
-                    reset your password. Thanks!</p>
-            </div>
-
         </div>
     </div>
 </div>
@@ -224,27 +265,19 @@
     });
 
     $('.btn-member').on("click", function () {
-        $('.login').hide();
+        $('.login, .recover-password').hide();
         $('.signup').fadeIn(300);
     });
 
 
     $('.btn-login').on("click", function () {
         $('.signup').hide();
-        $('.recover-password').hide();
         $('.login').fadeIn(300);
     });
 
-    $('.btn-password').on("click", function () {
-        if ($('#resetPassword').val() == 0) {
-            // $('#resetPassword').after('<span class="error">Email not valid.</span>')
-            $('.error').text('Email not valid.')
-        } else {
-            $('.reset-mail').text($('#resetPassword').val());
-            $('.recover-password form').hide();
-            $('.notification').fadeIn(300);
-        }
-    });
+    @if(session('status') || session('reset'))
+    $(".btn-reset").click();
+            @endif
 
     var recaptcha_login, recaptcha_register, recaptchaCallback = function () {
         recaptcha_login = grecaptcha.render(document.getElementById('recaptcha-login'), {
@@ -329,6 +362,16 @@
     $('#reg_password_confirm + .glyphicon').on('click', function () {
         $(this).toggleClass('glyphicon-eye-open glyphicon-eye-close');
         $('#reg_password_confirm').togglePassword();
+    });
+
+    $('#forg_password + .glyphicon').on('click', function () {
+        $(this).toggleClass('glyphicon-eye-open glyphicon-eye-close');
+        $('#forg_password').togglePassword();
+    });
+
+    $('#forg_password_confirm + .glyphicon').on('click', function () {
+        $(this).toggleClass('glyphicon-eye-open glyphicon-eye-close');
+        $('#forg_password_confirm').togglePassword();
     });
 
     (function () {
