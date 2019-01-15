@@ -28,6 +28,7 @@
 <div id="particles-js"></div>
 <div class="wrapper">
     <div class="sign-panels">
+        <!-- Sign in form -->
         <div class="login">
             <div class="title">
                 <span>Sign In</span>
@@ -57,16 +58,17 @@
 
             <div class="or"><span>OR</span></div>
 
-            @if(session('register'))
+            @if(session('register') || session('recovered'))
                 <div class="alert alert-success alert-dismissible">
                     <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                    <h4><i class="icon fa fa-check"></i> Alert!</h4>{{session('register')}}
+                    <h4><i class="icon fa fa-check"></i> Alert!</h4>
+                    {{session('register') ? session('register') : session('recovered')}}
                 </div>
-            @elseif(session('error'))
+            @elseif(session('error') || session('inactive'))
                 <div class="alert alert-danger alert-dismissible">
                     <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
                     <h4><i class="icon fa fa-times"></i> Alert!</h4>
-                    {{session('error')}}
+                    {{session('error') ? session('error') : session('inactive')}}
                 </div>
             @endif
             <form class="form-horizontal" method="post" accept-charset="UTF-8" action="{{route('login')}}"
@@ -101,6 +103,7 @@
             </form>
         </div>
 
+        <!-- Sign up form -->
         <div class="signup" style="display: none;">
             <div class="title">
                 <span>Sign Up</span>
@@ -176,11 +179,12 @@
             </form>
         </div>
 
+        <!-- Reset & Recover password form -->
         <div class="recover-password" style="display: none;">
             <div class="title">
-                <span>Reset Password</span>
+                <span>{{session('reset') || session('recover_failed') ? 'Recovery' : 'Reset'}} Password</span>
                 <p>
-                    {{session('reset') ? 'Please, enter your new password ' :
+                    {{session('reset') || session('recover_failed') ? 'Please, enter your new password ' :
                     'To recover your password, please enter an email that associated with your account '}}
                     or you can sign in with :
                 </p>
@@ -209,14 +213,21 @@
 
             <div class="or"><span>OR</span></div>
 
-            @if(session('status'))
-                <div class="alert alert-success alert-dismissible">
+            @if(session('resetLink') || session('resetLink_failed'))
+                <div class="alert alert-{{session('resetLink') ? 'success' : 'danger'}} alert-dismissible">
                     <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                    <h4><i class="icon fa fa-check"></i> Alert!</h4>{{session('status')}}
+                    <h4><i class="icon fa fa-{{session('resetLink') ? 'check' : 'times'}}"></i> Alert!</h4>
+                    {{session('resetLink') ? session('resetLink') : session('resetLink_failed')}}
+                </div>
+            @elseif(session('recover_failed'))
+                <div class="alert alert-danger alert-dismissible">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                    <h4><i class="icon fa fa-times"></i> Alert!</h4>{{ session('recover_failed') }}
                 </div>
             @endif
-            <form class="form-horizontal" method="post" accept-charset="UTF-8" action="{{session('reset') ?
-            route('password.request',['token' => session('reset')['token']]) : route('password.email') }}">
+            <form class="form-horizontal" method="post" accept-charset="UTF-8"
+                  action="{{session('reset') || session('recover_failed') ? route('password.request',
+                  ['token' => session('reset') ? session('reset')['token'] : old('token')]) : route('password.email')}}">
                 {{ csrf_field() }}
                 <div class="row form-group has-feedback">
                     <input type="email" placeholder="Email" id="resetPassword" name="email" value="{{ old('email') }}"
@@ -224,26 +235,29 @@
                     <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
                     <span class="error"></span>
                 </div>
-                @if(session('reset'))
-                    <div class="row form-group has-feedback">
+                @if(session('reset') || session('recover_failed'))
+                    <div class="row form-group has-feedback error_forgPass">
                         <input id="forg_password" type="password" placeholder="New Password" name="password"
                                minlength="6" required>
                         <span class="glyphicon glyphicon-eye-open form-control-feedback"></span>
                     </div>
-                    <div class="row form-group has-feedback">
-                        <input id="forg_password_confirm" type="password" placeholder="Retype password"
-                               name="password_confirmation" minlength="6" required>
+                    <div class="row form-group has-feedback error_forgPass">
+                        <input id="forg_password_confirm" type="password" placeholder="Retype password" required
+                               name="password_confirmation" minlength="6" onkeyup="return checkForgotPassword()">
                         <span class="glyphicon glyphicon-eye-open form-control-feedback"></span>
+                        <span class="help-block"><strong class="aj_forgPass"
+                                                         style="text-transform: none"></strong></span>
                     </div>
                 @endif
                 <div class="row">
-                    <button type="submit" class="btn-signup btn-password">{{session('reset') ? 'Reset Password' :
-                    'Send Password Reset Link'}}</button>
+                    <button type="submit" class="btn btn-signup btn-password">
+                        {{session('reset')||session('recover_failed') ? 'Reset Password' : 'Send Password Reset Link'}}
+                    </button>
                 </div>
-                @if(!session('reset'))
+                @unless(session('reset') || session('recover_failed'))
                     <a href="javascript:void(0)" class="btn-member btn-fade">
                         <i class="fa fa-long-arrow-left" aria-hidden="true"></i> Looking to create an account?</a>
-                @endif
+                @endunless
             </form>
         </div>
     </div>
@@ -275,22 +289,22 @@
         $('.login').fadeIn(300);
     });
 
-    @if(session('status') || session('reset'))
+    @if(session('resetLink') || session('resetLink_failed') || session('reset') || session('recover_failed'))
     $(".btn-reset").click();
             @endif
 
     var recaptcha_login, recaptcha_register, recaptchaCallback = function () {
-        recaptcha_login = grecaptcha.render(document.getElementById('recaptcha-login'), {
-            'sitekey': '{{env('reCAPTCHA_v2_SITEKEY')}}',
-            'callback': 'enable_btnLogin',
-            'expired-callback': 'disabled_btnLogin'
-        });
-        recaptcha_register = grecaptcha.render(document.getElementById('recaptcha-register'), {
-            'sitekey': '{{env('reCAPTCHA_v2_SITEKEY')}}',
-            'callback': 'enable_btnRegister',
-            'expired-callback': 'disabled_btnRegister'
-        });
-    };
+            recaptcha_login = grecaptcha.render(document.getElementById('recaptcha-login'), {
+                'sitekey': '{{env('reCAPTCHA_v2_SITEKEY')}}',
+                'callback': 'enable_btnLogin',
+                'expired-callback': 'disabled_btnLogin'
+            });
+            recaptcha_register = grecaptcha.render(document.getElementById('recaptcha-register'), {
+                'sitekey': '{{env('reCAPTCHA_v2_SITEKEY')}}',
+                'callback': 'enable_btnRegister',
+                'expired-callback': 'disabled_btnRegister'
+            });
+        };
 
     function enable_btnLogin() {
         $("#btn_login").removeAttr('disabled');
@@ -348,6 +362,20 @@
             $("#reg_errorAlert").html('');
         }
     });
+
+    function checkForgotPassword() {
+        var new_pas = $("#forg_password").val(),
+            re_pas = $("#forg_password_confirm").val();
+        if (new_pas != re_pas) {
+            $(".error_forgPass").addClass('has-error');
+            $(".aj_forgPass").text("Must match with your new password!");
+            $(".btn-password").attr('disabled', 'disabled');
+        } else {
+            $(".error_forgPass").removeClass('has-error');
+            $(".aj_forgPass").text("");
+            $(".btn-password").removeAttr('disabled');
+        }
+    }
 
     $('#log_password + .glyphicon').on('click', function () {
         $(this).toggleClass('glyphicon-eye-open glyphicon-eye-close');

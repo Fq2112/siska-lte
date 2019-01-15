@@ -324,6 +324,39 @@
                                             </code>
                                         </blockquote>
                                     </li>
+                                    <li>Buka file <code>app/Http/Controllers/Auth/ResetPasswordController.php</code> dan
+                                        tambahkan <em>POST&ndash;Request</em> seperti code berikut:
+                                        <blockquote>
+                                            <code>
+                                                protected function resetPassword($user, $password)<br>
+                                                {<br>
+                                                <span style="margin-left: 2em"><em>// here is your reset password code&hellip;</em></span><br><br>
+                                                <span style="margin-left: 2em">$findUser = User::find($user->id);</span><br>
+                                                <span style="margin-left: 2em">$response = app(Credential::class)->getCredentials();</span><br>
+                                                <span style="margin-left: 2em">if ($response['isSync'] == true) {</span><br>
+                                                <span style="margin-left: 4em">$data = array('email' => $findUser->email,</span><br>
+                                                <span style="margin-left: 6em">'password' => $findUser->password);</span><br>
+                                                <span style="margin-left: 4em">$client = new Client([</span><br>
+                                                <span style="margin-left: 6em">'base_uri' => env('SISKA_URI'),</span><br>
+                                                <span style="margin-left: 6em">'defaults' => [</span><br>
+                                                <span style="margin-left: 8em">'exceptions' => false</span><br>
+                                                <span style="margin-left: 6em">]</span><br>
+                                                <span style="margin-left: 4em">]);</span><br><br>
+
+                                                <span style="margin-left: 4em">$client->put(env('SISKA_URI') . '/api/partners/seekers/update', [</span><br>
+                                                <span style="margin-left: 6em">'form_params' => [</span><br>
+                                                <span style="margin-left: 8em">'key' => env('SISKA_API_KEY'),</span><br>
+                                                <span style="margin-left: 8em">'secret' => env('SISKA_API_SECRET'),</span><br>
+                                                <span style="margin-left: 8em">'check_form' => 'password',</span><br>
+                                                <span style="margin-left: 8em">'seeker' => $data,</span><br>
+                                                <span style="margin-left: 6em">]</span><br>
+                                                <span style="margin-left: 4em">]);</span><br>
+                                                <span style="margin-left: 2em">}</span><br><br>
+                                                <span style="margin-left: 2em"><em>// other codes&hellip;</em></span><br>
+                                                }
+                                            </code>
+                                        </blockquote>
+                                    </li>
                                     <li>Buka file <code>app/Http/Controllers/Seekers/AccountController.php</code> dan
                                         tambahkan <em>PUT&ndash;Request</em> seperti code berikut:
                                         <blockquote>
@@ -427,7 +460,7 @@
                             </div>
                             <div id="sync-vacancy-1">
                                 <h2 class="StepTitle">Step 3 Sync&ndash;Vacancy <sub>(Response)</sub></h2>
-                                <ol start="11" style="font-size: 15px;">
+                                <ol start="12" style="font-size: 15px;">
                                     <li>Masih di dalam file <code>app/Http/Controllers/Api/APIController.php</code>,
                                         tambahkan code berikut:
                                         <blockquote>
@@ -577,7 +610,7 @@
                             </div>
                             <div id="sync-vacancy-2">
                                 <h2 class="StepTitle">Step 4 Sync&ndash;Vacancy <sub>(Request)</sub></h2>
-                                <ol start="12" style="font-size: 15px;">
+                                <ol start="13" style="font-size: 15px;">
                                     <li>Buka file <code>app/Http/Controllers/Admins/AgencyController.php</code>.</li>
                                     <li>Tambahkan construct code berikut:
                                         <blockquote>
@@ -715,7 +748,7 @@
                             </div>
                             <div id="finish">
                                 <h2 class="StepTitle">Step 5 Finish</h2>
-                                <ol start="16" style="text-align: justify;font-size: 15px;">
+                                <ol start="17" style="text-align: justify;font-size: 15px;">
                                     <li>Untuk mengakhiri <em>synchronize setup</em>, tekan tombol
                                         "<strong>Finish</strong>" berikut. Dengan menekan tombol tersebut maka data
                                         <strong>SISKA</strong>, yaitu agensi beserta lowongannya akan disalin ke dalam
