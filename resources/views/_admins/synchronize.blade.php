@@ -325,32 +325,34 @@
                                         </blockquote>
                                     </li>
                                     <li>Buka file <code>app/Http/Controllers/Auth/ResetPasswordController.php</code> dan
-                                        tambahkan <em>POST&ndash;Request</em> seperti code berikut:
+                                        tambahkan <em>PUT&ndash;Request</em> seperti code berikut:
                                         <blockquote>
                                             <code>
                                                 protected function resetPassword($user, $password)<br>
                                                 {<br>
                                                 <span style="margin-left: 2em"><em>// here is your reset password code&hellip;</em></span><br><br>
-                                                <span style="margin-left: 2em">$findUser = User::find($user->id);</span><br>
-                                                <span style="margin-left: 2em">$response = app(Credential::class)->getCredentials();</span><br>
-                                                <span style="margin-left: 2em">if ($response['isSync'] == true) {</span><br>
-                                                <span style="margin-left: 4em">$data = array('email' => $findUser->email,</span><br>
-                                                <span style="margin-left: 6em">'password' => $findUser->password);</span><br>
-                                                <span style="margin-left: 4em">$client = new Client([</span><br>
-                                                <span style="margin-left: 6em">'base_uri' => env('SISKA_URI'),</span><br>
-                                                <span style="margin-left: 6em">'defaults' => [</span><br>
-                                                <span style="margin-left: 8em">'exceptions' => false</span><br>
-                                                <span style="margin-left: 6em">]</span><br>
-                                                <span style="margin-left: 4em">]);</span><br><br>
+                                                <span style="margin-left: 2em">if($guard == 'web') {</span><br>
+                                                <span style="margin-left: 4em">$findUser = User::find($user->id);</span><br>
+                                                <span style="margin-left: 4em">$response = app(Credential::class)->getCredentials();</span><br>
+                                                <span style="margin-left: 4em">if ($response['isSync'] == true) {</span><br>
+                                                <span style="margin-left: 5em">$data = array('email' => $findUser->email,</span><br>
+                                                <span style="margin-left: 7em">'password' => $findUser->password);</span><br>
+                                                <span style="margin-left: 5em">$client = new Client([</span><br>
+                                                <span style="margin-left: 7em">'base_uri' => env('SISKA_URI'),</span><br>
+                                                <span style="margin-left: 7em">'defaults' => [</span><br>
+                                                <span style="margin-left: 9em">'exceptions' => false</span><br>
+                                                <span style="margin-left: 7em">]</span><br>
+                                                <span style="margin-left: 5em">]);</span><br><br>
 
-                                                <span style="margin-left: 4em">$client->put(env('SISKA_URI') . '/api/partners/seekers/update', [</span><br>
-                                                <span style="margin-left: 6em">'form_params' => [</span><br>
-                                                <span style="margin-left: 8em">'key' => env('SISKA_API_KEY'),</span><br>
-                                                <span style="margin-left: 8em">'secret' => env('SISKA_API_SECRET'),</span><br>
-                                                <span style="margin-left: 8em">'check_form' => 'password',</span><br>
-                                                <span style="margin-left: 8em">'seeker' => $data,</span><br>
-                                                <span style="margin-left: 6em">]</span><br>
-                                                <span style="margin-left: 4em">]);</span><br>
+                                                <span style="margin-left: 5em">$client->put(env('SISKA_URI') . '/api/partners/seekers/update', [</span><br>
+                                                <span style="margin-left: 7em">'form_params' => [</span><br>
+                                                <span style="margin-left: 9em">'key' => env('SISKA_API_KEY'),</span><br>
+                                                <span style="margin-left: 9em">'secret' => env('SISKA_API_SECRET'),</span><br>
+                                                <span style="margin-left: 9em">'check_form' => 'password',</span><br>
+                                                <span style="margin-left: 9em">'seeker' => $data,</span><br>
+                                                <span style="margin-left: 7em">]</span><br>
+                                                <span style="margin-left: 5em">]);</span><br>
+                                                <span style="margin-left: 4em">}</span><br>
                                                 <span style="margin-left: 2em">}</span><br><br>
                                                 <span style="margin-left: 2em"><em>// other codes&hellip;</em></span><br>
                                                 }
