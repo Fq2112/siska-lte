@@ -225,7 +225,7 @@
                     <h4><i class="icon fa fa-times"></i> Alert!</h4>{{ session('recover_failed') }}
                 </div>
             @endif
-            <form class="form-horizontal" method="post" accept-charset="UTF-8"
+            <form id="form-recovery" class="form-horizontal" method="post" accept-charset="UTF-8"
                   action="{{session('reset') || session('recover_failed') ? route('password.request',
                   ['token' => session('reset') ? session('reset')['token'] : old('token')]) : route('password.email')}}">
                 {{ csrf_field() }}
@@ -351,7 +351,7 @@
         }
     });
 
-    $("#reg_password_confirm").on("change", function () {
+    $("#reg_password_confirm").on("keyup", function () {
         if ($(this).val() != $("#reg_password").val()) {
             $("#reg_errorAlert").html(
                 '<div class="alert alert-danger alert-dismissible">' +
@@ -376,6 +376,20 @@
             $(".btn-password").removeAttr('disabled');
         }
     }
+
+    $("#form-recovery").on("submit", function (e) {
+        @if(session('reset') || session('recover_failed'))
+        if ($("#forg_password_confirm").val() != $("#forg_password").val()) {
+            $(".btn-password").attr('disabled', 'disabled');
+            return false;
+
+        } else {
+            $("#forg_errorAlert").html('');
+            $(".btn-password").removeAttr('disabled');
+            return true;
+        }
+        @endif
+    });
 
     $('#log_password + .glyphicon').on('click', function () {
         $(this).toggleClass('glyphicon-eye-open glyphicon-eye-close');
