@@ -1367,7 +1367,7 @@
                                                         <small id="show_edu_settings">Education
                                                             <span class="pull-right"
                                                                   style="cursor: pointer; color: #35495d">
-                                                                <i class="fa fa-graduation-cap"></i>&ensp;Add</span>
+                                                                <i class="fa fa-school"></i>&ensp;Add</span>
                                                         </small>
                                                         <hr class="hr-divider">
                                                         <div id="stats_edu" style="font-size: 14px; margin-top: 0">
