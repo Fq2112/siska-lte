@@ -503,7 +503,7 @@
                                                                             </tr>
                                                                             <tr>
                                                                                 <td><i class="fa fa-comments"></i></td>
-                                                                                <td>&nbsp;Job Description</td>
+                                                                                <td>&nbsp;Description</td>
                                                                                 <td>&nbsp;:&nbsp;</td>
                                                                                 <td>&nbsp;</td>
                                                                             </tr>
