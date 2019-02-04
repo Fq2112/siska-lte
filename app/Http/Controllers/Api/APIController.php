@@ -10,6 +10,7 @@ use App\Models\JobType;
 use App\Models\Salaries;
 use App\Models\Degrees;
 use App\Models\Majors;
+use GuzzleHttp\Exception\ConnectException;
 use Illuminate\Support\Carbon;
 use App\Models\User;
 use App\Models\Agencies;
@@ -38,9 +39,13 @@ class APIController extends Controller
 
     public function getCredentials()
     {
-        $response = $this->client->get($this->uri . '/api/partners?key=' . $this->key . '&secret=' . $this->secret);
+        try {
+            $response = $this->client->get($this->uri . '/api/partners?key=' . $this->key . '&secret=' . $this->secret);
+            return json_decode($response->getBody(), true);
 
-        return json_decode($response->getBody(), true);
+        } catch (ConnectException $e) {
+            return $e->getResponse();
+        }
     }
 
     public function updateSeekers(Request $request)

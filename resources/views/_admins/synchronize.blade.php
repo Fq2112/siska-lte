@@ -101,11 +101,14 @@
 
                                                 public function getCredentials()<br>
                                                 {<br>
-                                                <span style="margin-left: 2em">$response = $this->client->get($this->uri . '/api/partners?key=' . $this->key .</span><br>
-                                                <span style="margin-left: 5em">'&secret=' . $this->secret);</span>
+                                                <span style="margin-left: 2em">try {</span><br>
+                                                <span style="margin-left: 4em">$response = $this->client->get($this->uri . '/api/partners?key=' . </span><br>
+                                                <span style="margin-left: 7em">$this->key . '&secret=' . $this->secret);</span><br>
+                                                <span style="margin-left: 4em">return json_decode($response->getBody(), true);</span>
                                                 <br><br>
-                                                <span style="margin-left: 2em">return json_decode($response->getBody(), true);</span>
-                                                <br>
+                                                <span style="margin-left: 2em">} catch (ConnectException $e) {</span><br>
+                                                <span style="margin-left: 4em">return $e->getResponse();</span><br>
+                                                <span style="margin-left: 2em">}</span><br>
                                                 }
                                             </code><br><br>
                                             <em>// here is your other functions&hellip;</em>
@@ -819,7 +822,7 @@
                                 '<strong><i class="fa fa-sync-alt"></i>&ensp;sinkronisasi sekarang!</strong></a></div></div>'
                             );
 
-                        } else {
+                        } else if (data.isSync == 1) {
                             $("#sync-info").html(
                                 '<div class="bs-example" data-example-id="simple-jumbotron">' +
                                 '<div id="sync-info" class="jumbotron">' +
@@ -827,6 +830,17 @@
                                 '<p>Selamat! SiskaLTE instansi Anda telah berhasil disinkronisasikan, baik dengan ' +
                                 '<strong>SISKA</strong> maupun SiskaLTE lainnya yang juga telah bermitra dan ' +
                                 'melakukan sinkronisasi dengan <strong>SISKA</strong>.</p></div></div>'
+                            );
+
+                        } else {
+                            $("#sync-info").html(
+                                '<div class="bs-example" data-example-id="simple-jumbotron">' +
+                                '<div id="sync-info" class="jumbotron">' +
+                                '<h1><strong>500</strong>. Internal Server Error!</h1>' +
+                                '<p>Kami minta maaf atas ketidaknyamanannya, tetapi tampaknya ada kesalahan ' +
+                                'server internal SISKA saat memproses permintaan Anda. ' +
+                                'Teknisi kami telah diberitahu dan bekerja untuk menyelesaikan masalah ini. ' +
+                                'Silakan coba lagi nanti.</p></div></div>'
                             );
                         }
 

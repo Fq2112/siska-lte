@@ -187,7 +187,7 @@
                                             <td align="center" width="660">
                                                 <a name="Logo" style="display:block" href="{{route('home-seeker')}}"
                                                    target="_blank">
-                                                    <img src="http://i66.tinypic.com/2iux5ph.png" border="0"
+                                                    <img src="http://siska.org/images/siska.png" border="0"
                                                          style="display:block;width: 40%;" class="logo"></a>
                                             </td>
                                         </tr>
@@ -204,7 +204,7 @@
                                         </tr>
                                         <tr>
                                             <td align="center" width="660">
-                                                <img src="http://i65.tinypic.com/1r2i4m.jpg"
+                                                <img src="http://siska.org/images/mail.jpg"
                                                      style="display: block;width: 70%" border="0"></td>
                                         </tr>
                                         <tr>
@@ -406,7 +406,8 @@
                                             <td align="center" valign="top" width="660" bgcolor="#1a1c21"><a
                                                         name="Logo_1" style="display:block;"
                                                         href="{{route('home-seeker')}}" target="_blank"><img
-                                                            src="http://i64.tinypic.com/2qn8tfp.png" alt="logo"
+                                                            src="http://siska.org/images/siska_circleicon.png"
+                                                            alt="logo"
                                                             border="0"
                                                             style="display:block;width: 15%;"></a>
                                             </td>
@@ -459,11 +460,11 @@
                                                                     <td align="center" bgcolor="#1a1c21">
                                                                         <a href="https://play.google.com/store/apps/details?id=com.siska.mobile"><img
                                                                                     class="zoom"
-                                                                                    src="http://i67.tinypic.com/2n8nadu.png"
+                                                                                    src="http://siska.org/images/GooglePlay.png"
                                                                                     style="width: 15%"></a>&nbsp;&nbsp;&nbsp;&nbsp;
                                                                         <a href="https://itunes.apple.com/id/app/siska.com/id1143444473?mt=8"><img
                                                                                     class="zoom"
-                                                                                    src="http://i67.tinypic.com/34sfhg7.png"
+                                                                                    src="http://siska.org/images/AppStore.png"
                                                                                     style="width: 15%"></a>
                                                                     </td>
                                                                 </tr>
@@ -576,11 +577,11 @@
                                                                         bgcolor="#1a1c21">
                                                                         <a name="Privacy Policy" class="footerlinks"
                                                                            style="color:#F9F9F9; text-decoration:none;"
-                                                                           href="{{env('SISKA_URI').'/info#privacy-policy'}}"
+                                                                           href="http://siska.org/info#privacy-policy"
                                                                            target="_blank">Privacy Policy</a>&nbsp;&nbsp;&nbsp;&nbsp;
                                                                         <a name="Terms" class="footerlinks"
                                                                            style="color:#F9F9F9; text-decoration:none;"
-                                                                           href="{{env('SISKA_URI').'/info#terms-conditions'}}"
+                                                                           href="http://siska.org/info#terms-conditions"
                                                                            target="_blank">Terms of Service</a>
                                                                     </td>
                                                                 </tr>
@@ -667,22 +668,13 @@
                                                                         registration initiated on the SISKA
                                                                         application; if you did not enter your email
                                                                         address in SISKA then you can either ignore
-                                                                        this message or contact info@karir.org for
+                                                                        this message or contact info@siska.org for
                                                                         more information. <br><br> SISKA is incorporated
                                                                         in
                                                                         Indonesia under company number
                                                                         <span class="appleLinksWhite">+62318672552</span>.
-                                                                        <span class="appleLinksWhite">Copyright © 2018 SISKA - Sistem Informasi Karier. All rights reserved. Ketintang, Gayungan, Ketintang, Gayungan, Surabaya, Jawa Timur — 60231.</span>
+                                                                        <span class="appleLinksWhite">Copyright © {{now()->format('Y')}} SISKA - Sistem Informasi Karier. All rights reserved. Ketintang, Gayungan, Ketintang, Gayungan, Surabaya, Jawa Timur — 60231.</span>
                                                                         <br>
-                                                                        <div id="stat-div"
-                                                                             style="visibility:hidden !important;"
-                                                                             height="0px">
-                                                                            <img id="stat-link"
-                                                                                 src="https://www.shazam.com/validate-email/email-view?email=matt@reallygoodemails.com"
-                                                                                 alt="" border="0" width="0px"
-                                                                                 height="0px"
-                                                                                 style="visibility:hidden !important;">
-                                                                        </div>
                                                                         <br>
                                                                         <br>
                                                                         <br></td>
