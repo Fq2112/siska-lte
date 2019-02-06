@@ -254,7 +254,7 @@
                     <a data-toggle="tooltip" title="Fullscreen" onclick="fullScreen()">
                         <span class="glyphicon glyphicon-fullscreen" aria-hidden="true"></span>
                     </a>
-                    <a href="{{route('home-seeker')}}" data-toggle="tooltip" title="SISKA">
+                    <a href="http://siska.org" data-toggle="tooltip" title="SISKA" target="_blank">
                         <span class="glyphicon glyphicon-globe" aria-hidden="true"></span>
                     </a>
                     <a href="@auth{{route('seeker.settings')}}@else javascript:void(0) @endauth" data-toggle="tooltip"
