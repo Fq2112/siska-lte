@@ -47,22 +47,7 @@
             </div>
 
             <div class="row">
-                <div class="col-md-4 col-sm-4 col-xs-12">
-                    <div class="x_panel">
-                        <div class="x_title">
-                            <h2>Admins & Users</h2>
-                            <ul class="nav navbar-right panel_toolbox">
-                                <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
-                                <li><a class="close-link"><i class="fa fa-times"></i></a></li>
-                            </ul>
-                            <div class="clearfix"></div>
-                        </div>
-                        <div class="x_content">
-                            <div id="users_chart" style="height:350px;"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4 col-sm-4 col-xs-12">
+                <div class="col-md-6 col-sm-6 col-xs-12">
                     <div class="x_panel">
                         <div class="x_title">
                             <h2>Agencies & Seekers</h2>
@@ -77,7 +62,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-4 col-sm-4 col-xs-12">
+                <div class="col-md-6 col-sm-6 col-xs-12">
                     <div class="x_panel">
                         <div class="x_title">
                             <h2>Vacancy & Application</h2>
@@ -309,56 +294,8 @@
                     fontFamily: 'Arial, Verdana, sans-serif'
                 }
             },
-            users = echarts.init(document.getElementById('users_chart'), theme),
             seekers = echarts.init(document.getElementById('seekers_chart'), theme),
             applications = echarts.init(document.getElementById('applications_chart'), theme);
-
-        users.setOption({
-            tooltip: {
-                trigger: 'item',
-                formatter: "{a} <br/>{b} : {c} ({d}%)"
-            },
-            legend: {
-                x: 'center',
-                y: 'bottom',
-                data: ['Admin', 'User']
-            },
-            toolbox: {
-                show: true,
-                feature: {
-                    magicType: {
-                        show: true,
-                        type: ['pie', 'funnel']
-                    },
-                    restore: {
-                        show: true,
-                        title: "Restore"
-                    },
-                    saveAsImage: {
-                        show: true,
-                        title: "Save Image"
-                    }
-                }
-            },
-            calculable: true,
-            series: [{
-                name: 'Total: {{count($admins) + count($users)}} persons',
-                type: 'pie',
-                radius: [25, 90],
-                center: ['50%', 170],
-                roseType: 'area',
-                x: '50%',
-                max: 40,
-                sort: 'ascending',
-                data: [{
-                    value: '{{count($admins)}}',
-                    name: 'Admin'
-                }, {
-                    value: '{{count($users)}}',
-                    name: 'User'
-                }]
-            }]
-        });
 
         seekers.setOption({
             tooltip: {
