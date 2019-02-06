@@ -312,15 +312,15 @@
                             </ul>
                         </li>
 
-                        <li role="presentation" class="dropdown">
-                            <a href="javascript:void(0);" class="dropdown-toggle info-number" data-toggle="dropdown"
-                               aria-expanded="false">
-                                <i class="fa fa-bell"></i>
-                                <span class="badge bg-orange">{{$notifications}}</span>
-                            </a>
-                            <ul id="menu2" class="dropdown-menu list-unstyled msg_list" role="menu">
-                                @if($notifications > 0)
-                                    @auth('admin')
+                        @auth('admin')
+                            <li role="presentation" class="dropdown">
+                                <a href="javascript:void(0);" class="dropdown-toggle info-number" data-toggle="dropdown"
+                                   aria-expanded="false">
+                                    <i class="fa fa-bell"></i>
+                                    <span class="badge bg-orange">{{$notifications}}</span>
+                                </a>
+                                <ul id="menu2" class="dropdown-menu list-unstyled msg_list" role="menu">
+                                    @if($notifications > 0)
                                         @if(count($applications) > 0)
                                             <li style="padding: 0">
                                                 <a style="text-decoration: none;cursor: text"><span><i
@@ -350,17 +350,17 @@
                                             <li class="divider"
                                                 style="margin: 0 6px;padding: 3px;background: none;border-bottom: 2px solid #d8d8d845;"></li>
                                         @endif
-                                    @endauth
-                                @else
-                                    <li>
-                                        <a style="text-decoration: none;cursor: text">
+                                    @else
+                                        <li>
+                                            <a style="text-decoration: none;cursor: text">
                                             <span class="message">There seems to be none of the notification was found&hellip;
                                             </span>
-                                        </a>
-                                    </li>
-                                @endif
-                            </ul>
-                        </li>
+                                            </a>
+                                        </li>
+                                    @endif
+                                </ul>
+                            </li>
+                        @endauth
                     </ul>
                 </nav>
             </div>

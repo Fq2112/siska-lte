@@ -112,7 +112,7 @@
                                                                     </strong>
                                                                 </span>&nbsp;|
                                                                 <span data-toggle="tooltip" data-placement="bottom"
-                                                                      title="Interview Date"
+                                                                      title="Job Interview Date"
                                                                       class="label label-primary">
                                                                     <strong><i class="fa fa-user-tie"></i>&ensp;
                                                                         {{$vacancy->interview_date != "" ?
@@ -403,7 +403,7 @@
                             </div>
                             <div class="row form-group" id="intDate_errorDiv">
                                 <div class="col-lg-12">
-                                    <label>Interview Date <span class="required">*</span></label>
+                                    <label>Job Interview Date <span class="required">*</span></label>
                                     <div class="input-group">
                                         <span class="input-group-addon"><i class="fa fa-comments"></i></span>
                                         <input style="background-color: #fff" class="form-control" type="text"

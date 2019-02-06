@@ -189,7 +189,7 @@
                                                                         <tr>
                                                                             <td><i class="fa fa-comments"></i>
                                                                             </td>
-                                                                            <td>&nbsp;Interview Date</td>
+                                                                            <td>&nbsp;Job Interview Date</td>
                                                                             <td>:
                                                                                 {{$row->interview_date != "" ?
                                                                                 \Carbon\Carbon::parse

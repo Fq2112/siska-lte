@@ -377,7 +377,7 @@
                     '<td>&nbsp;Recruitment Date</td>' +
                     '<td>: ' + $recruitmentDate + '</td></tr>' +
                     '<tr><td><i class="fa fa-comments"></i></td>' +
-                    '<td>&nbsp;Interview Date</td>' +
+                    '<td>&nbsp;Job Interview Date</td>' +
                     '<td>: ' + val.vacancy.interview_date + '</td></tr>' +
                     '<tr><td><i class="fa fa-clock"></i></td>' +
                     '<td>&nbsp;Last Update</td>' +

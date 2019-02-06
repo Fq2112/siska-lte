@@ -278,7 +278,7 @@
                                                 <tr>
                                                     <td><i class="fa fa-comments"></i>
                                                     </td>
-                                                    <td>&nbsp;Interview Date</td>
+                                                    <td>&nbsp;Job Interview Date</td>
                                                     <td>: {{$vacancy->interview_date != "" ? \Carbon\Carbon::parse
                                                     ($vacancy->interview_date)->format('l, j F Y') : '-'}}</td>
                                                 </tr>

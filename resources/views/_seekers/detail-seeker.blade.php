@@ -40,7 +40,7 @@
                             <ul class="list-unstyled user_data">
                                 <li data-toggle="tooltip" data-placement="left" title="{{count($job_title->get()) != 0 ?
                                     'Job Title' : 'Status'}}">
-                                    <i class="fa fa-briefcase user-profile-icon"></i> {{count($job_title->get()) != 0 ?
+                                    <i class="fa fa-star user-profile-icon"></i> {{count($job_title->get()) != 0 ?
                                     $job_title->first()->job_title : 'Looking for a Job'}}</li>
                                 <li data-toggle="tooltip" data-placement="left" title="Address">
                                     <i class="fa fa-map-marker-alt user-profile-icon"></i> {{$user->address}}</li>
