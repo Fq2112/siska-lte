@@ -464,7 +464,7 @@
                                 </ol>
                             </div>
                             <div id="sync-vacancy-1">
-                                <h2 class="StepTitle">Step 3 Sync&ndash;Vacancy <sub>(Response)</sub></h2>
+                                <h2 class="StepTitle">Step 4 Sync&ndash;Vacancy <sub>(Response)</sub></h2>
                                 <ol start="12" style="font-size: 15px;">
                                     <li>Masih di dalam file <code>app/Http/Controllers/Api/APIController.php</code>,
                                         tambahkan code berikut:
@@ -614,7 +614,7 @@
                                 </ol>
                             </div>
                             <div id="sync-vacancy-2">
-                                <h2 class="StepTitle">Step 4 Sync&ndash;Vacancy <sub>(Request)</sub></h2>
+                                <h2 class="StepTitle">Step 5 Sync&ndash;Vacancy <sub>(Request)</sub></h2>
                                 <ol start="13" style="font-size: 15px;">
                                     <li>Buka file <code>app/Http/Controllers/Admins/AgencyController.php</code>.</li>
                                     <li>Tambahkan construct code berikut:
@@ -752,7 +752,7 @@
                                 </ol>
                             </div>
                             <div id="finish">
-                                <h2 class="StepTitle">Step 5 Finish</h2>
+                                <h2 class="StepTitle">Step 6 Finish</h2>
                                 <ol start="17" style="text-align: justify;font-size: 15px;">
                                     <li>Untuk mengakhiri <em>synchronize setup</em>, tekan tombol
                                         "<strong>Finish</strong>" berikut. Dengan menekan tombol tersebut maka data
