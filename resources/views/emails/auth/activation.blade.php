@@ -187,7 +187,7 @@
                                             <td align="center" width="660">
                                                 <a name="Logo" style="display:block" href="{{route('home-seeker')}}"
                                                    target="_blank">
-                                                    <img src="http://siska.org/images/siska.png" border="0"
+                                                    <img src="{{env('SISKA_URI')}}/images/siska.png" border="0"
                                                          style="display:block;width: 40%;" class="logo"></a>
                                             </td>
                                         </tr>
@@ -204,7 +204,7 @@
                                         </tr>
                                         <tr>
                                             <td align="center" width="660">
-                                                <img src="http://siska.org/images/mail.jpg"
+                                                <img src="{{env('SISKA_URI')}}/images/mail.jpg"
                                                      style="display: block;width: 70%" border="0"></td>
                                         </tr>
                                         <tr>
@@ -406,7 +406,7 @@
                                             <td align="center" valign="top" width="660" bgcolor="#1a1c21"><a
                                                         name="Logo_1" style="display:block;"
                                                         href="{{route('home-seeker')}}" target="_blank"><img
-                                                            src="http://siska.org/images/siska_circleicon.png"
+                                                            src="{{env('SISKA_URI')}}/images/siska_circleicon.png"
                                                             alt="logo"
                                                             border="0"
                                                             style="display:block;width: 15%;"></a>
@@ -460,11 +460,11 @@
                                                                     <td align="center" bgcolor="#1a1c21">
                                                                         <a href="https://play.google.com/store/apps/details?id=com.siska.mobile"><img
                                                                                     class="zoom"
-                                                                                    src="http://siska.org/images/GooglePlay.png"
+                                                                                    src="{{env('SISKA_URI')}}/images/GooglePlay.png"
                                                                                     style="width: 15%"></a>&nbsp;&nbsp;&nbsp;&nbsp;
                                                                         <a href="https://itunes.apple.com/id/app/siska.com/id1143444473?mt=8"><img
                                                                                     class="zoom"
-                                                                                    src="http://siska.org/images/AppStore.png"
+                                                                                    src="{{env('SISKA_URI')}}/images/AppStore.png"
                                                                                     style="width: 15%"></a>
                                                                     </td>
                                                                 </tr>
@@ -577,11 +577,11 @@
                                                                         bgcolor="#1a1c21">
                                                                         <a name="Privacy Policy" class="footerlinks"
                                                                            style="color:#F9F9F9; text-decoration:none;"
-                                                                           href="http://siska.org/info#privacy-policy"
+                                                                           href="{{env('SISKA_URI')}}/info#privacy-policy"
                                                                            target="_blank">Privacy Policy</a>&nbsp;&nbsp;&nbsp;&nbsp;
                                                                         <a name="Terms" class="footerlinks"
                                                                            style="color:#F9F9F9; text-decoration:none;"
-                                                                           href="http://siska.org/info#terms-conditions"
+                                                                           href="{{env('SISKA_URI')}}/info#terms-conditions"
                                                                            target="_blank">Terms of Service</a>
                                                                     </td>
                                                                 </tr>
