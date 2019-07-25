@@ -40,10 +40,15 @@
                    data-toggle="tooltip" data-title="Github" data-placement="left">
                     <i class="fab fa-github fa-fw"></i>
                 </a>
-                <a id="facebook_login" class="circle facebook"
-                   href="{{route('redirect', ['provider' => 'facebook'])}}"
-                   data-toggle="tooltip" data-title="Facebook" data-placement="top">
-                    <i class="fab fa-facebook-f fa-fw"></i>
+                {{--<a id="facebook_login" class="circle facebook"
+                                   href="{{route('redirect', ['provider' => 'facebook'])}}"
+                                   data-toggle="tooltip" data-title="Facebook" data-placement="top">
+                                    <i class="fab fa-facebook-f fa-fw"></i>
+                                </a>--}}
+                <a id="linkedin_login" class="circle linkedin"
+                   href="{{route('redirect', ['provider' => 'linkedin'])}}"
+                   data-toggle="tooltip" data-title="Linkedin" data-placement="top">
+                    <i class="fab fa-linkedin-in fa-fw"></i>
                 </a>
                 <a class="circle twitter" href="{{route('redirect', ['provider' => 'twitter'])}}"
                    data-toggle="tooltip" data-title="Twitter" data-placement="bottom">
@@ -115,10 +120,15 @@
                    data-toggle="tooltip" data-title="Github" data-placement="left">
                     <i class="fab fa-github fa-fw"></i>
                 </a>
-                <a id="facebook_login" class="circle facebook"
-                   href="{{route('redirect', ['provider' => 'facebook'])}}"
-                   data-toggle="tooltip" data-title="Facebook" data-placement="top">
-                    <i class="fab fa-facebook-f fa-fw"></i>
+                {{--<a id="facebook_login" class="circle facebook"
+                                   href="{{route('redirect', ['provider' => 'facebook'])}}"
+                                   data-toggle="tooltip" data-title="Facebook" data-placement="top">
+                                    <i class="fab fa-facebook-f fa-fw"></i>
+                                </a>--}}
+                <a id="linkedin_login" class="circle linkedin"
+                   href="{{route('redirect', ['provider' => 'linkedin'])}}"
+                   data-toggle="tooltip" data-title="Linkedin" data-placement="top">
+                    <i class="fab fa-linkedin-in fa-fw"></i>
                 </a>
                 <a class="circle twitter" href="{{route('redirect', ['provider' => 'twitter'])}}"
                    data-toggle="tooltip" data-title="Twitter" data-placement="bottom">
@@ -164,7 +174,7 @@
                     <span class="glyphicon glyphicon-eye-open form-control-feedback"></span>
                 </div>
                 <div class="row form-group has-feedback">
-                    <input id="reg_password_confirm" type="password" placeholder="Retype Password"
+                    <input id="reg_password_confirm" type="password" placeholder="Retype password"
                            name="password_confirmation" minlength="6" required>
                     <span class="glyphicon glyphicon-eye-open form-control-feedback"></span>
                 </div>
@@ -195,10 +205,15 @@
                    data-toggle="tooltip" data-title="Github" data-placement="left">
                     <i class="fab fa-github fa-fw"></i>
                 </a>
-                <a id="facebook_login" class="circle facebook"
-                   href="{{route('redirect', ['provider' => 'facebook'])}}"
-                   data-toggle="tooltip" data-title="Facebook" data-placement="top">
-                    <i class="fab fa-facebook-f fa-fw"></i>
+                {{--<a id="facebook_login" class="circle facebook"
+                                   href="{{route('redirect', ['provider' => 'facebook'])}}"
+                                   data-toggle="tooltip" data-title="Facebook" data-placement="top">
+                                    <i class="fab fa-facebook-f fa-fw"></i>
+                                </a>--}}
+                <a id="linkedin_login" class="circle linkedin"
+                   href="{{route('redirect', ['provider' => 'linkedin'])}}"
+                   data-toggle="tooltip" data-title="Linkedin" data-placement="top">
+                    <i class="fab fa-linkedin-in fa-fw"></i>
                 </a>
                 <a class="circle twitter" href="{{route('redirect', ['provider' => 'twitter'])}}"
                    data-toggle="tooltip" data-title="Twitter" data-placement="bottom">

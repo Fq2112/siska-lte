@@ -254,7 +254,7 @@
                     <a data-toggle="tooltip" title="Fullscreen" onclick="fullScreen()">
                         <span class="glyphicon glyphicon-fullscreen" aria-hidden="true"></span>
                     </a>
-                    <a href="http://siska.org" data-toggle="tooltip" title="SISKA" target="_blank">
+                    <a href="{{env('SISKA_URI')}}" data-toggle="tooltip" title="SISKA" target="_blank">
                         <span class="glyphicon glyphicon-globe" aria-hidden="true"></span>
                     </a>
                     <a href="@auth{{route('seeker.settings')}}@else javascript:void(0) @endauth" data-toggle="tooltip"
@@ -374,8 +374,8 @@
         <!-- footer content -->
         <footer>
             <div class="pull-right">
-                &copy; 2018 {{env("APP_NAME")}}. All right reserved. Designed by <a href="http://rabbit-media.net">Rabbit
-                    Media</a>
+                &copy; {{now()->format('Y').' '.env("APP_NAME")}}. All right reserved. Designed by
+                <a href="http://rabbit-media.net">Rabbit Media</a>
             </div>
             <div class="clearfix"></div>
         </footer>
