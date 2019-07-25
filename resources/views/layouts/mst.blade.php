@@ -54,6 +54,16 @@
     <link href="{{ asset('css/downloadCard-gridList.css') }}" rel="stylesheet">
     @stack('styles')
     <style>
+        .main_menu .fa {
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+        }
+
+        .dc-view-switcher > button, .anim-icon label {
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+        }
+
         .dropdown-menu li:first-child a:before {
             border: none;
         }
