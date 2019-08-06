@@ -88,7 +88,7 @@ class AdminController extends Controller
 
     public function showSynchronize()
     {
-        return view('_admins.synchronize', compact('vacancies'));
+        return view('_admins.synchronize');
     }
 
     public function submitSynchronize(Request $request)
