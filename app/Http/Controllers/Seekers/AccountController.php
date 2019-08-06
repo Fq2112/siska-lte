@@ -64,9 +64,8 @@ class AccountController extends Controller
 
         return view('_seekers.profile', compact(
             'user', 'nations', 'provinces', 'job_functions', 'industries', 'job_levels', 'job_types',
-            'salaries', 'degrees', 'majors', 'seeker', 'seeker_degree', 'seeker_major', 'attachments',
-            'experiences', 'educations', 'trainings', 'organizations', 'languages', 'skills', 'job_title',
-            'last_edu'
+            'salaries', 'degrees', 'majors', 'attachments', 'experiences', 'educations', 'trainings', 'organizations',
+            'languages', 'skills', 'job_title', 'last_edu'
         ));
     }
 
@@ -167,8 +166,7 @@ class AccountController extends Controller
         $last_edu = Education::where('user_id', $user->id)->wherenotnull('end_period')
             ->orderby('degree_id', 'desc')->take(1);
 
-        return view('_seekers.settings', compact('user', 'provinces', 'seeker', 'job_title',
-            'last_edu'));
+        return view('_seekers.settings', compact('user', 'provinces', 'job_title', 'last_edu'));
     }
 
     public function updateAccount(Request $request)
