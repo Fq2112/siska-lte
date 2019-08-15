@@ -25,7 +25,7 @@
     <script src='https://www.google.com/recaptcha/api.js?onload=recaptchaCallback&render=explicit' async defer></script>
 </head>
 
-<body>
+<body class="use-nicescroll">
 <div id="particles-js"></div>
 <div class="wrapper">
     <div class="sign-panels">
@@ -284,9 +284,25 @@
 <script src="{{asset('js/hideShowPassword.min.js')}}"></script>
 <!-- Bootstrap -->
 <script src="{{asset('js/bootstrap.min.js')}}"></script>
+<script src="{{asset('js/checkMobileDevice.js')}}"></script>
+<!-- Nicescroll -->
+<script src="{{asset('nicescroll/jquery.nicescroll.js')}}"></script>
 <!-- Particle-js -->
 <script src="{{asset('js/particles.min.js')}}"></script>
 <script>
+    $(function () {
+        window.mobilecheck() ? $("body").removeClass('use-nicescroll') : '';
+        $(".use-nicescroll").niceScroll({
+            cursorcolor: "rgba(0, 0, 0, .5)",
+            cursorwidth: "8px",
+            background: "rgba(222, 222, 222, .75)",
+            cursorborder: 'none',
+            // cursorborderradius:0,
+            autohidemode: 'leave',
+            zindex: 99999999,
+        });
+    });
+
     $('[data-toggle="tooltip"]').tooltip();
 
     $('.btn-reset').on("click", function () {
