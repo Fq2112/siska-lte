@@ -36,7 +36,7 @@ class SocialAuthController extends Controller
             $checkUser = User::where('email', $userSocial->email)->first();
 
             if (!$checkUser) {
-                return back()->with('inactive', 'This email (' . $userSocial->email . ') address doesn\'t have an associated user account. Are you sure you\'ve registered?');
+                return back()->with("inactive", "This email (" . $userSocial->email . ") address doesn`t have an associated user account. Are you sure you`ve registered?");
 
             } else {
                 $user = $checkUser;
