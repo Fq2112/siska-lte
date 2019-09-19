@@ -46,7 +46,8 @@
                             <div id="partnership">
                                 <h2 class="StepTitle">Step 1 Partnership</h2>
                                 <ol style="text-align: justify;font-size: 15px;">
-                                    <li>Buka situs utama <a href="{{env('SISKA_URI')}}#partner" target="_blank">
+                                    <li>Buka situs utama <a href="{{env('SISKA_URI').'?q='.env('APP_INSTANSI')}}"
+                                                            target="_blank">
                                             <strong>SISKA</strong></a>, lalu klik tombol "<strong>Bermitra Sekarang!
                                         </strong>" untuk melakukan <em>partnership request</em>.
                                     </li>
