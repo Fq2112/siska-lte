@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admins\DataMaster;
 
+use App\Events\Auth\UserActivationEmail;
 use App\Http\Controllers\Api\APIController as Credential;
 use App\Models\User;
 use App\Models\Admin;
@@ -105,11 +106,41 @@ class AccountsController extends Controller
         return back()->with('success', '' . $admin->name . ' is successfully deleted!');
     }
 
-    public function showUsersTable()
+    public function showUsersTable(Request $request)
     {
-        $users = User::all();
+        if ($request->has('q')) {
+            $find = $request->q;
+        } else {
+            $find = null;
+        }
 
-        return view('_admins.tables.accounts.user-table', compact('users'));
+        $users = User::orderByDesc('id')->get();
+
+        return view('_admins.tables.accounts.user-table', compact('find', 'users'));
+    }
+
+    public function validateUsers(Request $request)
+    {
+        $user = User::find($request->user_id);
+        $user->update([
+            'isValid' => $request->isValid,
+            'note' => $request->note
+        ]);
+
+        event(new UserActivationEmail($user));
+
+        if ($user->isValid == false) {
+            foreach ($user->getAttachments as $row) {
+                Storage::delete('public/users/attachments/' . $row->files);
+            }
+            $user->forceDelete();
+
+            return redirect()->route('table.users')->with('success', '' . $user->name .
+                ' is successfully validated and deleted! The reason behind it is because ' . $user->name .
+                '\'s graduate certificate and/or transcripts data is invalid!');
+        }
+
+        return redirect()->route('table.users')->with('success', '' . $user->name . ' is successfully validated!');
     }
 
     public function deleteUsers($id)

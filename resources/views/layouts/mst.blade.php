@@ -208,11 +208,13 @@
             $label = '100%';
         }
 
+        $users = \App\Models\User::wherenull('isValid')->get();
+
         $applications = \App\Models\Vacancies::whereHas('getApplication', function ($acc){
             $acc->where('isApply', true);
         })->whereDate('recruitmentDate_end', today())->get();
 
-        $notifications = count($applications);
+        $notifications = count($users) + count($applications);
 
     } else {
        if(Auth::check()){
@@ -336,7 +338,26 @@
                                 </a>
                                 <ul id="menu2" class="dropdown-menu list-unstyled msg_list" role="menu">
                                     @if($notifications > 0)
-                                        @if(count($applications) > 0)
+                                        @if(count($users) > 0)
+                                            <li style="padding: 0">
+                                                <a style="text-decoration: none;cursor: text"><span><i
+                                                                class="fa fa-users"></i>
+                                                    <strong style="margin-left: 5px;text-transform: uppercase">Validation Accounts</strong></span>
+                                                </a>
+                                            </li>
+                                            @foreach($users as $user)
+                                                <li>
+                                                    <a href="{{route('table.users',['q'=>$user->nim])}}">
+                                                        <span class="image"><img
+                                                                    src="{{asset('images/seeker.png')}}"></span>
+                                                        <span><span>{{$user->nim}}</span></span>
+                                                        <span class="message"><strong>{{$user->name}}</strong>'s account hasn't been validate yet!</span>
+                                                    </a>
+                                                </li>
+                                            @endforeach
+                                            <li class="divider"
+                                                style="margin: 0 6px;padding: 3px;background: none;border-bottom: 2px solid #d8d8d845;"></li>
+                                        @elseif(count($applications) > 0)
                                             <li style="padding: 0">
                                                 <a style="text-decoration: none;cursor: text"><span><i
                                                                 class="fa fa-paper-plane"></i>

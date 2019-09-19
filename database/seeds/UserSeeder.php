@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Attachments;
 use Illuminate\Database\Seeder;
 use Faker\Factory;
 use Carbon\Carbon;
@@ -94,9 +95,11 @@ class UserSeeder extends Seeder
         for ($c = 0; $c < 50; $c++) {
             $user = User::create([
                 'ava' => 'seeker.png',
+                'nim' => str_replace(' ', '', $faker->bankAccountNumber),
                 'name' => $faker->firstName . ' ' . $faker->lastName,
                 'email' => $faker->unique()->safeEmail,
                 'password' => bcrypt('secret'),
+                'isValid' => true,
                 'status' => true,
                 'remember_token' => str_random(60),
                 'phone' => $faker->phoneNumber,
@@ -111,6 +114,16 @@ class UserSeeder extends Seeder
                 'lowest_salary' => '1000000',
                 'highest_salary' => '5000000',
                 'summary' => '<p align="justify">' . $faker->text($maxNbChars = 500) . '</p>',
+            ]);
+
+            Attachments::create([
+                'user_id' => $user->id,
+                'files' => $faker->imageUrl(),
+            ]);
+
+            Attachments::create([
+                'user_id' => $user->id,
+                'files' => $faker->imageUrl(),
             ]);
 
             Education::create([

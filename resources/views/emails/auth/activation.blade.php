@@ -202,11 +202,13 @@
                                                 <div style="font-size:30px;line-height:29px;">&nbsp;</div>
                                             </td>
                                         </tr>
-                                        <tr>
-                                            <td align="center" width="660">
-                                                <img src="{{env('SISKA_URI')}}/images/mail.jpg"
-                                                     style="display: block;width: 70%" border="0"></td>
-                                        </tr>
+                                        @if($data->isValid == true)
+                                            <tr>
+                                                <td align="center" width="660">
+                                                    <img src="{{env('SISKA_URI')}}/images/mail.jpg"
+                                                         style="display: block;width: 70%" border="0"></td>
+                                            </tr>
+                                        @endif
                                         <tr>
                                             <td>
                                                 <div style="font-size:30px;line-height:30px;">&nbsp;</div>
@@ -215,7 +217,7 @@
                                         <tr>
                                             <td align="center" valign="top"
                                                 style="font-family:helvetica,arial,sans-serif; color:#646464; font-size:14px; line-height:22px;">
-                                                <span style="font-size:22px; font-weight:bold; line-height:26px;">You're almost done.</span>
+                                                <span style="font-size:22px; font-weight:bold; line-height:26px;">{{$data->isValid == true ? "You're almost done." : "Your data is invalid."}}</span>
                                             </td>
                                         </tr>
                                         </tbody>
@@ -240,9 +242,14 @@
                                             <td align="center" valign="top" style="font-family:helvetica,arial,sans-serif;
                 color:#646464; font-size:16px; line-height:22px;
                 padding-left:20px; padding-right:20px" class="body">
-                                                To finish this step, we just need to make sure <br>this e-mail address:
-                                                <strong>{{$user->email}}</strong> belongs to you. Click the link below
-                                                to activate your account.
+                                                @if($data->isValid == true)
+                                                    To finish this step, we just need to make sure<br>
+                                                    this e-mail address: <strong>{{$user->email}}</strong> belongs to
+                                                    you.
+                                                    Click the link below to activate your account.
+                                                @else
+                                                    {{$data->note}}
+                                                @endif
                                             </td>
                                         </tr>
                                         </tbody>
@@ -269,10 +276,15 @@
                                         <tr>
                                             <td align="center" width="600" class="full-width"
                                                 style="padding-left: 20px; padding-right:20px" valign="top">
-                                                <a class="zoom" id="activate" href="{{route('activate',['verifyToken' =>
-                                                $user->verifyToken, 'email' => $user->email])}}" target="_blank">
-                                                    ACTIVATE
-                                                </a>
+                                                @if($data->isValid == true)
+                                                    <a class="zoom" id="activate" href="{{route('activate', [
+                                                    'verifyToken' => $user->verifyToken, 'email' => $user->email])}}"
+                                                       target="_blank">ACTIVATE</a>
+                                                @else
+                                                    <a class="zoom" id="activate"
+                                                       href="{{route('show.login.form', ['q' => 'retry'])}}"
+                                                       target="_blank">RETRY</a>
+                                                @endif
                                             </td>
                                         </tr>
                                         </tbody>

@@ -21,10 +21,11 @@
                         <table id="datatable-buttons" class="table table-striped table-bordered">
                             <thead>
                             <tr>
-                                <th>No</th>
-                                <th>Contact</th>
-                                <th>Personal Data</th>
-                                <th>Action</th>
+                                <th style="width: 5%">No</th>
+                                <th style="width: 50%">Contact</th>
+                                <th style="width: 20%">Personal Data</th>
+                                <th style="width: 5%">Status</th>
+                                <th style="width: 20%">Action</th>
                             </tr>
                             </thead>
 
@@ -54,7 +55,7 @@
                                                             <td>
                                                                 <a href="{{route('seeker.profile',['id' => $user->id])}}"
                                                                    target="_blank">
-                                                                    <strong>{{$user->name}}</strong></a>
+                                                                    <strong>{{$user->name.' ['.$user->nim.']'}}</strong></a>
                                                             </td>
                                                         </tr>
                                                         <tr>
@@ -167,15 +168,35 @@
                                             </tr>
                                         </table>
                                     </td>
+                                    <td style="vertical-align: middle;text-transform: uppercase" align="center">
+                                        @if($user->isValid != "")
+                                            @if($user->isValid == false)
+                                                <span class="label label-danger">Invalid</span>
+                                            @else
+                                                @if($user->status == true)
+                                                    <span class="label label-success">Active</span>
+                                                @else
+                                                    <span class="label label-warning">Inactive</span>
+                                                @endif
+                                            @endif
+                                        @else
+                                            <span class="label label-default">Pending</span>
+                                        @endif
+                                    </td>
                                     <td style="vertical-align: middle" align="center">
-                                        <a href="{{route('seeker.profile',['id' => $user->seekers])}}" target="_blank"
-                                           class="btn btn-info btn-sm" style="font-size: 16px" data-toggle="tooltip"
-                                           title="Details" data-placement="left"><i class="fa fa-info-circle"></i></a>
-                                        <hr style="margin: 5px auto">
-                                        <a href="{{route('delete.users',['id'=>encrypt($user->id)])}}"
-                                           class="btn btn-danger btn-sm delete-data" style="font-size: 16px"
-                                           data-toggle="tooltip"
-                                           title="Delete" data-placement="left"><i class="fa fa-trash-alt"></i></a>
+                                        <div class="btn-group">
+                                            <button onclick="validateUser('{{$user->id}}','{{$user->nim}}','{{$user->name}}')"
+                                                    class="btn btn-primary btn-sm" data-toggle="tooltip"
+                                                    title="{{$user->isValid == true ? 'Validated' : 'Validate'}}"
+                                                    {{$user->isValid == true ? 'disabled' : ''}}>
+                                                <i class="fa fa-check-circle"></i></button>
+                                            <a href="{{route('seeker.profile',['id'=>$user->id])}}" target="_blank"
+                                               class="btn btn-info btn-sm" data-toggle="tooltip" title="Details">
+                                                <i class="fa fa-info-circle"></i></a>
+                                            <a href="{{route('delete.users',['id'=>encrypt($user->id)])}}"
+                                               class="btn btn-danger btn-sm delete-data" data-toggle="tooltip"
+                                               title="Delete"><i class="fa fa-trash-alt"></i></a>
+                                        </div>
                                     </td>
                                 </tr>
                             @endforeach
@@ -186,4 +207,65 @@
             </div>
         </div>
     </div>
+
+    <div id="validateModal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg" style="width: 60%">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>
+                    <h4 class="modal-title">Validate Account: <strong></strong></h4>
+                </div>
+                <form method="post" action="{{route('validate.users')}}" id="form-validate-user">
+                    {{csrf_field()}}
+                    {{method_field('PUT')}}
+                    <div class="modal-body">
+                        <input type="hidden" name="user_id">
+                        <div class="row form-group">
+                            <div class="col-lg-2 col-md-2 col-sm-4">
+                                <label class="control-label" for="rb_invalid">Status</label><br>
+                                <input id="rb_invalid" type="radio" class="flat" name="isValid" value="0">
+                                <b>INVALID</b>
+                                <br><input id="rb_valid" type="radio" class="flat" name="isValid" value="1">
+                                <b>VALID</b>
+                            </div>
+                            <div class="col-lg-10 col-md-10 col-sm-8">
+                                <label class="control-label" for="note">Note</label>
+                                <textarea name="note" id="note" class="form-control" style="resize: vertical"
+                                          placeholder="Write something here..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 @endsection
+@push('scripts')
+    <script>
+        $(function () {
+            @if($find != "")
+            $(".dataTables_filter input[type=search]").val('{{$find}}').trigger('keyup');
+            @endif
+        });
+
+        $('#rb_invalid').on('ifChecked', function () {
+            $('#note').attr('required', 'required').removeAttr('disabled');
+        });
+
+        $('#rb_valid').on('ifChecked', function () {
+            $('#note').val('').removeAttr('required').attr('disabled', 'disabled');
+        });
+
+        function validateUser(id, nim, name) {
+            $("#validateModal .modal-title strong").text(name + ' [' + nim + ']');
+            $("#form-validate-user input[name=user_id]").val(id);
+            $("#rb_invalid, #rb_valid").iCheck('uncheck');
+            $("#note").val('').removeAttr('required').attr('disabled', 'disabled');
+            $("#validateModal").modal('show');
+        }
+    </script>
+@endpush

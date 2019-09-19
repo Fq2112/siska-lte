@@ -16,6 +16,10 @@ Route::post('password/reset', 'Auth\ResetPasswordController@postReset')->name('p
 
 Auth::routes();
 
+Route::get('/', function () {
+    return view('welcome');
+})->name('welcome');
+
 Route::group(['namespace' => 'Auth', 'prefix' => 'account'], function () {
 
     Route::get('/', [
@@ -165,6 +169,11 @@ Route::group(['namespace' => 'Admins', 'prefix' => 'admin', 'middleware' => 'adm
                     Route::get('/', [
                         'uses' => 'AccountsController@showUsersTable',
                         'as' => 'table.users'
+                    ]);
+
+                    Route::put('validate', [
+                        'uses' => 'AccountsController@validateUsers',
+                        'as' => 'validate.users'
                     ]);
 
                     Route::get('{id}/delete', [

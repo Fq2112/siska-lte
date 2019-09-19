@@ -50,11 +50,18 @@ class LoginController extends Controller
     /**
      * Show the application's login form.
      *
+     * @param Request $request
      * @return \Illuminate\Http\Response
      */
-    public function showLoginForm()
+    public function showLoginForm(Request $request)
     {
-        return view('index');
+        if ($request->has("q")) {
+            $find = $request->q;
+        } else {
+            $find = null;
+        }
+
+        return view('index', compact('find'));
     }
 
     /**

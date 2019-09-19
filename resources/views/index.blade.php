@@ -25,7 +25,7 @@
     <script src='https://www.google.com/recaptcha/api.js?onload=recaptchaCallback&render=explicit' async defer></script>
 </head>
 
-<body class="use-nicescroll">
+<body>
 <div id="particles-js"></div>
 <div class="wrapper">
     <div class="sign-panels">
@@ -113,36 +113,9 @@
         <div class="signup" style="display: none;">
             <div class="title">
                 <span>Sign Up</span>
-                <p>Create a new account. You can sign up with :</p>
+                <p>Create a new account. You have to upload your graduate certificate (ijazah) and transcripts
+                    (transkrip nilai) file.</p>
             </div>
-
-            <div class="social">
-                <a class="circle github" href="{{route('redirect', ['provider' => 'github'])}}"
-                   data-toggle="tooltip" data-title="Github" data-placement="left">
-                    <i class="fab fa-github fa-fw"></i>
-                </a>
-                {{--<a id="facebook_login" class="circle facebook"
-                                   href="{{route('redirect', ['provider' => 'facebook'])}}"
-                                   data-toggle="tooltip" data-title="Facebook" data-placement="top">
-                                    <i class="fab fa-facebook-f fa-fw"></i>
-                                </a>--}}
-                <a id="linkedin_login" class="circle linkedin"
-                   href="{{route('redirect', ['provider' => 'linkedin'])}}"
-                   data-toggle="tooltip" data-title="Linkedin" data-placement="top">
-                    <i class="fab fa-linkedin-in fa-fw"></i>
-                </a>
-                <a class="circle twitter" href="{{route('redirect', ['provider' => 'twitter'])}}"
-                   data-toggle="tooltip" data-title="Twitter" data-placement="bottom">
-                    <i class="fab fa-twitter fa-fw"></i>
-                </a>
-                <a id="google_login" class="circle google"
-                   href="{{route('redirect', ['provider' => 'google'])}}"
-                   data-toggle="tooltip" data-title="Google+" data-placement="right">
-                    <i class="fab fa-google-plus-g fa-fw"></i>
-                </a>
-            </div>
-
-            <div class="or"><span>OR</span></div>
 
             @if ($errors->has('email'))
                 <div class="alert alert-danger alert-dismissible">
@@ -159,11 +132,25 @@
             @endif
             <div id="reg_errorAlert"></div>
             <form class="form-horizontal" method="post" accept-charset="UTF-8" action="{{ route('register') }}"
-                  id="form-register">
+                  id="form-register" enctype="multipart/form-data">
                 {{ csrf_field() }}
+                <div class="row form-group has-feedback">
+                    <input id="reg_nim" type="text" placeholder="Registration number (NIM)" name="nim"
+                           onkeypress="return numberOnly(event, false)" required>
+                    <span class="fa fa-id-card form-control-feedback"></span>
+                </div>
                 <div class="row form-group has-feedback">
                     <input id="reg_name" type="text" placeholder="Full name" name="name" required>
                     <span class="glyphicon glyphicon-user form-control-feedback"></span>
+                </div>
+                <div id="reg_ijazah" data-toggle="tooltip" title="Ijazah" class="row form-group has-feedback">
+                    <input type="file" name="ijazah" required>
+                    <span class="fa fa-file-alt form-control-feedback"></span>
+                </div>
+                <div id="reg_transkrip" data-toggle="tooltip" title="Transkrip Nilai"
+                     class="row form-group has-feedback">
+                    <input type="file" name="transkrip" required>
+                    <span class="fa fa-file-alt form-control-feedback"></span>
                 </div>
                 <div class="row form-group has-feedback">
                     <input id="reg_email" type="email" placeholder="Email" name="email" required>
@@ -301,6 +288,10 @@
             autohidemode: 'leave',
             zindex: 99999999,
         });
+
+        @if($find != "")
+        $('.btn-member').click();
+        @endif
     });
 
     $('[data-toggle="tooltip"]').tooltip();
@@ -383,6 +374,63 @@
         }
     });
 
+    $("#reg_ijazah input[type=file]").on('change', function () {
+        var files = $(this).prop("files"), names = $.map(files, function (val) {
+            return val.name;
+        }), files_size = this.files[0].size, max_file_size = 1048576;
+
+        if (!window.File && window.FileReader && window.FileList && window.Blob) {
+            swal('ATTENTION!', "Your browser does not support new File API! Please upgrade.", 'warning');
+
+        } else {
+            if (files_size > max_file_size) {
+                swal('ERROR!', names + " with total size " + humanFileSize(files_size) + ". Allowed size is " + humanFileSize(max_file_size) + ", try smaller file!", 'error');
+                $(this).val('');
+
+            } else {
+                $(this.files).each(function (i, ifile) {
+                    if (ifile.value !== "") {
+                        $("#reg_ijazah[data-toggle=tooltip]").attr('data-original-title', 'Ijazah: ' + names);
+
+                    } else {
+                        swal('Oops...', 'There\'s no any file selected!', 'error');
+                    }
+                });
+            }
+        }
+    });
+
+    $("#reg_transkrip input[type=file]").on('change', function () {
+        var files = $(this).prop("files"), names = $.map(files, function (val) {
+            return val.name;
+        }), files_size = this.files[0].size, max_file_size = 1048576;
+
+        if (!window.File && window.FileReader && window.FileList && window.Blob) {
+            swal('ATTENTION!', "Your browser does not support new File API! Please upgrade.", 'warning');
+
+        } else {
+            if (files_size > max_file_size) {
+                swal('ERROR!', names + " with total size " + humanFileSize(files_size) + ". Allowed size is " + humanFileSize(max_file_size) + ", try smaller file!", 'error');
+                $(this).val('');
+
+            } else {
+                $(this.files).each(function (i, ifile) {
+                    if (ifile.value !== "") {
+                        $("#reg_transkrip[data-toggle=tooltip]").attr('data-original-title', 'Transkrip Nilai: ' + names);
+
+                    } else {
+                        swal('Oops...', 'There\'s no any file selected!', 'error');
+                    }
+                });
+            }
+        }
+    });
+
+    function humanFileSize(size) {
+        var i = Math.floor(Math.log(size) / Math.log(1024));
+        return (size / Math.pow(1024, i)).toFixed(2) * 1 + ' ' + ['B', 'kB', 'MB', 'GB', 'TB'][i];
+    }
+
     $("#reg_password_confirm").on("keyup", function () {
         if ($(this).val() != $("#reg_password").val()) {
             $("#reg_errorAlert").html(
@@ -447,6 +495,24 @@
         $(this).toggleClass('glyphicon-eye-open glyphicon-eye-close');
         $('#forg_password_confirm').togglePassword();
     });
+
+    function numberOnly(e, decimal) {
+        var key;
+        var keychar;
+        if (window.event) {
+            key = window.event.keyCode;
+        } else if (e) {
+            key = e.which;
+        } else return true;
+        keychar = String.fromCharCode(key);
+        if ((key == null) || (key == 0) || (key == 8) || (key == 9) || (key == 13) || (key == 27) || (key == 188)) {
+            return true;
+        } else if ((("0123456789").indexOf(keychar) > -1)) {
+            return true;
+        } else if (decimal && (keychar == ".")) {
+            return true;
+        } else return false;
+    }
 
     (function () {
         particlesJS('particles-js', {

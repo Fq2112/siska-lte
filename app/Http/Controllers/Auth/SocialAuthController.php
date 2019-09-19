@@ -36,21 +36,7 @@ class SocialAuthController extends Controller
             $checkUser = User::where('email', $userSocial->email)->first();
 
             if (!$checkUser) {
-                Storage::disk('local')
-                    ->put('public/users/ava/' . $userSocial->getId() . ".jpg", file_get_contents($userSocial->getAvatar()));
-
-                $user = User::firstOrCreate([
-                    'ava' => $userSocial->getId() . ".jpg",
-                    'email' => $userSocial->getEmail(),
-                    'name' => $userSocial->getName(),
-                    'password' => bcrypt(str_random(15)),
-                    'status' => true,
-                ]);
-
-                $user->socialProviders()->create([
-                    'provider_id' => $userSocial->getId(),
-                    'provider' => $provider
-                ]);
+                return back()->with('inactive', 'This email (' . $userSocial->email . ') address doesn\'t have an associated user account. Are you sure you\'ve registered?');
 
             } else {
                 $user = $checkUser;

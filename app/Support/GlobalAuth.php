@@ -25,12 +25,18 @@ class GlobalAuth
     {
         if ($this->isUser($credentials['email'])) {
             $user = User::where('email', $credentials['email'])->first();
-            if ($user->status == false) {
+            if ($user->isValid == "") {
                 return back()->withInput(Input::all())->with([
-                    'inactive' => 'Your account has not been activated! Please activate first.'
+                    'inactive' => 'Your account is pending because we still validating your data! Be patience and keep an eye on your email, have a nice day.'
                 ]);
             } else {
-                $guard = 'web';
+                if ($user->status == false) {
+                    return back()->withInput(Input::all())->with([
+                        'inactive' => 'Your account has not been activated! Please activate first.'
+                    ]);
+                } else {
+                    $guard = 'web';
+                }
             }
         } else if ($this->isAdmin($credentials['email'])) {
             $guard = 'admin';

@@ -32,7 +32,8 @@
                     <li><a>Accounts <span class="fa fa-chevron-down"></span></a>
                         <ul class="nav child_menu">
                             <li><a href="{{route('table.admins')}}">Admins</a></li>
-                            <li><a href="{{route('table.users')}}">Users</a></li>
+                            <li class="{{Illuminate\Support\Facades\Request::is('admin/tables/accounts/users*') ?
+                            'current-page' : ''}}"><a href="{{route('table.users')}}">Users</a></li>
                         </ul>
                     </li>
                     <li><a>Requirements <span class="fa fa-chevron-down"></span></a>

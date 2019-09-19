@@ -186,6 +186,10 @@ body {
     display: none;
 }
 
+.sign-panels input[type="file"] {
+    cursor: pointer;
+}
+
 .sign-panels input[type="checkbox"] + label {
     display: block;
     text-align: left;
