@@ -31,10 +31,9 @@ class SeekerController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('seeker')->except(['index', 'detailSeeker', 'downloadSeekerAttachments']);
+        $this->middleware('seeker')->except(['index', 'detailSeeker']);
         $this->middleware('seeker.home')->only('index');
         $this->middleware('seeker.profile')->only('detailSeeker');
-        $this->middleware('admin')->only('downloadSeekerAttachments');
     }
 
     public function index(Request $request)
@@ -66,12 +65,6 @@ class SeekerController extends Controller
 
         return view('_seekers.detail-seeker', compact('user', 'attachments', 'experiences', 'educations',
             'trainings', 'organizations', 'languages', 'skills', 'job_title', 'last_edu'));
-    }
-
-    public function downloadSeekerAttachments($files)
-    {
-        $file_path = public_path('storage/users/attachments/' . $files);
-        return response()->download($file_path);
     }
 
     public function showDashboard()

@@ -230,22 +230,15 @@
                                                         </div>
                                                         <div class="media-body">
                                                             @if(Auth::guard('admin')->check())
-                                                                <form class="pull-right to-animate-2"
-                                                                      id="form-download-attachments{{$row->id}}"
-                                                                      action="{{route('download.seeker.attachments',[
-                                                                      'files' => $row->files])}}" data-toggle="tooltip"
-                                                                      data-placement="left"
-                                                                      title="Download {{$row->files}}">{{csrf_field()}}
-                                                                    <div class="anim-icon anim-icon-md download ld ld-breath"
-                                                                         id="{{$row->id}}"
-                                                                         onclick="downloadAttachments(id)"
-                                                                         style="font-size: 25px">
-                                                                        <input type="hidden" name="attachments_id"
-                                                                               value="{{$row->id}}">
-                                                                        <input type="checkbox">
-                                                                        <label for="download"></label>
-                                                                    </div>
-                                                                </form>
+                                                                <div class="pull-right anim-icon anim-icon-md download ld ld-breath"
+                                                                     id="{{$row->id}}"
+                                                                     data-toggle="tooltip" data-placement="left"
+                                                                     title="Download {{$row->files}}"
+                                                                     onclick="downloadAttachments(id, '{{asset('storage/users/attachments/'.$row->files)}}')"
+                                                                     style="font-size: 25px">
+                                                                    <input type="checkbox">
+                                                                    <label for="download"></label>
+                                                                </div>
                                                             @endif
                                                             <blockquote
                                                                     style="font-size: 12px;text-transform: none">{{$row->files}}</blockquote>
@@ -694,10 +687,10 @@
             $("#avaModal").modal('show');
         }
 
-        function downloadAttachments(id) {
+        function downloadAttachments(id, href) {
             $("#" + id).removeClass('ld ld-breath');
             $("#" + id + ' input[type=checkbox]').prop('checked', true);
-            $("#form-download-attachments" + id)[0].submit();
+            window.open(href, '_blank');
         }
     </script>
 @endpush
