@@ -101,13 +101,15 @@
 
                                                 public function getCredentials()<br>
                                                 {<br>
-                                                <span style="margin-left: 2em">try {</span><br>
-                                                <span style="margin-left: 4em">$response = $this->client->get($this->uri . '/api/partners?key=' . </span><br>
-                                                <span style="margin-left: 7em">$this->key . '&secret=' . $this->secret);</span><br>
-                                                <span style="margin-left: 4em">return json_decode($response->getBody(), true);</span>
+                                                <span style="margin-left: 2em">if ($this->key != "" && $this->secret != "") {</span><br>
+                                                <span style="margin-left: 4em">try {</span><br>
+                                                <span style="margin-left: 6em">$response = $this->client->get($this->uri . '/api/partners?key=' . </span><br>
+                                                <span style="margin-left: 9em">$this->key . '&secret=' . $this->secret);</span><br>
+                                                <span style="margin-left: 6em">return json_decode($response->getBody(), true);</span>
                                                 <br><br>
-                                                <span style="margin-left: 2em">} catch (ConnectException $e) {</span><br>
-                                                <span style="margin-left: 4em">return $e->getResponse();</span><br>
+                                                <span style="margin-left: 4em">} catch (ConnectException $e) {</span><br>
+                                                <span style="margin-left: 6em">return $e->getResponse();</span><br>
+                                                <span style="margin-left: 4em">}</span><br>
                                                 <span style="margin-left: 2em">}</span><br>
                                                 }
                                             </code><br><br>
@@ -822,6 +824,10 @@
                                 '<strong><i class="fa fa-sync-alt"></i>&ensp;sinkronisasi sekarang!</strong></a></div></div>'
                             );
 
+                            $("#wizard .stepContainer").css('height', 'auto');
+                            $("#wizard a.buttonFinish").attr('href', 'javascript:void(0)')
+                                .attr('onclick', 'submitSync()');
+
                         } else if (data.isSync == 1) {
                             $("#sync-info").html(
                                 '<div class="bs-example" data-example-id="simple-jumbotron">' +
@@ -832,21 +838,30 @@
                                 'melakukan sinkronisasi dengan <strong>SISKA</strong>.</p></div></div>'
                             );
 
+                            $("#wizard .stepContainer").css('height', 'auto');
+                            $("#wizard a.buttonFinish").attr('href', 'javascript:void(0)')
+                                .attr('onclick', 'submitSync()');
+
                         } else {
                             $("#sync-info").html(
                                 '<div class="bs-example" data-example-id="simple-jumbotron">' +
                                 '<div id="sync-info" class="jumbotron">' +
-                                '<h1><strong>500</strong>. Internal Server Error!</h1>' +
-                                '<p>Kami minta maaf atas ketidaknyamanannya, tetapi tampaknya ada kesalahan ' +
-                                'server internal SISKA saat memproses permintaan Anda. ' +
-                                'Teknisi kami telah diberitahu dan bekerja untuk menyelesaikan masalah ini. ' +
-                                'Silakan coba lagi nanti.</p></div></div>'
+                                '<h1>Halo, {{env('APP_NAME')}} Admin</h1>' +
+                                '<p>Untuk dapat melakukan sinkronisasi data, Anda memerlukan sebuah hak akses ' +
+                                '(<em>credential</em>) berupa <strong>API Key & API Secret</strong> dari SISKA ' +
+                                'dan dengan bermitra Anda akan mendapatkan hak akses tersebut.</p>' +
+                                '<small style="color: #c7254e">P.S.: Jika Anda masih melihat pesan ini maka Anda belum ' +
+                                'menyelesaikan <em>partnership setup</em> dengan benar atau kredensial Anda sudah kadaluarsa.' +
+                                '</small><hr>' +
+                                '<a href="javascript:void(0)" class="btn btn-primary btn-lg" onclick="startPartner()"' +
+                                'style="text-transform: capitalize;"><strong><i class="fa fa-handshake"></i>&ensp;' +
+                                'bermitra sekarang!</strong></a></div></div>'
                             );
-                        }
 
-                        $("#wizard .stepContainer").css('height', 'auto');
-                        $("#wizard a.buttonFinish").attr('href', 'javascript:void(0)')
-                            .attr('onclick', 'submitSync()');
+                            $("#wizard_verticle .stepContainer").css('height', 'auto');
+                            $("#wizard_verticle a.buttonFinish").attr('href', 'javascript:void(0)')
+                                .attr('onclick', 'submitPartner()');
+                        }
                     },
                     error: function () {
                         $("#sync-info").html(

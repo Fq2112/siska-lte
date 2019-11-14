@@ -39,12 +39,14 @@ class APIController extends Controller
 
     public function getCredentials()
     {
-        try {
-            $response = $this->client->get($this->uri . '/api/partners?key=' . $this->key . '&secret=' . $this->secret);
-            return json_decode($response->getBody(), true);
+        if ($this->key != "" && $this->secret != "") {
+            try {
+                $response = $this->client->get($this->uri . '/api/partners?key=' . $this->key . '&secret=' . $this->secret);
+                return json_decode($response->getBody(), true);
 
-        } catch (ConnectException $e) {
-            return $e->getResponse();
+            } catch (ConnectException $e) {
+                return $e->getResponse();
+            }
         }
     }
 
@@ -221,7 +223,7 @@ class APIController extends Controller
     {
         $vacancies = Vacancies::where('judul', 'like', '%' . $keyword . '%')->where('isPost', true)->get();
 
-        if(count($vacancies) > 0){
+        if (count($vacancies) > 0) {
             foreach ($vacancies as $vacancy) {
                 $vacancy->label = $vacancy->judul . ' - ' . $vacancy->getAgency->company;
                 $vacancy->keyword = $vacancy->judul;
@@ -230,11 +232,11 @@ class APIController extends Controller
             return $vacancies;
 
         } else {
-            $agencies = Agencies::where('company', 'like', '%' . $keyword . '%')->whereHas('getVacancy', function($query){
+            $agencies = Agencies::where('company', 'like', '%' . $keyword . '%')->whereHas('getVacancy', function ($query) {
                 $query->where('isPost', true);
             })->get();
 
-            foreach($agencies as $agency){
+            foreach ($agencies as $agency) {
                 $agency->label = $agency->company;
                 $agency->keyword = $agency->company;
             }
