@@ -300,7 +300,7 @@
                     return item[1]
                 });
                 $("#applicant_ids").val(ids);
-                $("#form-application").attr("action", "{{route('table.applications.massPDF')}}");
+                $("#form-application").attr("action", "{{route('table.applications.massPDF')}}").attr('target', '_blank');
 
                 if (ids.length > 0) {
                     swal({
@@ -315,24 +315,8 @@
 
                         preConfirm: function () {
                             return new Promise(function (resolve) {
-                                $.ajax({
-                                    type: "POST",
-                                    url: "{{route('table.applications.massPDF')}}",
-                                    data: new FormData($("#form-application")[0]),
-                                    contentType: false,
-                                    processData: false,
-                                    success: function (data) {
-                                        if (data == 0) {
-                                            swal("Error!", "Couldn't zip the file! Please try again.", "error");
-                                        } else {
-                                            swal("Success!", "Pdf file(s) is successfully generated and " +
-                                                "zipped into PDFs.zip file!", "success");
-                                        }
-                                    },
-                                    error: function () {
-                                        swal("Error!", "Something went wrong, please refresh the page.", "error");
-                                    }
-                                });
+                                $("#form-application")[0].submit();
+                                swal('Success', 'Pdf file(s) is successfully generated and zipped into PDFs.zip file!', 'success');
                             });
                         },
                         allowOutsideClick: false
@@ -348,7 +332,7 @@
                     return item[1]
                 });
                 $("#applicant_ids").val(ids);
-                $("#form-application").attr("action", "{{route('table.applications.massDelete')}}");
+                $("#form-application").attr("action", "{{route('table.applications.massDelete')}}").removeAttr('target');
 
                 if (ids.length > 0) {
                     swal({

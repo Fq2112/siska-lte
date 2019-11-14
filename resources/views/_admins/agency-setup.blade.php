@@ -93,7 +93,7 @@
                         </table>
                     </div>
                     <div id="content2" class="x_content" style="display: none">
-                        <form method="post" action="{{route('create.agencies')}}" id="form-agency">
+                        <form method="post" action="{{route('create.agencies')}}" id="form-agency" enctype="multipart/form-data">
                             {{csrf_field()}}
                             <input type="hidden" name="_method" id="method">
                             <div class="row form-group">
@@ -556,6 +556,7 @@
         $("#agency_ava_input, #agency_ava_img, #agency_ava_btn").on('click', function () {
             $("#agency_ava_file").trigger('click');
         });
+
         $("#agency_ava_file").on('change', function () {
             var files = $(this).prop("files");
             var names = $.map(files, function (val) {
@@ -564,6 +565,11 @@
             var txt = $("#agency_ava_input");
             txt.val(names);
             $("#agency_ava_input[data-toggle=tooltip]").attr('data-original-title', names).tooltip('show');
+        });
+
+        $("#link").on("blur", function () {
+            var $uri = $(this).val().substr(0, 4) != 'http' ? 'http://' + $(this).val() : $(this).val();
+            $(this).val($uri);
         });
 
         $("#form-agency").on("submit", function (e) {

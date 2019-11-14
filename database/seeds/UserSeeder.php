@@ -95,7 +95,7 @@ class UserSeeder extends Seeder
         for ($c = 0; $c < 50; $c++) {
             $user = User::create([
                 'ava' => 'seeker.png',
-                'nim' => str_replace(' ', '', $faker->bankAccountNumber),
+                'nim' => str_replace(' ','', $faker->bankAccountNumber),
                 'name' => $faker->firstName . ' ' . $faker->lastName,
                 'email' => $faker->unique()->safeEmail,
                 'password' => bcrypt('secret'),
@@ -167,7 +167,7 @@ class UserSeeder extends Seeder
         }
 
         Admin::find(1)->update([
-            'email' => 'adminLTE@gmail.com',
+            'email' => 'adminLTE@ucc.unesa.ac.id',
             'name' => 'AdminLTE',
             'role' => 'root'
         ]);

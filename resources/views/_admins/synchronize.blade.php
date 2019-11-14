@@ -46,8 +46,7 @@
                             <div id="partnership">
                                 <h2 class="StepTitle">Step 1 Partnership</h2>
                                 <ol style="text-align: justify;font-size: 15px;">
-                                    <li>Buka situs utama <a href="{{env('SISKA_URI').'?q='.env('APP_INSTANSI')}}"
-                                                            target="_blank">
+                                    <li>Buka situs utama <a href="{{env('SISKA_URI').'?q='.env('APP_INSTANSI')}}" target="_blank">
                                             <strong>SISKA</strong></a>, lalu klik tombol "<strong>Bermitra Sekarang!
                                         </strong>" untuk melakukan <em>partnership request</em>.
                                     </li>
@@ -771,7 +770,7 @@
                                 </ol>
                             </div>
                         </div>
-                        <form method="post" id="form-submit-sync">
+                        <form method="post" id="form-submit-sync" action="{{route('submit.synchronize')}}">
                             {{csrf_field()}}
                             <input type="hidden" name="key" value="{{env('SISKA_API_KEY')}}">
                             <input type="hidden" name="secret" value="{{env('SISKA_API_SECRET')}}">
@@ -853,7 +852,7 @@
                         $("#sync-info").html(
                             '<div class="bs-example" data-example-id="simple-jumbotron">' +
                             '<div id="sync-info" class="jumbotron">' +
-                            '<h1>Halo, {{Auth::guard('admin')->user()->name}}</h1>' +
+                            '<h1>Halo, {{env('APP_NAME')}} Admin</h1>' +
                             '<p>Untuk dapat melakukan sinkronisasi data, Anda memerlukan sebuah hak akses ' +
                             '(<em>credential</em>) berupa <strong>API Key & API Secret</strong> dari SISKA ' +
                             'dan dengan bermitra Anda akan mendapatkan hak akses tersebut.</p>' +
@@ -935,21 +934,7 @@
 
                 preConfirm: function () {
                     return new Promise(function (resolve) {
-                        $.ajax({
-                            type: "POST",
-                            url: "{{route('submit.synchronize')}}",
-                            data: new FormData($("#form-submit-sync")[0]),
-                            contentType: false,
-                            processData: false,
-                            success: function (data) {
-                                swal('Synchronize Setup', data, 'success');
-                                loadCredentials();
-                                cancelSync();
-                            },
-                            error: function () {
-                                swal('Synchronize Setup', 'Something went wrong! Please refresh the page.', 'error');
-                            }
-                        });
+                        $("#form-submit-sync")[0].submit();
                     });
                 },
                 allowOutsideClick: false

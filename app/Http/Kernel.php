@@ -59,6 +59,7 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'admin' => \App\Http\Middleware\Auth\AdminMiddleware::class,
         'seeker' => \App\Http\Middleware\Auth\SeekerMiddleware::class,
+        'visitor' => \App\Http\Middleware\Auth\VisitorMiddleware::class,
         'seeker.home' => \App\Http\Middleware\Seekers\HomeSeekerMiddleware::class,
         'seeker.profile' => \App\Http\Middleware\Seekers\ProfileSeekerMiddleware::class,
     ];

@@ -18,11 +18,12 @@ Auth::routes();
 
 Route::get('/', function () {
     return view('welcome');
-})->name('welcome');
+})->middleware('visitor')->name('welcome');
 
 Route::group(['namespace' => 'Auth', 'prefix' => 'account'], function () {
 
     Route::get('/', [
+        'middleware' => 'visitor',
         'uses' => 'LoginController@showLoginForm',
         'as' => 'show.login.form'
     ]);

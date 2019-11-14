@@ -35,6 +35,11 @@ $router->group(['prefix' => 'api', 'namespace' => 'Api'], function ($router) {
         'as' => 'get.search.vacancy'
     ]);
 
+    $router->get('vacancies/search/{keyword}', [
+        'uses' => 'APIController@getKeywordVacancy',
+        'as' => 'get.keyword.vacancy'
+    ]);
+
     /**
      * Mohon tidak melakukan perubahan apapun pada
      * routing berikut! Terimakasih :)

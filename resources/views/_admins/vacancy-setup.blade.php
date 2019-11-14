@@ -53,7 +53,7 @@
                                                                          style="margin: 0 auto"
                                                                          src="{{$agency->ava == "" || $agency->ava ==
                                                                          "agency.png" ? asset('images/agency.png') :
-                                                                         asset('storage/admins/ava/'.$agency->ava)}}">
+                                                                         asset('storage/admins/agencies/ava/'.$agency->ava)}}">
                                                                 </a>
                                                             </td>
                                                         </tr>

@@ -191,7 +191,7 @@
     </style>
 </head>
 
-<body class="nav-md">
+<body class="nav-md use-nicescroll">
 @php
     $auth = Auth::guard('admin')->check() ? Auth::guard('admin')->user() : Auth::user();
     $notifications = 0;
@@ -340,23 +340,20 @@
                                     @if($notifications > 0)
                                         @if(count($users) > 0)
                                             <li style="padding: 0">
-                                                <a style="text-decoration: none;cursor: text"><span><i
-                                                                class="fa fa-users"></i>
+                                                <a style="text-decoration: none;cursor: text"><span><i class="fa fa-users"></i>
                                                     <strong style="margin-left: 5px;text-transform: uppercase">Validation Accounts</strong></span>
                                                 </a>
                                             </li>
                                             @foreach($users as $user)
                                                 <li>
                                                     <a href="{{route('table.users',['q'=>$user->nim])}}">
-                                                        <span class="image"><img
-                                                                    src="{{asset('images/seeker.png')}}"></span>
+                                                    <span class="image"><img src="{{asset('images/seeker.png')}}"></span>
                                                         <span><span>{{$user->nim}}</span></span>
                                                         <span class="message"><strong>{{$user->name}}</strong>'s account hasn't been validate yet!</span>
                                                     </a>
                                                 </li>
                                             @endforeach
-                                            <li class="divider"
-                                                style="margin: 0 6px;padding: 3px;background: none;border-bottom: 2px solid #d8d8d845;"></li>
+                                            <li class="divider" style="margin: 0 6px;padding: 3px;background: none;border-bottom: 2px solid #d8d8d845;"></li>
                                         @elseif(count($applications) > 0)
                                             <li style="padding: 0">
                                                 <a style="text-decoration: none;cursor: text"><span><i
@@ -793,6 +790,10 @@
             titleScroller(text.substr(1) + text.substr(0, 1));
         }, 500);
     }(title + " ~ "));
+
+    $(document).on('mouseover', '.use-nicescroll', function () {
+        $(this).getNiceScroll().resize();
+    });
 </script>
 @include('layouts.partials._alert')
 @include('layouts.partials._confirm')

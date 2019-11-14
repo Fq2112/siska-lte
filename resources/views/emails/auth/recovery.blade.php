@@ -202,13 +202,11 @@
                                                 <div style="font-size:30px;line-height:29px;">&nbsp;</div>
                                             </td>
                                         </tr>
-                                        @if($data->isValid == true)
-                                            <tr>
-                                                <td align="center" width="660">
-                                                    <img src="{{env('SISKA_URI')}}/images/mail.jpg"
-                                                         style="display: block;width: 70%" border="0"></td>
-                                            </tr>
-                                        @endif
+                                        {{--<tr>
+                                            <td align="center" width="660">
+                                                <img src="{{env('SISKA_URI')}}/images/mail.jpg"
+                                                     style="display: block;width: 70%" border="0"></td>
+                                        </tr>--}}
                                         <tr>
                                             <td>
                                                 <div style="font-size:30px;line-height:30px;">&nbsp;</div>
@@ -217,7 +215,7 @@
                                         <tr>
                                             <td align="center" valign="top"
                                                 style="font-family:helvetica,arial,sans-serif; color:#646464; font-size:14px; line-height:22px;">
-                                                <span style="font-size:22px; font-weight:bold; line-height:26px;">{{$data->isValid == true ? "You're almost done." : "Your data is invalid."}}</span>
+                                                <span style="font-size:22px; font-weight:bold; line-height:26px;">Hello!</span>
                                             </td>
                                         </tr>
                                         </tbody>
@@ -242,13 +240,9 @@
                                             <td align="center" valign="top" style="font-family:helvetica,arial,sans-serif;
                 color:#646464; font-size:16px; line-height:22px;
                 padding-left:20px; padding-right:20px" class="body">
-                                                @if($data->isValid == true)
-                                                    To finish this step, we just need to make sure<br>
-                                                    this e-mail address: <strong>{{$user->email}}</strong> belongs to you.
-                                                    Click the link below to activate your account.
-                                                @else
-                                                    {{$data->note}}
-                                                @endif
+                                                We are sending this email because we received a forgot password request.
+                                                If you did not request a password reset, no further action is required.
+                                                Please contact us if you did not submit this request.
                                             </td>
                                         </tr>
                                         </tbody>
@@ -275,14 +269,9 @@
                                         <tr>
                                             <td align="center" width="600" class="full-width"
                                                 style="padding-left: 20px; padding-right:20px" valign="top">
-                                                @if($data->isValid == true)
-                                                    <a class="zoom" id="activate" href="{{route('activate', [
-                                                    'verifyToken' => $user->verifyToken, 'email' => $user->email])}}"
-                                                       target="_blank">ACTIVATE</a>
-                                                @else
-                                                    <a class="zoom" id="activate" href="{{route('show.login.form', ['q' => 'retry'])}}"
-                                                       target="_blank">RETRY</a>
-                                                @endif
+                                                <a class="zoom" id="activate"
+                                                   href="{{url(route('password.reset', $data, false))}}"
+                                                   target="_blank">RESET PASSWORD</a>
                                             </td>
                                         </tr>
                                         </tbody>
@@ -319,7 +308,7 @@
                                                     <tr>
                                                         <td align="center">
                        <span style="font-family : helvetica, arial; font-weight : bold; font-size: 16px; ">
-                            Where is my password?
+                            Where is my new password?
                         </span>
                                                         </td>
                                                     </tr>
@@ -334,7 +323,7 @@
                                                         <td align="center"><span class="pw-note" style="font-family: helvetica, arial;
                                                          font-size: 15px;
                                                          line-height: 22px;
-                                                         display: block;">SISKA doesn't make you remember yet another password. Just click the link and you’re in.<br>No password. Ever.</span>
+                                                         display: block;">SISKA doesn't make you remember yet another password or certain codes.<br>Just click the link and enter the new password that you want.</span>
                                                         </td>
                                                     </tr>
 
@@ -585,9 +574,10 @@
                                                                     <td align="center"
                                                                         style="font-family:Helvetica, arial,helv,sans-serif;font-size:16px;color:#F9F9F9; font-weight:bold;"
                                                                         bgcolor="#1a1c21">
-                                                                        <a name="Privacy Policy" class="footerlinks"
-                                                                           style="color:#F9F9F9; text-decoration:none;"
+                                                                        <a name="Privacy Policy"
                                                                            href="{{env('SISKA_URI')}}/info#privacy-policy"
+                                                                           class="footerlinks"
+                                                                           style="color:#F9F9F9; text-decoration:none;"
                                                                            target="_blank">Privacy Policy</a>&nbsp;&nbsp;&nbsp;&nbsp;
                                                                         <a name="Terms" class="footerlinks"
                                                                            style="color:#F9F9F9; text-decoration:none;"
@@ -678,7 +668,8 @@
                                                                         registration initiated on the SISKA
                                                                         application; if you did not enter your email
                                                                         address in SISKA then you can either ignore
-                                                                        this message or contact info@siska.org for
+                                                                        this message or contact {{env('MAIL_USERNAME')}}
+                                                                        for
                                                                         more information. <br><br> SISKA is incorporated
                                                                         in
                                                                         Indonesia under company number

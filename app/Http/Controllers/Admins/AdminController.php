@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Storage;
 
 class AdminController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $newUser = User::where('created_at', '>=', today()->subDays('3')->toDateTimeString())->count();
         $newApp = Applications::where('created_at', '>=', today()->subDays('3')->toDateTimeString())->count();
@@ -31,8 +31,14 @@ class AdminController extends Controller
         $users = User::all();
         $agencies = Agencies::count();
 
+        if ($request->has('period')) {
+            $period = $request->period;
+        } else {
+            $period = null;
+        }
+
         return view('_admins.home-admin', compact('newUser', 'newApp', 'newAgency', 'newVacancy',
-            'admins', 'users', 'vacancies', 'applications', 'agencies'));
+            'admins', 'users', 'vacancies', 'applications', 'agencies', 'period'));
     }
 
     public function updateProfile(Request $request)
@@ -95,6 +101,7 @@ class AdminController extends Controller
     {
         $client = new Client([
             'base_uri' => env('SISKA_URI'),
+            'headers' => ['Content-Type' => 'application/json'],
             'defaults' => [
                 'exceptions' => false
             ]
@@ -118,12 +125,12 @@ class AdminController extends Controller
         }
 
         $response = $client->post(env('SISKA_URI') . '/api/partners/sync', [
-            'form_params' => [
+            'body' => json_encode([
                 'key' => $request->key,
                 'secret' => $request->secret,
                 'seekers' => $arr,
                 'vacancies' => $vacancies,
-            ]
+            ])
         ])->getBody()->getContents();
 
         $response = json_decode($response, true);
@@ -178,9 +185,9 @@ class AdminController extends Controller
             $statusVac = $totalVac > 1 ? $totalVac . ' vacancies' : 'a vacancy';
             $statusSeeker = count($arr) > 1 ? count($arr) . ' seekers' : 'a seeker';
 
-            return 'Successfully synchronized ' . $statusSeeker . ' and ' . $statusVac . '!';
+            return back()->with('success', 'Successfully synchronized ' . $statusSeeker . ' and ' . $statusVac . '!');
         }
 
-        return $response['message'];
+        return back()->with('error', $response['message']);
     }
 }

@@ -25,7 +25,7 @@
     <script src='https://www.google.com/recaptcha/api.js?onload=recaptchaCallback&render=explicit' async defer></script>
 </head>
 
-<body>
+<body class="use-nicescroll">
 <div id="particles-js"></div>
 <div class="wrapper">
     <div class="sign-panels">
@@ -615,6 +615,10 @@
             titleScroller(text.substr(1) + text.substr(0, 1));
         }, 500);
     }(title + " ~ "));
+
+    $(document).on('mouseover', '.use-nicescroll', function () {
+        $(this).getNiceScroll().resize();
+    });
 </script>
 @include('layouts.partials._alert')
 </html>

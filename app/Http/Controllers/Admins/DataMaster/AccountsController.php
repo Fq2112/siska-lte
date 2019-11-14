@@ -108,15 +108,15 @@ class AccountsController extends Controller
 
     public function showUsersTable(Request $request)
     {
-        if ($request->has('q')) {
+        if($request->has('q')){
             $find = $request->q;
-        } else {
+        } else{
             $find = null;
         }
 
         $users = User::orderByDesc('id')->get();
 
-        return view('_admins.tables.accounts.user-table', compact('find', 'users'));
+        return view('_admins.tables.accounts.user-table', compact('find','users'));
     }
 
     public function validateUsers(Request $request)
@@ -129,14 +129,14 @@ class AccountsController extends Controller
 
         event(new UserActivationEmail($user));
 
-        if ($user->isValid == false) {
-            foreach ($user->getAttachments as $row) {
+        if($user->isValid == false){
+            foreach($user->getAttachments as $row){
                 Storage::delete('public/users/attachments/' . $row->files);
             }
             $user->forceDelete();
 
             return redirect()->route('table.users')->with('success', '' . $user->name .
-                ' is successfully validated and deleted! The reason behind it is because ' . $user->name .
+                ' is successfully validated and deleted! The reason behind it is because '.$user->name.
                 '\'s graduate certificate and/or transcripts data is invalid!');
         }
 

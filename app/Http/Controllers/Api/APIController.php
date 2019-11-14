@@ -217,6 +217,32 @@ class APIController extends Controller
         }
     }
 
+    public function getKeywordVacancy($keyword)
+    {
+        $vacancies = Vacancies::where('judul', 'like', '%' . $keyword . '%')->where('isPost', true)->get();
+
+        if(count($vacancies) > 0){
+            foreach ($vacancies as $vacancy) {
+                $vacancy->label = $vacancy->judul . ' - ' . $vacancy->getAgency->company;
+                $vacancy->keyword = $vacancy->judul;
+            }
+
+            return $vacancies;
+
+        } else {
+            $agencies = Agencies::where('company', 'like', '%' . $keyword . '%')->whereHas('getVacancy', function($query){
+                $query->where('isPost', true);
+            })->get();
+
+            foreach($agencies as $agency){
+                $agency->label = $agency->company;
+                $agency->keyword = $agency->company;
+            }
+
+            return $agencies;
+        }
+    }
+
     public function getSearchResult(Request $request)
     {
         $input = $request->all();
@@ -245,8 +271,8 @@ class APIController extends Controller
 
             $agency = Agencies::findOrFail($row['agency_id']);
 
-            $filename = "agency.png" || $agency->ava == "" ? asset('images/agency.png') :
-                asset('storage/admins/agencies/' . $agency->ava);
+            $filename = $agency->ava == "agency.png" || $agency->ava == "" ? asset('images/agency.png') :
+                asset('storage/admins/agencies/ava/' . $agency->ava);
 
             $city = array('city' => $cities);
             $degrees = array('degrees' => Degrees::findOrFail($row['degree_id'])->name);

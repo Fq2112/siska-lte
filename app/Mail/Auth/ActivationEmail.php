@@ -34,7 +34,7 @@ class ActivationEmail extends Mailable
         $subject = $data->isValid == false ? 'Validation Account' : 'Activation Email';
 
         return $this->from(env('MAIL_USERNAME'), env("APP_NAME") . ' | SISKA - Sistem Informasi Karier')
-            ->subject('SISKA Account: ' . $subject)
+            ->subject('SISKA Account: '.$subject)
             ->view('emails.auth.activation', compact('data'));
     }
 }

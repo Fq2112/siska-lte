@@ -14,16 +14,19 @@
 Route::group(['prefix' => '/', 'namespace' => 'Seekers'], function () {
 
     Route::get('search', [
+        'middleware' => 'visitor',
         'uses' => 'SeekerController@index',
         'as' => 'home-seeker'
     ]);
 
     Route::get('seekers/{id}', [
+        'middleware' => 'visitor',
         'uses' => 'SeekerController@detailSeeker',
         'as' => 'seeker.profile'
     ]);
 
     Route::get('agencies/{id}', [
+        'middleware' => 'visitor',
         'uses' => 'VacancyController@detailAgency',
         'as' => 'agency.profile'
     ]);
@@ -31,6 +34,7 @@ Route::group(['prefix' => '/', 'namespace' => 'Seekers'], function () {
     Route::group(['prefix' => 'vacancy'], function () {
 
         Route::get('{id}', [
+            'middleware' => 'visitor',
             'uses' => 'VacancyController@detailVacancy',
             'as' => 'detail.vacancy'
         ]);
@@ -55,6 +59,7 @@ Route::group(['prefix' => '/', 'namespace' => 'Seekers'], function () {
     Route::group(['prefix' => 'dashboard'], function () {
 
         Route::get('application_status', [
+            'middleware' => 'visitor',
             'uses' => 'SeekerController@showDashboard',
             'as' => 'seeker.dashboard'
         ]);
@@ -70,6 +75,7 @@ Route::group(['prefix' => '/', 'namespace' => 'Seekers'], function () {
         ]);
 
         Route::get('bookmarked_vacancy', [
+            'middleware' => 'visitor',
             'uses' => 'SeekerController@showBookmark',
             'as' => 'seeker.bookmarked.vacancy'
         ]);
@@ -84,6 +90,7 @@ Route::group(['prefix' => '/', 'namespace' => 'Seekers'], function () {
     Route::group(['prefix' => 'account'], function () {
 
         Route::get('profile', [
+            'middleware' => 'visitor',
             'uses' => 'AccountController@editProfile',
             'as' => 'seeker.edit.profile'
         ]);
@@ -94,6 +101,7 @@ Route::group(['prefix' => '/', 'namespace' => 'Seekers'], function () {
         ]);
 
         Route::get('settings', [
+            'middleware' => 'visitor',
             'uses' => 'AccountController@accountSettings',
             'as' => 'seeker.settings'
         ]);

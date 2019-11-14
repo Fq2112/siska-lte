@@ -143,9 +143,9 @@
                 <a href="{{route('welcome')}}">
                     <img src="{{asset('images/carousels/logotype.png')}}" class="animated fadeInLeft"
                          alt="logo kota madiun" style="width: 100%"></a>
-                <blockquote style="text-align: left">
-                    <h3 class="animated fadeInRight">{{Faker\Factory::create()->paragraph}}</h3>
-                </blockquote>
+                {{--<blockquote style="text-align: left">
+                    <h2 class="animated fadeInRight">Growing with Character</h2>
+                </blockquote>--}}
                 <button class="myBtn"></button>
             </div>
         </div>
@@ -156,9 +156,9 @@
                 <a href="{{route('welcome')}}">
                     <img src="{{asset('images/carousels/logotype.png')}}" class="animated fadeInLeft"
                          alt="logo kota madiun" style="width: 100%"></a>
-                <blockquote style="text-align: left">
-                    <h2 class="animated fadeInRight">{{Faker\Factory::create()->paragraph}}</h2>
-                </blockquote>
+                {{--<blockquote style="text-align: left">
+                    <h2 class="animated fadeInRight">Growing with Character</h2>
+                </blockquote>--}}
                 <button class="myBtn"></button>
             </div>
         </div>
@@ -167,11 +167,10 @@
             <div class="carousel-caption">
                 <h1 class="line-1 anim-typewriter">Selamat datang di {{env("APP_TITLE")}}!</h1>
                 <a href="{{route('welcome')}}">
-                    <img src="{{asset('images/carousels/logotype.png')}}" class="animated fadeInLeft"
-                         alt="logo {{env("APP_NAME")}}" style="width: 100%"></a>
-                <blockquote style="text-align: left">
-                    <h2 class="animated fadeInRight">{{Faker\Factory::create()->paragraph}}</h2>
-                </blockquote>
+                    <img src="{{asset('images/carousels/logotype.png')}}" class="animated fadeInLeft" alt="logo {{env("APP_NAME")}}" style="width: 100%"></a>
+                {{--<blockquote style="text-align: left">
+                    <h2 class="animated fadeInRight">Growing with Character</h2>
+                </blockquote>--}}
                 <button class="myBtn"></button>
             </div>
         </div>

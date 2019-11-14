@@ -1,11 +1,61 @@
 @extends('layouts.mst')
 @section('title', 'Search Vacancy &ndash; '.env("APP_NAME").' | SISKA &mdash; Sistem Informasi Karier')
 @push("styles")
+    <link href="{{ asset('jquery-ui/jquery-ui.min.css') }}" rel="stylesheet">
     <link href="{{ asset('css/myPagination.css') }}" rel="stylesheet">
     <link href="{{ asset('css/mySearchFilter.css') }}" rel="stylesheet">
     <style>
         [data-scrollbar] {
             max-height: 575px;
+        }
+
+        #list-lokasi input {
+            width: 340px;
+            z-index: 2;
+            position: fixed;
+            margin-top: -5px;
+            background-color: rgba(255, 255, 255, .1);
+        }
+
+        #list-lokasi input {
+            width: 325px;
+            background: transparent url('../images/map.png') 98% 50% no-repeat;
+            background-size: 8%;
+            -webkit-transition: .5s all ease-out;
+            transition: .5s all ease-out;
+        }
+
+        #list-lokasi:hover input, #list-lokasi:focus input {
+            background-color: rgba(255, 255, 255, 1);
+        }
+
+        #list-lokasi input:hover, #list-lokasi input:focus {
+            width: 325px;
+            background: transparent url('../images/map.png') 2% 50% no-repeat;
+            background-size: 8%;
+            padding-left: 2.25em;
+            -webkit-transition: .5s all ease-out;
+            transition: .5s all ease-out;
+        }
+
+        ul.ui-autocomplete {
+            color: #2A3F54;
+            border-color: #e4e4e4 !important;
+            border-radius: 0 0 6px 6px;
+        }
+
+        ul.ui-autocomplete .ui-menu-item .ui-state-active,
+        ul.ui-autocomplete .ui-menu-item .ui-state-active:hover,
+        ul.ui-autocomplete .ui-menu-item .ui-state-active:focus {
+            background: #2A3F54;
+            color: #fff;
+            border: 1px solid #2A3F54;
+        }
+
+        ul.ui-autocomplete .ui-menu-item:last-child .ui-state-active,
+        ul.ui-autocomplete .ui-menu-item:last-child .ui-state-active:hover,
+        ul.ui-autocomplete .ui-menu-item:last-child .ui-state-active:focus {
+            border-radius: 0 0 6px 6px;
         }
     </style>
 @endpush
@@ -41,14 +91,9 @@
                                                     <span class="fa fa-caret-down"></span>
                                                 </button>
                                                 <ul class="dropdown-menu scrollable-menu" id="list-lokasi">
-                                                    <div class="row form-group has-feedback">
-                                                        <div class="col-lg-12">
-                                                            <input class="form-control" type="text"
-                                                                   placeholder="Search location&hellip;"
-                                                                   id="txt_filter" onkeyup="filterFunction()"
-                                                                   autofocus>
-                                                        </div>
-                                                    </div>
+                                                    <input class="form-control" type="text"
+                                                           placeholder="Search location&hellip;"
+                                                           id="txt_filter" onkeyup="filterFunction()" autofocus>
                                                     <li id="divider" class="divider"></li>
                                                     @foreach($provinces as $province)
                                                         <li class="province{{$province->id}} dropdown-header">
@@ -69,7 +114,7 @@
                                             </div>
                                             <input id="txt_keyword" type="text" name="q"
                                                    class="form-control myInput input-lg"
-                                                   onkeyup="showResetBtn(this.value)"
+                                                   onkeyup="showResetBtn(this.value)" autocomplete="off"
                                                    placeholder="Job Title or Agency's Name&hellip;"
                                                    value="{{!empty($keyword) ? $keyword : ''}}">
                                             <input type="hidden" name="loc" id="txt_location"
@@ -103,8 +148,9 @@
     </div>
 @endsection
 @push("scripts")
+    <script src="{{asset('jquery-ui/jquery-ui.min.js')}}"></script>
     <script>
-        var last_page;
+        var last_page, input_keyword = $("#txt_keyword");
 
         $(function () {
             $('.dc-view-switcher button[data-trigger="grid-view"]').click();
@@ -128,7 +174,24 @@
             });
         });
 
-        $('#txt_keyword').on('keyup', function () {
+        input_keyword.autocomplete({
+            source: function (request, response) {
+                $.getJSON('{{route('get.keyword.vacancy', ['keyword' => ''])}}/' + input_keyword.val(), {
+                    name: request.term,
+                }, function (data) {
+                    response(data);
+                });
+            },
+            focus: function (event, ui) {
+                event.preventDefault();
+            },
+            select: function (event, ui) {
+                event.preventDefault();
+                input_keyword.val(ui.item.keyword).trigger('keyup');
+            }
+        });
+
+        input_keyword.on('keyup', function() {
             loadVacancy();
         });
 
@@ -147,13 +210,13 @@
 
         $("#btn_reset").on("click", function () {
             $("#lokasi").html('Filter&nbsp;<span class="fa fa-caret-down">' + '</span>');
-            $("#txt_keyword").removeAttr('value');
+            input_keyword.removeAttr('value');
             $("#form-search input").val('');
             loadVacancy();
         });
 
         function loadVacancy() {
-            var keyword = $("#txt_keyword").val(), location = $("#txt_location").val();
+            var keyword = input_keyword.val(), location = $("#txt_location").val();
 
             clearTimeout(this.delay);
             this.delay = setTimeout(function () {
@@ -191,7 +254,7 @@
         $('.myPagination ul').on('click', 'li', function () {
             $(window).scrollTop(0);
 
-            var keyword = $("#txt_keyword").val(), location = $("#txt_location").val(),
+            var keyword = input_keyword.val(), location = $("#txt_location").val(),
                 page, $url, active, hellip_prev, hellip_next;
 
             page = $(this).children().text();

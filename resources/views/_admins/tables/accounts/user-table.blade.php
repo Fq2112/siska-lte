@@ -223,10 +223,8 @@
                         <div class="row form-group">
                             <div class="col-lg-2 col-md-2 col-sm-4">
                                 <label class="control-label" for="rb_invalid">Status</label><br>
-                                <input id="rb_invalid" type="radio" class="flat" name="isValid" value="0">
-                                <b>INVALID</b>
-                                <br><input id="rb_valid" type="radio" class="flat" name="isValid" value="1">
-                                <b>VALID</b>
+                                <input id="rb_invalid" type="radio" class="flat" name="isValid" value="0"> <b>INVALID</b>
+                                <br><input id="rb_valid" type="radio" class="flat" name="isValid" value="1"> <b>VALID</b>
                             </div>
                             <div class="col-lg-10 col-md-10 col-sm-8">
                                 <label class="control-label" for="note">Note</label>
@@ -252,7 +250,7 @@
             @endif
         });
 
-        $('#rb_invalid').on('ifChecked', function () {
+        $('#rb_invalid').on('ifChecked', function (){
             $('#note').attr('required', 'required').removeAttr('disabled');
         });
 

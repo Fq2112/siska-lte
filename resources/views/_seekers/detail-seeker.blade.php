@@ -229,7 +229,7 @@
                                                             asset('images/files.png')}}">
                                                         </div>
                                                         <div class="media-body">
-                                                            @if(Auth::guard('admin')->check())
+                                                            @if(Auth::guard('admin')->check() || (Auth::check() && Auth::id() == $user->id))
                                                                 <div class="pull-right anim-icon anim-icon-md download ld ld-breath"
                                                                      id="{{$row->id}}"
                                                                      data-toggle="tooltip" data-placement="left"
