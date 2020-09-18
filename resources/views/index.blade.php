@@ -94,10 +94,9 @@
                         <input type="checkbox" id="remember" name="remember" {{ old('remember') ? 'checked' : '' }}>
                         <label for="remember">Keep me sign in</label>
                     </div>
-                    <div class="col-lg-8" id="recaptcha-login"></div>
-                </div>
-                <div class="row">
-                    <button id="btn_login" type="submit" class="btn btn-signin btn-block" disabled>SIGN IN</button>
+                    <div class="col-lg-8">
+                        <button id="btn_login" type="submit" class="btn btn-signin" style="width: 100%">SIGN IN</button>
+                    </div>
                 </div>
                 @if(session('error'))
                     <strong>{{ $errors->first('password') }}</strong>
@@ -316,12 +315,7 @@
     $(".btn-reset").click();
             @endif
 
-    var recaptcha_login, recaptcha_register, recaptchaCallback = function () {
-            recaptcha_login = grecaptcha.render(document.getElementById('recaptcha-login'), {
-                'sitekey': '{{env('reCAPTCHA_v2_SITEKEY')}}',
-                'callback': 'enable_btnLogin',
-                'expired-callback': 'disabled_btnLogin'
-            });
+    var recaptcha_register, recaptchaCallback = function () {
             recaptcha_register = grecaptcha.render(document.getElementById('recaptcha-register'), {
                 'sitekey': '{{env('reCAPTCHA_v2_SITEKEY')}}',
                 'callback': 'enable_btnRegister',
